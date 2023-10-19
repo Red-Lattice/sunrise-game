@@ -25,16 +25,13 @@ public class StateMachine : MonoBehaviour
     [SerializeField] private AwarenessSystem awarenessScript;
     [SerializeField] private PlasmaGun plasmaGun;
 
-    [Header("Parameters")]
-    [SerializeField] private bool amongus;
-
     private GameObject target;
     private Vector3 lastKnownTargetPosition;
     // The position that the enemy should attack
     private Vector3 attackPosition;
     private bool lookingAtTarget;
     private bool previouslySeenTarget;
-    [SerializeField] private float distanceFromTarget;
+    private float distanceFromTarget;
     private float randomChanceToSwitchState;
     private float reactionTime;
     // Marks how long the enemy will fire at a corner before charging in at the target.
@@ -69,61 +66,61 @@ public class StateMachine : MonoBehaviour
 
     void decideActionFromState()
     {
-        if (state == State.Attacking)
+        switch (state)
         {
-            movementScript.turnToTarget(target.transform.position);
-            if (awarenessScript.canShootTarget())
-            {
-                plasmaGun.Fire(transform.rotation);
-                if (distanceFromTarget < 10f)
+            case State.Attacking:
+                movementScript.turnToTarget(target.transform.position);
+                if (awarenessScript.canShootTarget())
                 {
-                    //transform.position += Vector3.back;
+                    plasmaGun.Fire(transform.rotation);
+                    //if (distanceFromTarget < 10f) This script is for if I want the enemy to back up if the player is too close
+                    //{
+                        //transform.position += Vector3.back;
+                    //}
                 }
-            }
-        }
+                break;
+                
+            case State.AttackingLKP:
+                Vector3 dirToLastKnownPos = (lastKnownTargetPosition - plasmaGun.gameObject.transform.position);
+                Vector3 plasmaGunPos = plasmaGun.gameObject.transform.position;
 
-        if (state == State.AttackingLKP)
-        {
-            Vector3 dirToLastKnownPos = (lastKnownTargetPosition - plasmaGun.gameObject.transform.position);
-            Vector3 plasmaGunPos = plasmaGun.gameObject.transform.position;
+                if (!Physics.Raycast(plasmaGunPos, (dirToLastKnownPos), (dirToLastKnownPos).magnitude))
+                {
+                    movementScript.turnToTarget(lastKnownTargetPosition);
+                    plasmaGun.Fire(transform.rotation);
+                    return;
+                }
 
-            if (!Physics.Raycast(plasmaGunPos, (dirToLastKnownPos), (dirToLastKnownPos).magnitude))
-            {
+                Vector3 testVector1 = Quaternion.AngleAxis(-1, Vector3.up) * dirToLastKnownPos;
+                if (!Physics.Raycast(plasmaGunPos, (testVector1), (testVector1).magnitude))
+                {
+                    attackPosition = testVector1;
+                    movementScript.turnToTarget(testVector1);
+                    plasmaGun.Fire(transform.rotation);
+                    return;
+                }
+
+                Vector3 testVector2 = Quaternion.AngleAxis(1, Vector3.up) * dirToLastKnownPos;
+                if (!Physics.Raycast(plasmaGunPos, (testVector2), (testVector2).magnitude))
+                {
+                    attackPosition = testVector2;
+                    movementScript.turnToTarget(testVector2);
+                    plasmaGun.Fire(transform.rotation);
+                    return;
+                }
+
                 movementScript.turnToTarget(lastKnownTargetPosition);
                 plasmaGun.Fire(transform.rotation);
-                return;
-            }
+                break;
 
-            Vector3 testVector1 = Quaternion.AngleAxis(-1, Vector3.up) * dirToLastKnownPos;
-
-            if (!Physics.Raycast(plasmaGunPos, (testVector1), (testVector1).magnitude))
-            {
-                attackPosition = testVector1;
-                movementScript.turnToTarget(testVector1);
-                plasmaGun.Fire(transform.rotation);
-                return;
-            }
-
-            Vector3 testVector2 = Quaternion.AngleAxis(1, Vector3.up) * dirToLastKnownPos;
-
-            if (!Physics.Raycast(plasmaGunPos, (testVector2), (testVector2).magnitude))
-            {
-                attackPosition = testVector2;
-                movementScript.turnToTarget(testVector2);
-                plasmaGun.Fire(transform.rotation);
-                return;
-            }
-
-            movementScript.turnToTarget(lastKnownTargetPosition);
-            plasmaGun.Fire(transform.rotation);
-        }
-
-        if (state == State.Persuing)
-        {
-            if (awarenessScript.unobstructedFrom(target))
-            {
-                movementScript.turnToTarget(target.transform.position);
-            }
+            case State.Persuing:
+                if (awarenessScript.unobstructedFrom(target))
+                {
+                    movementScript.turnToTarget(target.transform.position);
+                }
+                break;
+            default:
+                break;
         }
     }
 
