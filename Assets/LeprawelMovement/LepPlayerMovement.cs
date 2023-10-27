@@ -259,7 +259,6 @@ public class LepPlayerMovement : MonoBehaviour
                 //camCon.Punch(new Vector2(0, -3f));
             }
             //StartCoroutine(bHopCoroutine(bhopLeniency));
-            gameObject.SendMessage("OnStartWalking");
             mode = Mode.Walking;
         }
     }
@@ -287,7 +286,6 @@ public class LepPlayerMovement : MonoBehaviour
         {
             if (VectorToGround().magnitude > 0.2f && CanRunOnThisWall(bannedGroundNormal) && wallStickTimer == 0f)
             {
-                gameObject.SendMessage("OnStartWallrunning");
                 wrTimer = wallRunTime;
                 canDJump = true;
                 mode = Mode.Wallruning;
@@ -308,7 +306,6 @@ public class LepPlayerMovement : MonoBehaviour
         //wishDir is just the direction vector.
         if (jump && canJump)
         {
-            gameObject.SendMessage("OnJump");
             Jump();
         }
         else
@@ -350,7 +347,6 @@ public class LepPlayerMovement : MonoBehaviour
     {
         if (jump && !crouched)
         {
-            gameObject.SendMessage("OnDoubleJump");
             DoubleJump(wishDir);
         }
 

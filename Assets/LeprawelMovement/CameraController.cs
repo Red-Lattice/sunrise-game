@@ -66,7 +66,7 @@ public class CameraController : MonoBehaviour
 
         transform.localRotation = Quaternion.AngleAxis(-currentLook.y, Vector3.right);
         transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, curTilt);
-        transform.root.transform.localRotation = Quaternion.Euler(0, currentLook.x, 0);
+        transform.parent.transform.localRotation = Quaternion.Euler(0, currentLook.x, 0);
     }
 
     public void Punch(Vector2 dir)
