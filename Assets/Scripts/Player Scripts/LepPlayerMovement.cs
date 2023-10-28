@@ -98,16 +98,6 @@ public class LepPlayerMovement : MonoBehaviour
         {
             jump = true;
         }
-
-        if (mode == Mode.Flying)
-        {
-            //AirDash();
-        }
-
-        //Special use
-        //if (Input.GetKeyDown(KeyCode.T)) transform.position = new Vector3(0f, 30f, 0f);
-        //if (Input.GetKeyDown(KeyCode.X)) rb.velocity = new Vector3(rb.velocity.x, 40f, rb.velocity.z);
-        //if (Input.GetKeyDown(KeyCode.V)) rb.AddForce(dir * 20f, ForceMode.VelocityChange);
     }
 
     void AirDash()
@@ -472,16 +462,7 @@ public class LepPlayerMovement : MonoBehaviour
 
 
 
-    #region MathGenious
-    Vector2 ClampedAdditionVector(Vector2 a, Vector2 b)
-    {
-        float k, x, y;
-        k = Mathf.Sqrt(Mathf.Pow(a.x, 2) + Mathf.Pow(a.y, 2)) / Mathf.Sqrt(Mathf.Pow(a.x + b.x, 2) + Mathf.Pow(a.y + b.y, 2));
-        x = k * (a.x + b.x) - a.x;
-        y = k * (a.y + b.y) - a.y;
-        return new Vector2(x, y);
-    }
-
+    #region MathGenius
     Vector3 RotateToPlane(Vector3 vect, Vector3 normal)
     {
         Vector3 rotDir = Vector3.ProjectOnPlane(normal, Vector3.up);
