@@ -27,11 +27,14 @@ public class PlayerGunHandler : MonoBehaviour
     private Weapon[] availableWeapons;
     private Weapon activeWeaponScript;
     private GunAnimator gunAnimator;
+    private LepPlayerMovement playerMovement;
+    private string currentMode;
 
     void Start()
     {
         weaponSelected = 0;
         availableWeapons = new Weapon[maxWeapons];
+        playerMovement = this.transform.GetComponent<LepPlayerMovement>();
         setWeapon("Pistol");
     }
 
@@ -47,6 +50,44 @@ public class PlayerGunHandler : MonoBehaviour
         {
             activeWeaponScript.triggerWeapon();
             gunAnimator.fire();
+        }
+
+        // Updating the running vs idling animation
+        /*if (playerMovement.getPlayerSpeed() > 5)
+        {
+            if (playerMovement.getMode() == "Walking")
+            {
+                currentMode = playerMovement.getMode();
+                gunAnimator.updateCurrentPlayerState("Running");
+            }
+            else
+            {
+                currentMode = playerMovement.getMode();
+                gunAnimator.updateCurrentPlayerState("Idle");
+            }
+        }
+        else
+        {
+            currentMode = playerMovement.getMode();
+            gunAnimator.updateCurrentPlayerState("Idle");
+        }*/
+        if (playerMovement.getMode() == "Walking")
+        {
+            if (playerMovement.getPlayerSpeed() > 5)
+            {
+                currentMode = playerMovement.getMode();
+                gunAnimator.updateCurrentPlayerState("Running");
+            }
+            else
+            {
+                currentMode = playerMovement.getMode();
+                gunAnimator.updateCurrentPlayerState("Idle");
+            }
+        }
+        else
+        {
+            currentMode = playerMovement.getMode();
+            gunAnimator.updateCurrentPlayerState("Idle");
         }
     }
 

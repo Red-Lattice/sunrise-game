@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class LepPlayerMovement : MonoBehaviour
@@ -246,7 +247,7 @@ public class LepPlayerMovement : MonoBehaviour
             }
             if (rb.velocity.y < -1.2f)
             {
-                //camCon.Punch(new Vector2(0, -3f));
+                camCon.Punch(new Vector2(0, -3f));
             }
             //StartCoroutine(bHopCoroutine(bhopLeniency));
             mode = Mode.Walking;
@@ -535,4 +536,14 @@ public class LepPlayerMovement : MonoBehaviour
         canJump = true;
     }
     #endregion
+
+    public string getMode()
+    {
+        return mode.ToString();
+    }
+
+    public float getPlayerSpeed()
+    {
+        return Math.Abs(rb.velocity.x + rb.velocity.z);
+    }
 }
