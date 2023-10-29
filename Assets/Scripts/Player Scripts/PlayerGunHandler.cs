@@ -22,7 +22,7 @@ public class PlayerGunHandler : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private int maxWeapons = 2;
 
-    private int numberOfWeapons;
+    [SerializeField] private int numberOfWeapons;
     private int weaponSelected;
     private Weapon[] availableWeapons;
     private Weapon activeWeaponScript;
@@ -35,7 +35,7 @@ public class PlayerGunHandler : MonoBehaviour
         weaponSelected = 0;
         availableWeapons = new Weapon[maxWeapons];
         playerMovement = this.transform.GetComponent<LepPlayerMovement>();
-        setWeapon("Pistol");
+        //setWeapon("Pistol");
     }
 
     // Update is called once per frame
@@ -51,44 +51,22 @@ public class PlayerGunHandler : MonoBehaviour
             activeWeaponScript.triggerWeapon();
             gunAnimator.fire();
         }
+        if (gunAnimator != null)
+        {
+            updateContinuousAnimations();
+        }
+    }
 
-        // Updating the running vs idling animation
-        /*if (playerMovement.getPlayerSpeed() > 5)
+    // Updating the running vs idling animation
+    void updateContinuousAnimations()
+    {
+        currentMode = playerMovement.getMode();       
+        if (playerMovement.getMode() == "Walking" && playerMovement.getPlayerSpeed() > 5)
         {
-            if (playerMovement.getMode() == "Walking")
-            {
-                currentMode = playerMovement.getMode();
-                gunAnimator.updateCurrentPlayerState("Running");
-            }
-            else
-            {
-                currentMode = playerMovement.getMode();
-                gunAnimator.updateCurrentPlayerState("Idle");
-            }
+            gunAnimator.updateCurrentPlayerState("Running");
+            return;
         }
-        else
-        {
-            currentMode = playerMovement.getMode();
-            gunAnimator.updateCurrentPlayerState("Idle");
-        }*/
-        if (playerMovement.getMode() == "Walking")
-        {
-            if (playerMovement.getPlayerSpeed() > 5)
-            {
-                currentMode = playerMovement.getMode();
-                gunAnimator.updateCurrentPlayerState("Running");
-            }
-            else
-            {
-                currentMode = playerMovement.getMode();
-                gunAnimator.updateCurrentPlayerState("Idle");
-            }
-        }
-        else
-        {
-            currentMode = playerMovement.getMode();
-            gunAnimator.updateCurrentPlayerState("Idle");
-        }
+        gunAnimator.updateCurrentPlayerState("Idle");
     }
 
     /**
@@ -142,5 +120,9 @@ public class PlayerGunHandler : MonoBehaviour
         }
     }
 
+    public bool weaponsNeededCheck()
+    {
+        return (numberOfWeapons < maxWeapons);
+    }
 }
 

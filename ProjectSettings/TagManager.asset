@@ -9,6 +9,7 @@ TagManager:
   - Projectile
   - Gun
   - Debug
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - FriendlyEntity
   - Enemy
   - Projectile
-  - 
+  - objects
   - 
   - 
   - 

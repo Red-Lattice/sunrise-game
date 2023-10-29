@@ -744,6 +744,8 @@ GameObject:
   - component: {fileID: 7798008654792206724}
   - component: {fileID: 7798008654792206730}
   - component: {fileID: 7798008654792206721}
+  - component: {fileID: 7856247505076962347}
+  - component: {fileID: 856271675744474698}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -817,8 +819,6 @@ MonoBehaviour:
   coefficientOfFriction: 0.3
   airSpeed: 3
   airAccel: 20
-  airDash: 200
-  gravityDisableTimer: 0
   jumpUpSpeed: 9.2
   dashSpeed: 6
   wallSpeed: 10
@@ -853,6 +853,33 @@ MonoBehaviour:
   camControl: {fileID: 7798008653611156035}
   uiCam: {fileID: 7798008653543340225}
   maxWeapons: 2
+  numberOfWeapons: 0
+--- !u!65 &7856247505076962347
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7798008654792206731}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.25, y: 2.25, z: 1.25}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &856271675744474698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7798008654792206731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3063e2ae8461f064599413a6af0fa780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pgh: {fileID: 7798008654792206721}
 --- !u!1 &7798008654866528778
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ public class LepPlayerMovement : MonoBehaviour
     /**
     * This code is a modified version of some code originally written by youtube user Leprawel
     */
-
+    #region Fields
     //Ground
     [Header("Ground")]
     private float groundSpeed = 6f;
@@ -21,8 +21,6 @@ public class LepPlayerMovement : MonoBehaviour
     [Header("Air")]
     [SerializeField] private float airSpeed = 3f;
     [SerializeField] private float airAccel = 20f;
-    [SerializeField] private float airDash = 100f;
-    [SerializeField] private float gravityDisableTimer = 0f;
 
     //Jump
     [Header("Jump")]
@@ -44,7 +42,6 @@ public class LepPlayerMovement : MonoBehaviour
     //Cooldowns
     bool canJump = true;
     bool canDJump = true;
-    bool canAirDash = false;
     float wallBan = 0f;
     float wrTimer = 0f;
     float wallStickTimer = 0f;
@@ -54,12 +51,7 @@ public class LepPlayerMovement : MonoBehaviour
     bool crouched;
     [Header("Debug (read only)")]
     [SerializeField] bool grounded;
-
-    Collider ground;
-
-    Vector3 groundNormal = Vector3.up;
     
-
     enum Mode
     {
         Walking,
@@ -67,29 +59,27 @@ public class LepPlayerMovement : MonoBehaviour
         Wallruning
     }
     [SerializeField] Mode mode = Mode.Flying;
+
     [Header("Initialization")]
     [SerializeField] private CapsuleCollider col;
     [SerializeField] private CameraController camCon;
     [SerializeField] private Transform camTranform;
     [SerializeField] private Rigidbody rb;
     Vector3 dir = Vector3.zero;
+    Collider ground;
+    Vector3 groundNormal = Vector3.up;
+
+    #endregion
 
     void OnGUI()
     {
-        GUILayout.Label("Velocity: " + new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
-        GUILayout.Label("Upward Velocity: " + rb.velocity.y);
+        //GUILayout.Label("Velocity: " + new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
+        //GUILayout.Label("Upward Velocity: " + rb.velocity.y);
     }
 
     void Update()
     {
-        if (gravityDisableTimer > 0f)
-        {
-            gravityDisableTimer -= Time.deltaTime * 5;
-        }
-        else
-        {
-            rb.useGravity = !(mode == Mode.Walking);
-        }
+        rb.useGravity = !(mode == Mode.Walking);
 
         col.material.dynamicFriction = 0f;
         dir = Direction();
@@ -98,24 +88,6 @@ public class LepPlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             jump = true;
-        }
-    }
-
-    void AirDash()
-    {
-        if (gravityDisableTimer < 0.05)
-        {
-            rb.useGravity = true;
-        }
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canAirDash)
-        {
-            //Vector3 lookDir = new Vector3(camTranform.rotation.x, camTranform.roation.y, camTransform.rotation.z);
-            rb.AddForce(camTranform.forward * airDash, ForceMode.Force);
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            canDJump = true;
-            canAirDash = false;
-            rb.useGravity = false;
-            gravityDisableTimer = 1f;
         }
     }
 
@@ -132,14 +104,8 @@ public class LepPlayerMovement : MonoBehaviour
             groundSpeed = playerSpeed;
         }
 
-        if (wallStickTimer == 0f && wallBan > 0f)
-        {
-            bannedGroundNormal = groundNormal;
-        }
-        else
-        {
-            bannedGroundNormal = Vector3.zero;
-        }
+        bannedGroundNormal = (wallStickTimer == 0f && wallBan > 0f) 
+            ? groundNormal : Vector3.zero;
 
         wallStickTimer = Mathf.Max(wallStickTimer - Time.deltaTime, 0f);
         wallBan = Mathf.Max(wallBan - Time.deltaTime, 0f);
@@ -257,7 +223,6 @@ public class LepPlayerMovement : MonoBehaviour
     void EnterFlying(bool wishFly = false)
     {
         grounded = false;
-        canAirDash = true;
         if (mode == Mode.Wallruning && VectorToWall().magnitude < wallStickDistance && !wishFly)
         {
             return;
@@ -461,8 +426,6 @@ public class LepPlayerMovement : MonoBehaviour
     }
     #endregion
 
-
-
     #region MathGenius
     Vector3 RotateToPlane(Vector3 vect, Vector3 normal)
     {
@@ -525,8 +488,6 @@ public class LepPlayerMovement : MonoBehaviour
         }
     }
     #endregion
-
-
 
     #region Coroutines
     IEnumerator jumpCooldownCoroutine(float time)
