@@ -23,8 +23,8 @@ public class PlayerGunHandler : MonoBehaviour
     [SerializeField] private int maxWeapons = 2;
 
     [SerializeField] private int numberOfWeapons;
-    private int weaponSelected;
-    private Weapon[] availableWeapons;
+    [SerializeField] private int weaponSelected;
+    [SerializeField] private Weapon[] availableWeapons;
     private Weapon activeWeaponScript;
     private GunAnimator gunAnimator;
     private LepPlayerMovement playerMovement;
@@ -35,7 +35,7 @@ public class PlayerGunHandler : MonoBehaviour
         weaponSelected = 0;
         availableWeapons = new Weapon[maxWeapons];
         playerMovement = this.transform.GetComponent<LepPlayerMovement>();
-        //setWeapon("Pistol");
+        setWeapon("Plasma Pulser");
     }
 
     // Update is called once per frame
@@ -46,12 +46,12 @@ public class PlayerGunHandler : MonoBehaviour
         {
             switchWeapon();
         }
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && activeWeaponScript != null)
         {
             activeWeaponScript.triggerWeapon();
             gunAnimator.fire();
         }
-        if (gunAnimator != null)
+        if (gunAnimator != null && gunAnimator.gameObject != null)
         {
             updateContinuousAnimations();
         }
@@ -60,6 +60,7 @@ public class PlayerGunHandler : MonoBehaviour
     // Updating the running vs idling animation
     void updateContinuousAnimations()
     {
+        if (gunAnimator == null) {return;}
         currentMode = playerMovement.getMode();       
         if (playerMovement.getMode() == "Walking" && playerMovement.getPlayerSpeed() > 5)
         {
@@ -80,6 +81,11 @@ public class PlayerGunHandler : MonoBehaviour
         // This runs when you're adding a new weapon
         if (numberOfWeapons < maxWeapons)
         {
+            if (gunAnimator != null)
+            {
+                Destroy(gunAnimator.gameObject);
+                Destroy(gunAnimator);
+            }
             activeWeaponScript = getAddedWeapon(weaponName);
             numberOfWeapons++;
             availableWeapons[numberOfWeapons - 1] = activeWeaponScript;
@@ -87,7 +93,6 @@ public class PlayerGunHandler : MonoBehaviour
             return;
         }
 
-        Destroy(activeWeaponScript);
         Destroy(gunAnimator.transform.parent);
 
         gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
@@ -103,8 +108,17 @@ public class PlayerGunHandler : MonoBehaviour
     {
         if (numberOfWeapons > 0) // We don't want a divide by 0 error!
         {
+            if (gunAnimator != null)
+            {
+                Destroy(gunAnimator.gameObject);
+                Destroy(gunAnimator);
+            }
             weaponSelected = weaponSelected % numberOfWeapons;
-            activeWeaponScript = availableWeapons[weaponSelected];
+            weaponSelected++;
+            activeWeaponScript = availableWeapons[weaponSelected - 1];
+            string weaponName = activeWeaponScript.weaponName;
+            GameObject gunInQuestion = gunGetter.getGunPrefab(weaponName);
+            gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
         }
     }
 
@@ -115,6 +129,8 @@ public class PlayerGunHandler : MonoBehaviour
         {
             case "Pistol":
                 return weaponObject.AddComponent<Weapon_Pistol>();
+            case "Plasma Pulser":
+                return weaponObject.AddComponent<Weapon_PlasmaPulser>();
             default:
                 return weaponObject.AddComponent<Weapon>();
         }
@@ -124,5 +140,13 @@ public class PlayerGunHandler : MonoBehaviour
     {
         return (numberOfWeapons < maxWeapons);
     }
+
+    #region Getters
+
+    public ProjectileScriptableObjects getProjectileGetter()
+    {
+        return projectileGetter;
+    }
+    #endregion
 }
 

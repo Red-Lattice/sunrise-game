@@ -8,11 +8,13 @@ public class PlasmaBullet : MonoBehaviour
     [SerializeField] private float bulletLifeTime = 10f;
     [SerializeField] private Vector3 bulletDirection;
     [SerializeField] private Rigidbody bulletRB;
+    private bool initialized = false;
+    private string shooter;
     // Update is called once per frame
 
     void Start()
     {
-        bulletSpeed = 10f;
+        bulletSpeed = 25f;
         bulletLifeTime = 10f;
         bulletDirection = gameObject.transform.forward;
     }
@@ -29,9 +31,24 @@ public class PlasmaBullet : MonoBehaviour
 
     public void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag != "Projectile" && other.gameObject.tag != "Gun" && other.gameObject.tag != "Debug")
+        if (!initialized) {return;}
+        GameObject otherGO = other.gameObject;
+        string otherTag = otherGO.tag;
+
+        //Returning before the GetComponent call if it's the shooter
+        if (otherGO.transform.root.name == shooter) {return;}
+        if (otherTag == "Projectile") {return;}
+        StatManager otherStatManager = otherGO.GetComponent<StatManager>();
+        if (otherStatManager != null)
         {
-            Destroy(this.gameObject);
+            otherStatManager.dealDamage(30f, "Energy");
         }
+        Destroy(this.gameObject);
+    }
+
+    public void initialization(string shooter)
+    {
+        this.shooter = shooter;
+        initialized = true;
     }
 }

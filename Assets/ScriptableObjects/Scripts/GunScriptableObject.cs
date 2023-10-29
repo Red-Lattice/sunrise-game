@@ -9,6 +9,7 @@ using UnityEngine;
 public class GunScriptableObject : ScriptableObject
 {
     public GameObject pistol;
+    public GameObject plasmaPulser;
 
     public GameObject getGunPrefab(string gun)
     {
@@ -16,6 +17,8 @@ public class GunScriptableObject : ScriptableObject
         {
             case "Pistol":
                 return pistol;
+            case "Plasma Pulser":
+                return plasmaPulser;
             default:
                 return null;
         }

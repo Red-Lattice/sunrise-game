@@ -11,6 +11,7 @@ public class Weapon_Pistol : Weapon
     {
         cam = this.transform.parent.GetComponentInChildren<Camera>();
         shootableLayers = LayerMask.GetMask("Default", "whatIsWall", "whatIsGround", "Enemy");
+        weaponName = "Pistol";
     }
 
     public override bool triggerWeapon()
@@ -18,10 +19,10 @@ public class Weapon_Pistol : Weapon
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, shootableLayers))
         {
-            TestEnemyStatManager hitEnemy = hit.transform.GetComponent<TestEnemyStatManager>();
-            if (hitEnemy != null)
+            StatManager statManager = hit.transform.GetComponent<StatManager>();
+            if (statManager != null)
             {
-                hitEnemy.DealDamage(30f);
+                statManager.dealDamage(30f, "Physical");
             }
         }
         return true;

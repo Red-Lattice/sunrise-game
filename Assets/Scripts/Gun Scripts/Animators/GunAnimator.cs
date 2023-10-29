@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GunAnimator : MonoBehaviour
 {
@@ -41,11 +42,18 @@ public class GunAnimator : MonoBehaviour
     /* Creates a smooth transition between two animations (ideally) */
     public void crossfadeAnimState(string newAnimState)
     {
-        if (currentAnimState == newAnimState) {return;}
+        try
+        {
+            if (currentAnimState == newAnimState) {return;}
 
-        animator.CrossFadeInFixedTime(newAnimState, 0.3f);
+            animator.CrossFadeInFixedTime(newAnimState, 0.3f);
 
-        currentAnimState = newAnimState;
+            currentAnimState = newAnimState;
+        }
+        catch (NullReferenceException nre)
+        {
+            return;
+        }
     }
 
     public void updateCurrentPlayerState(string newPlayerState)

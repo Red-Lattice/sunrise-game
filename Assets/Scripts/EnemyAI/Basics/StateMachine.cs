@@ -23,7 +23,7 @@ public class StateMachine : MonoBehaviour
     [Header("Initialization")]
     [SerializeField] private EnemyMovement movementScript;
     [SerializeField] private AwarenessSystem awarenessScript;
-    [SerializeField] private PlasmaGun plasmaGun;
+    [SerializeField] private Weapon plasmaGun;
 
     private GameObject target;
     private Vector3 lastKnownTargetPosition;
@@ -34,7 +34,7 @@ public class StateMachine : MonoBehaviour
     private float distanceFromTarget;
     private float randomChanceToSwitchState;
     private float reactionTime;
-    // Marks how long the enemy will fire at a corner before charging in at the target.
+    // Marks how long the enemy will triggerWeapon at a corner before charging in at the target.
     private float chargeInTimer;
 
     // Start is called before the first frame update
@@ -42,6 +42,7 @@ public class StateMachine : MonoBehaviour
     {
         awarenessScript = GetComponent<AwarenessSystem>();
         movementScript = GetComponent<EnemyMovement>();
+        plasmaGun = GetComponentInChildren<Weapon>();
         randomChanceToSwitchState = 0f;
         reactionTime = 0.3f;
     }
@@ -72,7 +73,7 @@ public class StateMachine : MonoBehaviour
                 movementScript.turnToTarget(target.transform.position);
                 if (awarenessScript.canShootTarget())
                 {
-                    plasmaGun.Fire(transform.rotation);
+                    plasmaGun.triggerWeapon();
                     //if (distanceFromTarget < 10f) This script is for if I want the enemy to back up if the player is too close
                     //{
                         //transform.position += Vector3.back;
@@ -87,7 +88,7 @@ public class StateMachine : MonoBehaviour
                 if (!Physics.Raycast(plasmaGunPos, (dirToLastKnownPos), (dirToLastKnownPos).magnitude))
                 {
                     movementScript.turnToTarget(lastKnownTargetPosition);
-                    plasmaGun.Fire(transform.rotation);
+                    plasmaGun.triggerWeapon();
                     return;
                 }
 
@@ -96,7 +97,7 @@ public class StateMachine : MonoBehaviour
                 {
                     attackPosition = testVector1;
                     movementScript.turnToTarget(testVector1);
-                    plasmaGun.Fire(transform.rotation);
+                    plasmaGun.triggerWeapon();
                     return;
                 }
 
@@ -105,12 +106,12 @@ public class StateMachine : MonoBehaviour
                 {
                     attackPosition = testVector2;
                     movementScript.turnToTarget(testVector2);
-                    plasmaGun.Fire(transform.rotation);
+                    plasmaGun.triggerWeapon();
                     return;
                 }
 
                 movementScript.turnToTarget(lastKnownTargetPosition);
-                plasmaGun.Fire(transform.rotation);
+                plasmaGun.triggerWeapon();
                 break;
 
             case State.Persuing:

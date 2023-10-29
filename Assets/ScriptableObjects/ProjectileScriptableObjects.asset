@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e29594c69fe60f4c9c92bac98dae1b1, type: 3}
   m_Name: ProjectileScriptableObjects
   m_EditorClassIdentifier: 
-  spockLockBolt: {fileID: 0}
+  plasmaBall: {fileID: 6245491676161645225, guid: 20ce753b4ac3c4040baea08345370641, type: 3}

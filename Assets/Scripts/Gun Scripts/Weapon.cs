@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
+    public string weaponName;
     public virtual bool triggerWeapon()
     {
         return false;

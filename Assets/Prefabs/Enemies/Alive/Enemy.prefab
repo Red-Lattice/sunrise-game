@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -144,7 +144,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -227,7 +227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -258,7 +258,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3558762389142686484}
-  - component: {fileID: 4190761241304535471}
+  - component: {fileID: 4862697884638191133}
   m_Layer: 9
   m_Name: PlasmaGun
   m_TagString: Gun
@@ -289,7 +289,7 @@ Transform:
   m_Father: {fileID: 5876637674732677699}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4190761241304535471
+--- !u!114 &4862697884638191133
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -298,13 +298,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4190761241304535470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 555bd18cb087ddd429eb8cab186ffc37, type: 3}
+  m_Script: {fileID: 11500000, guid: 18bca828b870e6c4f8303a31b330fec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myPrefab: {fileID: 6245491676161645225, guid: 20ce753b4ac3c4040baea08345370641, type: 3}
-  spawnPoint: {fileID: 5876637673387306631}
-  firing: 0
-  maxFiringTimer: 0.2
+  weaponName: 
+  plasmaBolt: {fileID: 6245491676161645225, guid: 20ce753b4ac3c4040baea08345370641, type: 3}
 --- !u!1 &4424110953258393243
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +364,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -449,7 +447,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -532,7 +530,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -615,7 +613,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -698,7 +696,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -764,6 +762,7 @@ GameObject:
   - component: {fileID: 5876637673533578670}
   - component: {fileID: 5876637673533578657}
   - component: {fileID: 5876637673533578656}
+  - component: {fileID: 1749418491106725908}
   m_Layer: 9
   m_Name: Shield
   m_TagString: Untagged
@@ -870,6 +869,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1749418491106725908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5876637673533578658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19b5c924cf5afd149ba6ae0c0cd353a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shieldAnimator: {fileID: 0}
 --- !u!1 &5876637673730339890
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,10 +897,10 @@ GameObject:
   - component: {fileID: 5876637673730339903}
   - component: {fileID: 5876637673730339900}
   - component: {fileID: 5876637673730339901}
-  - component: {fileID: 5876637673730339898}
+  - component: {fileID: 2416244569037348860}
   m_Layer: 9
   m_Name: Enemy
-  m_TagString: Projectile
+  m_TagString: NoWallrun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -984,7 +996,7 @@ MonoBehaviour:
   isChasing: 0
   agent: {fileID: 0}
   enemyRB: {fileID: 0}
-  plasmaGun: {fileID: 4190761241304535471}
+  plasmaGun: {fileID: 4862697884638191133}
 --- !u!195 &5876637673730339900
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1022,8 +1034,8 @@ MonoBehaviour:
   state: 0
   movementScript: {fileID: 0}
   awarenessScript: {fileID: 0}
-  plasmaGun: {fileID: 4190761241304535471}
---- !u!114 &5876637673730339898
+  plasmaGun: {fileID: 0}
+--- !u!114 &2416244569037348860
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1032,16 +1044,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5876637673730339890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f793d48c094f4044bb0d81c89cb8703, type: 3}
+  m_Script: {fileID: 11500000, guid: eea5aade9cdb46c4c90fd92cf36512ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
-  health: 0
-  maxShield: 0
-  shield: 0
-  shieldAnimator: {fileID: 5876637673533578656}
-  deadEnemyPrefab: {fileID: 8440909457511559008, guid: 39b6c295fc6dd59409ab0ea9f3f3a67e, type: 3}
-  enemyTransform: {fileID: 5876637674968605720}
+  maxHealth: 100
+  maxShield: 100
+  deso: {fileID: 11400000, guid: 58ed3237caa41aa438c92214747b8142, type: 2}
 --- !u!1 &5876637674732677698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1138,7 +1146,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5fc3ede2376b5ec42a4adc7592dd7c65, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

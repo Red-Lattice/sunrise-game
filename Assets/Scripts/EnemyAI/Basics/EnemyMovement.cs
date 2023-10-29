@@ -12,7 +12,7 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private bool isChasing;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Rigidbody enemyRB;
-    [SerializeField] private PlasmaGun plasmaGun;
+    [SerializeField] private Weapon plasmaGun;
     private bool moveToTargetRunning;
     private float defaultSpeed;
 
@@ -53,7 +53,7 @@ public class EnemyMovement : MonoBehaviour
             }
             if (enemyAwareness.hasLineOfSight())
             {
-                plasmaGun.Fire(transform.rotation);
+                plasmaGun.triggerWeapon();
             }
         }
     }
