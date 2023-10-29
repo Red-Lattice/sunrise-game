@@ -5,17 +5,22 @@ using UnityEngine;
 public class Weapon_PlasmaPulser : Weapon
 {
     [SerializeField] private GameObject plasmaBolt;
+    [SerializeField] private Camera cam;
     private float cooldown;
+    private Quaternion rot;
     
     void Start()
     {
         cooldown = 0f;
         PlayerGunHandler pgh = this.transform.parent.GetComponent<PlayerGunHandler>();
+        
         if (pgh != null)
         {
             plasmaBolt = pgh.getProjectileGetter().plasmaBall;
         }
         weaponName = "Plasma Pulser";
+
+        cam = this.transform.parent.GetComponentInChildren<Camera>();
     }
 
     void Update()
@@ -24,13 +29,15 @@ public class Weapon_PlasmaPulser : Weapon
         {
             cooldown -= Time.deltaTime;
         }
+
+        rot = (cam != null) ? cam.transform.rotation : transform.rotation;
     }
 
     public override bool triggerWeapon()
     {
         if (cooldown < 0)
         {
-            PlasmaBullet instantiatedBolt = Instantiate(plasmaBolt, transform.position, transform.rotation).GetComponent<PlasmaBullet>();
+            PlasmaBullet instantiatedBolt = Instantiate(plasmaBolt, transform.position, rot).GetComponent<PlasmaBullet>();
             instantiatedBolt.initialization(this.transform.root.gameObject.name);
             cooldown = 0.3f;
             return true;

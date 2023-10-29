@@ -29,10 +29,13 @@ public class PlayerGunHandler : MonoBehaviour
     private GunAnimator gunAnimator;
     private LepPlayerMovement playerMovement;
     private string currentMode;
+    private float recoilMovement;
+    private float recoilDecay = 2f;
 
     void Start()
     {
         weaponSelected = 0;
+        recoilDecay = 3f;
         availableWeapons = new Weapon[maxWeapons];
         playerMovement = this.transform.GetComponent<LepPlayerMovement>();
         setWeapon("Plasma Pulser");
@@ -41,6 +44,11 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (recoilMovement > 0f)
+        {
+            camControl.Punch(new Vector2(0f, -Time.deltaTime * recoilDecay));
+            recoilMovement -= Time.deltaTime * recoilDecay;
+        }
         // Switches weapon
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -50,6 +58,8 @@ public class PlayerGunHandler : MonoBehaviour
         {
             activeWeaponScript.triggerWeapon();
             gunAnimator.fire();
+            camControl.Punch(new Vector2(0f, 1f));
+            recoilMovement += 1f;
         }
         if (gunAnimator != null && gunAnimator.gameObject != null)
         {

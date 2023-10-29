@@ -70,6 +70,10 @@ public class StateMachine : MonoBehaviour
         switch (state)
         {
             case State.Attacking:
+                if (target == null)
+                {
+                    state = State.Cautious;
+                }
                 movementScript.turnToTarget(target.transform.position);
                 if (awarenessScript.canShootTarget())
                 {
