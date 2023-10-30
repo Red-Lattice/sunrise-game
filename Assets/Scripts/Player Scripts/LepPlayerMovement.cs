@@ -45,6 +45,8 @@ public class LepPlayerMovement : MonoBehaviour
     float wallBan = 0f;
     float wrTimer = 0f;
     float wallStickTimer = 0f;
+    bool slideBoostApplied = false;
+    float slideTimer = 0f;
 
     //States
     bool jump;
@@ -56,7 +58,8 @@ public class LepPlayerMovement : MonoBehaviour
     {
         Walking,
         Flying,
-        Wallruning
+        Wallruning,
+        Sliding
     }
     [SerializeField] Mode mode = Mode.Flying;
 
@@ -77,9 +80,18 @@ public class LepPlayerMovement : MonoBehaviour
         //GUILayout.Label("Upward Velocity: " + rb.velocity.y);
     }
 
+    #region Update
     void Update()
     {
-        rb.useGravity = !(mode == Mode.Walking);
+        if (slideTimer > 0f)
+        {
+            slideTimer = (!crouched) ? slideTimer - Time.deltaTime : slideTimer;
+        }
+        else
+        {
+            slideBoostApplied = false;
+        }
+        rb.useGravity = !(mode == Mode.Walking || mode == Mode.Sliding);
 
         col.material.dynamicFriction = 0f;
         dir = Direction();
@@ -93,16 +105,7 @@ public class LepPlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (crouched)
-        {
-            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 10f);
-            groundSpeed = 0.3f * playerSpeed;
-        }
-        else
-        {
-            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 10f);
-            groundSpeed = playerSpeed;
-        }
+        crouched = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C));
 
         bannedGroundNormal = (wallStickTimer == 0f && wallBan > 0f) 
             ? groundNormal : Vector3.zero;
@@ -123,16 +126,32 @@ public class LepPlayerMovement : MonoBehaviour
                 Walk(dir, groundSpeed, grAccel);
                 break;
 
+            case Mode.Sliding:
+                camCon.SetTilt(0);
+                Slide(dir, groundSpeed, grAccel);
+                break;
+
             case Mode.Flying:
                 camCon.SetTilt(0);
                 AirMove(dir, airSpeed, airAccel);
                 break;
         }
 
+        if (crouched)
+        {
+            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 10f);
+            groundSpeed = 0.3f * playerSpeed;
+        }
+        else
+        {
+            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 10f);
+            groundSpeed = playerSpeed;
+        }
+
         jump = false;
     }
 
-
+    #endregion
 
     private Vector3 Direction()
     {
@@ -142,8 +161,6 @@ public class LepPlayerMovement : MonoBehaviour
         Vector3 direction = new Vector3(hAxis, 0, vAxis);
         return rb.transform.TransformDirection(direction);
     }
-
-
 
     #region Collisions
     void OnCollisionStay(Collision collision)
@@ -157,7 +174,15 @@ public class LepPlayerMovement : MonoBehaviour
                 angle = Vector3.Angle(contact.normal, Vector3.up);
                 if (angle < wallFloorBarrier)
                 {
-                    EnterWalking();
+                    if (crouched)
+                    {
+                        EnterSliding();
+                    }
+                    else
+                    {
+                        EnterWalking();
+                    }
+                    
                     grounded = true;
                     groundNormal = contact.normal;
                     ground = contact.otherCollider;
@@ -220,6 +245,18 @@ public class LepPlayerMovement : MonoBehaviour
         }
     }
 
+    void EnterSliding()
+    {
+        if (mode != Mode.Sliding && canJump)
+        {
+            if (rb.velocity.y < -1.2f)
+            {
+                camCon.Punch(new Vector2(0, -3f));
+            }
+            mode = Mode.Sliding;
+        }
+    }
+
     void EnterFlying(bool wishFly = false)
     {
         grounded = false;
@@ -229,7 +266,6 @@ public class LepPlayerMovement : MonoBehaviour
         }
         else if (mode != Mode.Flying)
         {
-
             wallBan = wallBanTime;
             canDJump = true;
             mode = Mode.Flying;
@@ -259,14 +295,17 @@ public class LepPlayerMovement : MonoBehaviour
     #region Movement Types
     void Walk(Vector3 wishDir, float maxSpeed, float acceleration)
     {
-        //wishDir is just the direction vector.
+        //wishDir is just the direction vector that the player wants to go in.
         if (jump && canJump)
         {
             Jump();
         }
         else
         {
-            //if (crouched) acceleration = 0.5f;
+            if (crouched)
+            {
+                slideBoost();
+            }
             wishDir = wishDir.normalized;
             Vector3 spid = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             if (spid.magnitude > maxSpeed) acceleration *= spid.magnitude / maxSpeed;
@@ -296,6 +335,32 @@ public class LepPlayerMovement : MonoBehaviour
             {
                 rb.AddForce(-1f * rb.velocity * frictionConstant, ForceMode.Acceleration);
             }
+        }
+    }
+
+    void Slide(Vector3 wishDir, float maxSpeed, float acceleration)
+    {
+        float slideFrictionConstant = 0.2f;
+        if (jump && canJump)
+        {
+            Jump();
+            return;
+        }
+
+        slideBoost();
+
+        rb.AddForce(-1f * rb.velocity * slideFrictionConstant, ForceMode.Acceleration);
+    }
+
+    void slideBoost()
+    {
+        if (!slideBoostApplied)
+        {
+            Vector3 direction = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            direction = Vector3.ProjectOnPlane(direction, groundNormal);
+            rb.AddForce(direction * 0.25f, ForceMode.VelocityChange);
+            slideBoostApplied = true;
+            slideTimer = 2f;
         }
     }
 
@@ -378,12 +443,23 @@ public class LepPlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (mode == Mode.Walking && canJump)
+        if (!canJump) {return;}
+        
+        float upForce = Mathf.Clamp(jumpUpSpeed - rb.velocity.y, 0, Mathf.Infinity);
+        switch (mode)
         {
-            float upForce = Mathf.Clamp(jumpUpSpeed - rb.velocity.y, 0, Mathf.Infinity);
-            rb.AddForce(new Vector3(0, upForce, 0), ForceMode.VelocityChange);
-            StartCoroutine(jumpCooldownCoroutine(0.2f));
-            EnterFlying(true);
+            case Mode.Walking:
+                rb.AddForce(new Vector3(0, upForce, 0), ForceMode.VelocityChange);
+                StartCoroutine(jumpCooldownCoroutine(0.2f));
+                EnterFlying(true);
+                break;
+            case Mode.Sliding:
+                rb.AddForce(new Vector3(0, upForce * 1.2f, 0), ForceMode.VelocityChange);
+                StartCoroutine(jumpCooldownCoroutine(0.2f));
+                EnterFlying(true);
+                break;
+            default:
+                break;
         }
     }
 
@@ -498,6 +574,7 @@ public class LepPlayerMovement : MonoBehaviour
     }
     #endregion
 
+    #region Getters
     public string getMode()
     {
         return mode.ToString();
@@ -507,4 +584,5 @@ public class LepPlayerMovement : MonoBehaviour
     {
         return Math.Abs(rb.velocity.x + rb.velocity.z);
     }
+    #endregion
 }
