@@ -39,7 +39,7 @@ public class Weapon_PlasmaPulser : Weapon
         {
             PlasmaBullet instantiatedBolt = Instantiate(plasmaBolt, transform.position, rot).GetComponent<PlasmaBullet>();
             instantiatedBolt.initialization(this.transform.root.gameObject.name);
-            cooldown = 0.3f;
+            cooldown = 0.15f;
             return true;
         }
         return false;

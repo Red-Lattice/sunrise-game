@@ -38,7 +38,6 @@ public class PlayerGunHandler : MonoBehaviour
         recoilDecay = 3f;
         availableWeapons = new Weapon[maxWeapons];
         playerMovement = this.transform.GetComponent<LepPlayerMovement>();
-        setWeapon("Plasma Pulser");
     }
 
     // Update is called once per frame
@@ -61,7 +60,7 @@ public class PlayerGunHandler : MonoBehaviour
             camControl.Punch(new Vector2(0f, 1f));
             recoilMovement += 1f;
         }
-        if (gunAnimator != null && gunAnimator.gameObject != null)
+        if (gunAnimator != null)
         {
             updateContinuousAnimations();
         }
@@ -71,13 +70,14 @@ public class PlayerGunHandler : MonoBehaviour
     void updateContinuousAnimations()
     {
         if (gunAnimator == null) {return;}
+
         currentMode = playerMovement.getMode();       
         if (playerMovement.getMode() == "Walking" && playerMovement.getPlayerSpeed() > 5)
         {
-            gunAnimator.updateCurrentPlayerState("Running");
+            gunAnimator.setContinuousState("Running");
             return;
         }
-        gunAnimator.updateCurrentPlayerState("Idle");
+        gunAnimator.setContinuousState("Idle");
     }
 
     /**
@@ -100,6 +100,7 @@ public class PlayerGunHandler : MonoBehaviour
             numberOfWeapons++;
             availableWeapons[numberOfWeapons - 1] = activeWeaponScript;
             gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
+            weaponSelected++;
             return;
         }
 
@@ -108,6 +109,7 @@ public class PlayerGunHandler : MonoBehaviour
         gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
         activeWeaponScript = getAddedWeapon(weaponName);
         availableWeapons[weaponSelected] = activeWeaponScript;
+        weaponSelected++;
     }
 
     /**

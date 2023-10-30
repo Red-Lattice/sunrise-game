@@ -20,4 +20,9 @@ public class ShieldAnimator : MonoBehaviour
     {
         shieldAnimator.Play("Flash", -1, 0f);
     }
+
+    public void ShieldBreak()
+    {
+        shieldAnimator.Play("ShieldPop", -1, 0f);
+    }
 }

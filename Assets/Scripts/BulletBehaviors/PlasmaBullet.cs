@@ -14,8 +14,8 @@ public class PlasmaBullet : MonoBehaviour
 
     void Start()
     {
-        bulletSpeed = 25f;
-        bulletLifeTime = 10f;
+        bulletSpeed = 50f;
+        bulletLifeTime = 4f;
         bulletDirection = gameObject.transform.forward;
     }
     void Update()

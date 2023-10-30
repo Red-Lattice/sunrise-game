@@ -11,12 +11,18 @@ public class GunAnimator : MonoBehaviour
     private string currentAnimState;
     private string currentPlayerState;
 
+    [SerializeField] private string currentContinuousState;
+    [SerializeField] private string queuedAction;
+
+    [SerializeField] private bool actionPlaying;
+
     #endregion
 
     void Start()
     {
+        queuedAction = "PistolEnter";
+        actionPlaying = false;
         animator = this.transform.GetComponent<Animator>();
-        changeAnimState("Idle");
     }
 
     #region Animation_State_Changers
@@ -37,6 +43,8 @@ public class GunAnimator : MonoBehaviour
         animator.Play(newAnimState);
 
         currentAnimState = newAnimState;
+
+        queuedAction = "";
     }
 
     /* Creates a smooth transition between two animations (ideally) */
@@ -46,7 +54,7 @@ public class GunAnimator : MonoBehaviour
         {
             if (currentAnimState == newAnimState) {return;}
 
-            animator.CrossFadeInFixedTime(newAnimState, 0.3f);
+            animator.CrossFadeInFixedTime(newAnimState, 0.05f);
 
             currentAnimState = newAnimState;
         }
@@ -54,6 +62,7 @@ public class GunAnimator : MonoBehaviour
         {
             return;
         }
+        queuedAction = "";
     }
 
     public void updateCurrentPlayerState(string newPlayerState)
@@ -77,13 +86,49 @@ public class GunAnimator : MonoBehaviour
 
     public void fire()
     {
-        changeAnimStateOverride("Fire");
+        setActionState("Fire");
     }
 
-    // Triggered by the gun firing animation upon finishing.
-    public void firingFinished()
-    {
-        changeAnimState(currentPlayerState);
-    }
     #endregion
+
+    #region New_Anim_State_Changers
+    
+    public void setContinuousState(string newAnimState)
+    {
+        currentContinuousState = newAnimState;
+    }
+    public void setActionState(string newAnimState)
+    {
+        queuedAction = newAnimState;
+        
+    }
+
+    #endregion
+
+    void Update()
+    {
+        if (!actionPlaying && queuedAction == "")
+        {
+            changeAnimState(currentContinuousState);
+            return;
+        }
+
+        if (queuedAction == "") {return;}
+
+        if (actionPlaying)
+        {
+            changeAnimStateOverride(queuedAction);
+        }
+        else
+        {
+            crossfadeAnimState(queuedAction);
+        }
+        actionPlaying = true;
+        queuedAction = "";
+    }
+
+    public void actionStateFinished()
+    {
+        actionPlaying = false;
+    }
 }

@@ -37,7 +37,7 @@ public class PlayerBoundingBox : MonoBehaviour
         if (pgh.weaponsNeededCheck())
         {
             pgh.setWeapon(highlightedWeapon);
-            Destroy(go.transform.root.gameObject);
+            Destroy(go);
         }
     }
 

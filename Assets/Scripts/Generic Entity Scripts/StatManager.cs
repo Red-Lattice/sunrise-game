@@ -6,9 +6,10 @@ public class StatManager : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxShield;
+    [SerializeField] private DeadEntitiesScriptableObject deso;
+    
     private ShieldAnimator shieldAnimator;
     private DeathManager deathManager;
-    [SerializeField] private DeadEntitiesScriptableObject deso;
     private float health;
     private float shield;
 
@@ -27,11 +28,7 @@ public class StatManager : MonoBehaviour
     {
         if (shield > 0)
         {
-            shield -= (damageType == "Plasma") ? damage * 3 : damage;
-            if (shieldAnimator != null)
-            {
-                shieldAnimator.ShieldFlash();
-            }
+            damageShield(damage, damageType);
         }
         else
         {
@@ -40,6 +37,22 @@ public class StatManager : MonoBehaviour
         if (health < 0f)
         {
             deathManager.kill();
+        }
+    }
+
+    void damageShield(float damage, string damageType)
+    {
+        shield -= (damageType == "Plasma") ? damage * 3 : damage;
+
+        if (shieldAnimator == null) {return;}
+
+        if (shield > 0f)
+        {
+            shieldAnimator.ShieldFlash();
+        }
+        else
+        {
+            shieldAnimator.ShieldBreak();
         }
     }
 }
