@@ -15,12 +15,13 @@ public class GunAnimator : MonoBehaviour
     [SerializeField] private string queuedAction;
 
     [SerializeField] private bool actionPlaying;
+    private bool blockActions;
 
     #endregion
 
     void Start()
     {
-        queuedAction = "PistolEnter";
+        queuedAction = "Enter";
         actionPlaying = false;
         animator = this.transform.GetComponent<Animator>();
     }
@@ -89,6 +90,17 @@ public class GunAnimator : MonoBehaviour
         setActionState("Fire");
     }
 
+    public bool punch()
+    {
+        if (!blockActions)
+        {
+            setActionState("Punch");
+            blockActions = true;
+            return true;
+        }
+        return false;
+    }
+
     #endregion
 
     #region New_Anim_State_Changers
@@ -100,7 +112,6 @@ public class GunAnimator : MonoBehaviour
     public void setActionState(string newAnimState)
     {
         queuedAction = newAnimState;
-        
     }
 
     #endregion
@@ -114,6 +125,7 @@ public class GunAnimator : MonoBehaviour
         }
 
         if (queuedAction == "") {return;}
+        if (actionPlaying && blockActions) {return;}
 
         if (actionPlaying)
         {
@@ -130,5 +142,12 @@ public class GunAnimator : MonoBehaviour
     public void actionStateFinished()
     {
         actionPlaying = false;
+        blockActions = false;
+    }
+
+    // Returns whether actions like shooting are blocked or not
+    public bool getActionsBlocked()
+    {
+        return blockActions;
     }
 }

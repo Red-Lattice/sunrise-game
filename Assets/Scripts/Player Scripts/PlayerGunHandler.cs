@@ -22,9 +22,9 @@ public class PlayerGunHandler : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private int maxWeapons = 2;
 
-    [SerializeField] private int numberOfWeapons;
-    [SerializeField] private int weaponSelected;
-    [SerializeField] private Weapon[] availableWeapons;
+    private int numberOfWeapons;
+    private int weaponSelected;
+    private Weapon[] availableWeapons;
     private Weapon activeWeaponScript;
     private GunAnimator gunAnimator;
     private LepPlayerMovement playerMovement;
@@ -53,17 +53,36 @@ public class PlayerGunHandler : MonoBehaviour
         {
             switchWeapon();
         }
-        if (Input.GetMouseButtonDown(0) && activeWeaponScript != null)
+
+        if (gunAnimator == null) {return;}
+        if (Input.GetMouseButtonDown(0) && activeWeaponScript != null && !gunAnimator.getActionsBlocked())
         {
-            activeWeaponScript.triggerWeapon();
-            gunAnimator.fire();
-            camControl.Punch(new Vector2(0f, 1f));
-            recoilMovement += 1f;
+            if (activeWeaponScript.triggerWeapon())
+            {
+                gunAnimator.fire();
+                camControl.Punch(new Vector2(0f, 1f));
+                recoilMovement += 1f;
+            }
         }
-        if (gunAnimator != null)
+
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            updateContinuousAnimations();
+            if (!gunAnimator.getActionsBlocked())
+            {
+                gunAnimator.punch();
+
+                RaycastHit hit;
+                if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
+                {
+                    StatManager statManager; 
+                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
+                    {
+                        statManager.dealDamage(30f, "Physical");
+                    }
+                }
+            }
         }
+        updateContinuousAnimations();
     }
 
     // Updating the running vs idling animation

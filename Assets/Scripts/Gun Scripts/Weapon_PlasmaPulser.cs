@@ -44,4 +44,9 @@ public class Weapon_PlasmaPulser : Weapon
         }
         return false;
     }
+
+    public override bool punch()
+    {
+        return true;
+    }
 }

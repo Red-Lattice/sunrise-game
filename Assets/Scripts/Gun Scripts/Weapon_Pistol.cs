@@ -19,12 +19,17 @@ public class Weapon_Pistol : Weapon
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, shootableLayers))
         {
-            StatManager statManager = hit.transform.GetComponent<StatManager>();
-            if (statManager != null)
+            StatManager statManager; 
+            if (hit.transform.TryGetComponent<StatManager>(out statManager))
             {
                 statManager.dealDamage(30f, "Physical");
             }
         }
+        return true;
+    }
+
+    public override bool punch()
+    {
         return true;
     }
 }

@@ -17,4 +17,9 @@ public class Weapon : MonoBehaviour
     {
         //Empty
     }
+
+    public virtual bool punch()
+    {
+        return false;
+    }
 }
