@@ -43,10 +43,6 @@ public class PlayerBoundingBox : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && highlightedWeapon != "")
-        {
-            pgh.setWeapon(highlightedWeapon);
-        }
     }
 
     public string getHighlightedWeapon()

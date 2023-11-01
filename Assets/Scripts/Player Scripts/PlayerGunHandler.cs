@@ -123,10 +123,11 @@ public class PlayerGunHandler : MonoBehaviour
             return;
         }
 
-        Destroy(gunAnimator.transform.parent);
+        Destroy(gunAnimator.transform.gameObject);
 
         gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
         activeWeaponScript = getAddedWeapon(weaponName);
+        weaponSelected = weaponSelected % numberOfWeapons;
         availableWeapons[weaponSelected] = activeWeaponScript;
         weaponSelected++;
     }
