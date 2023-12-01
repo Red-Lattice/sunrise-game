@@ -31,15 +31,15 @@ public class PlasmaBullet : MonoBehaviour
 
     public void OnCollisionEnter(Collision other)
     {
-        if (!initialized) {return;}
         GameObject otherGO = other.gameObject;
-        string otherTag = otherGO.tag;
-
-        //Returning before the GetComponent call if it's the shooter
+        
+        // Guards
+        if (!initialized) {return;}
         if (otherGO.transform.root.name == shooter) {return;}
-        if (otherTag == "Projectile") {return;}
-        StatManager otherStatManager = otherGO.GetComponent<StatManager>();
-        if (otherStatManager != null)
+        if (otherGO.tag == "Projectile") {return;}
+
+        StatManager otherStatManager;
+        if (otherGO.TryGetComponent<StatManager>(out otherStatManager))
         {
             otherStatManager.dealDamage(30f, "Energy");
         }
