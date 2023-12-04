@@ -76,8 +76,8 @@ public class LepPlayerMovement : MonoBehaviour
 
     void OnGUI()
     {
-        //GUILayout.Label("Velocity: " + new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
-        //GUILayout.Label("Upward Velocity: " + rb.velocity.y);
+        GUILayout.Label("Velocity: " + new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
+        GUILayout.Label("Upward Velocity: " + rb.velocity.y);
     }
 
     void Awake()
