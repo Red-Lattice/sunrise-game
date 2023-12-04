@@ -316,7 +316,7 @@ public class LepPlayerMovement : MonoBehaviour
             rb.AddForce(direction, ForceMode.Acceleration);
         }
 
-        if (mode != Wallruning)
+        if (mode != Wallruning && !(Input.GetMouseButtonDown(2)))
         {
             if (rb.velocity.magnitude < coefficientOfFriction)
             {

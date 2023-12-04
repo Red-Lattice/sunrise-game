@@ -45,6 +45,38 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+        if (Input.GetKeyDown(KeyCode.Q)) // Clean this shit up later
+        {
+            if (gunAnimator == null)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
+                {
+                    StatManager statManager; 
+                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
+                    {
+                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical");
+                    }
+                }
+                return;
+            }
+            if (!gunAnimator.getActionsBlocked())
+            {
+                gunAnimator.punch();
+
+                RaycastHit hit;
+                if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
+                {
+                    StatManager statManager; 
+                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
+                    {
+                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical");
+                    }
+                }
+            }
+        }
+
         if (recoilMovement > 0f)
         {
             camControl.Punch(new Vector2(0f, -Time.deltaTime * recoilDecay));
@@ -64,24 +96,6 @@ public class PlayerGunHandler : MonoBehaviour
                 gunAnimator.fire();
                 camControl.Punch(new Vector2(0f, 1f));
                 recoilMovement += 1f;
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (!gunAnimator.getActionsBlocked())
-            {
-                gunAnimator.punch();
-
-                RaycastHit hit;
-                if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
-                {
-                    StatManager statManager; 
-                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
-                    {
-                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical");
-                    }
-                }
             }
         }
         updateContinuousAnimations();
