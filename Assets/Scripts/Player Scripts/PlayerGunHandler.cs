@@ -18,6 +18,7 @@ public class PlayerGunHandler : MonoBehaviour
     [SerializeField] private GameObject weaponObject;
     [SerializeField] private CameraController camControl;
     [SerializeField] private GameObject uiCam;
+    private Rigidbody playerRB;
     
     [Header("Parameters")]
     [SerializeField] private int maxWeapons = 2;
@@ -37,7 +38,8 @@ public class PlayerGunHandler : MonoBehaviour
         weaponSelected = 0;
         recoilDecay = 3f;
         availableWeapons = new Weapon[maxWeapons];
-        playerMovement = this.transform.GetComponent<LepPlayerMovement>();
+        playerMovement = transform.GetComponent<LepPlayerMovement>();
+        playerRB = transform.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -77,7 +79,7 @@ public class PlayerGunHandler : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent<StatManager>(out statManager))
                     {
-                        statManager.dealDamage(30f, "Physical");
+                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical");
                     }
                 }
             }

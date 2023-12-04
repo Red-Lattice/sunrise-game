@@ -50,12 +50,13 @@ public class GrapplingHook : MonoBehaviour
     private LineRenderer lr;
     private Vector3 grapplePoint;
     public Transform gunTip, camera, player;
-    private float maxDistance = 100f;
+    private float maxDistance;
     private SpringJoint joint;
     private Rigidbody playerRB;
 
     void Awake() {
         lr = GetComponent<LineRenderer>();
+        maxDistance = 75f;
         playerRB = transform.parent.parent.GetComponent<Rigidbody>();
     }
 
@@ -68,7 +69,7 @@ public class GrapplingHook : MonoBehaviour
         }
 
         if (joint) {joint.maxDistance -= Time.deltaTime * 25f;}
-        if (joint && playerRB.velocity.magnitude > 10f)
+        if (joint && playerRB.velocity.magnitude > 20f)
         {
             playerRB.AddForce(-playerRB.velocity * Time.deltaTime * 5f, ForceMode.VelocityChange);
         }
@@ -82,6 +83,7 @@ public class GrapplingHook : MonoBehaviour
     void StartGrapple() {
         RaycastHit hit;
         if (Physics.Raycast(camera.position, camera.forward, out hit, maxDistance)) {
+
             grapplePoint = hit.point;
             joint = player.gameObject.AddComponent<SpringJoint>();
             joint.autoConfigureConnectedAnchor = false;
