@@ -139,12 +139,17 @@ public class LepPlayerMovement : MonoBehaviour
 
         if (crouched)
         {
-            col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 10f);
+            if (0.6f < col.height - Time.deltaTime)
+            {
+                col.height = Mathf.Max(0.6f, col.height - Time.deltaTime * 10f);
+                if (mode != Flying)
+                    col.transform.position += new Vector3(0, -Time.deltaTime * 2f, 0);
+            }
             groundSpeed = 0.3f * playerSpeed;
         }
         else
         {
-            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 10f);
+            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 5f);
             groundSpeed = playerSpeed;
         }
 
@@ -236,10 +241,6 @@ public class LepPlayerMovement : MonoBehaviour
         {
             rb.AddForce(-rb.velocity.normalized, ForceMode.VelocityChange);
         }
-        if (rb.velocity.y < -1.2f)
-        {
-            camCon.Punch(new Vector2(0, -3f));
-        }
         //StartCoroutine(bHopCoroutine(bhopLeniency));
         mode = Walking;
     }
@@ -248,10 +249,6 @@ public class LepPlayerMovement : MonoBehaviour
     {
         if (mode != Sliding && canJump)
         {
-            if (rb.velocity.y < -1.2f)
-            {
-                camCon.Punch(new Vector2(0, -3f));
-            }
             mode = Sliding;
         }
     }
