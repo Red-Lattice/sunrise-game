@@ -177,22 +177,21 @@ public class LepPlayerMovement : MonoBehaviour
             foreach (ContactPoint contact in collision.contacts)
             {
                 angle = Vector3.Angle(contact.normal, Vector3.up);
-                if (angle < wallFloorBarrier)
+                if (angle >= wallFloorBarrier) {continue;}
+
+                if (crouched)
                 {
-                    if (crouched)
-                    {
-                        EnterSliding();
-                    }
-                    else
-                    {
-                        EnterWalking();
-                    }
-                    
-                    grounded = true;
-                    groundNormal = contact.normal;
-                    ground = contact.otherCollider;
-                    return;
+                    EnterSliding();
                 }
+                else
+                {
+                    EnterWalking();
+                }
+                
+                grounded = true;
+                groundNormal = contact.normal;
+                ground = contact.otherCollider;
+                return;
             }
 
             if (VectorToGround().magnitude > 0.2f)
@@ -362,11 +361,6 @@ public class LepPlayerMovement : MonoBehaviour
             DoubleJump(wishDir);
         }
 
-        if (crouched && rb.velocity.y > -10 && Input.GetKeyDown(KeyCode.Space))
-        {
-            //rb.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
-        }
-
         float projVel = Vector3.Dot(new Vector3(rb.velocity.x, 0f, rb.velocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
         float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movment
 
@@ -379,6 +373,11 @@ public class LepPlayerMovement : MonoBehaviour
 
     void Wallrun(Vector3 wishDir, float maxSpeed, float climbSpeed, float acceleration)
     {
+        if (!grounded)
+        {
+            wallStickTimer = 0.2f;
+            EnterFlying();
+        }
         if (jump)
         {
             //Vertical
@@ -392,43 +391,37 @@ public class LepPlayerMovement : MonoBehaviour
             rb.AddForce(jumpOffWall, ForceMode.VelocityChange);
             wrTimer = 0f;
             EnterFlying(true);
+            return;
         }
-        else if (wrTimer == 0f || crouched)
+        if (wrTimer == 0f || crouched)
         {
             rb.AddForce(groundNormal * 3f, ForceMode.VelocityChange);
             EnterFlying(true);
+            return;
         }
-        else
+
+        //Horizontal
+        Vector3 distance = VectorToWall();
+        wishDir = RotateToPlane(wishDir, -distance.normalized) * maxSpeed;
+        wishDir.y = Mathf.Clamp(wishDir.y, -climbSpeed, climbSpeed);
+        Vector3 wallrunForce = wishDir - rb.velocity;
+        if (wallrunForce.magnitude > 0.2f) {wallrunForce = wallrunForce.normalized * acceleration;}
+
+        //Vertical
+        if (rb.velocity.y < 0f && wishDir.y > 0f) {wallrunForce.y = 2f * acceleration;}
+
+        //Anti-gravity force
+        Vector3 antiGravityForce = -Physics.gravity;
+        if (wrTimer < 0.33 * wallRunTime)
         {
-            //Horizontal
-            Vector3 distance = VectorToWall();
-            wishDir = RotateToPlane(wishDir, -distance.normalized) * maxSpeed;
-            wishDir.y = Mathf.Clamp(wishDir.y, -climbSpeed, climbSpeed);
-            Vector3 wallrunForce = wishDir - rb.velocity;
-            if (wallrunForce.magnitude > 0.2f) wallrunForce = wallrunForce.normalized * acceleration;
-
-            //Vertical
-            if (rb.velocity.y < 0f && wishDir.y > 0f) wallrunForce.y = 2f * acceleration;
-
-            //Anti-gravity force
-            Vector3 antiGravityForce = -Physics.gravity;
-            if (wrTimer < 0.33 * wallRunTime)
-            {
-                antiGravityForce *= wrTimer / wallRunTime;
-                wallrunForce += (Physics.gravity + antiGravityForce);
-            }
-
-            //Forces
-            rb.AddForce(wallrunForce, ForceMode.Acceleration);
-            rb.AddForce(antiGravityForce, ForceMode.Acceleration);
-            if (distance.magnitude > wallStickDistance) distance = Vector3.zero;
-            rb.AddForce(distance * wallStickiness, ForceMode.Acceleration);
+            antiGravityForce *= wrTimer / wallRunTime;
+            wallrunForce += (Physics.gravity + antiGravityForce);
         }
-        if (!grounded)
-        {
-            wallStickTimer = 0.2f;
-            EnterFlying();
-        }
+
+        //Forces
+        rb.AddForce(wallrunForce + antiGravityForce, ForceMode.Acceleration);
+        if (distance.magnitude > wallStickDistance) {distance = Vector3.zero;}
+        rb.AddForce(distance * wallStickiness, ForceMode.Acceleration);
     }
 
     void Jump()
