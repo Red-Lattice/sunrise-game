@@ -4,49 +4,6 @@ using UnityEngine;
 
 public class GrapplingHook : MonoBehaviour
 {
-    /*private GameObject grapplingHook;
-    private GameObject cam;
-    private bool extending;
-    private Vector3 grapplePoint;
-    private bool grappled;
-    private float totalFactor = 0;
-    [SerializeField] private GameObject testSphere;
-
-    void Awake()
-    {
-        grapplingHook = transform.gameObject;
-        cam = transform.parent.gameObject;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(2))
-        {
-            grapplePoint = getGrapplePoint();
-            testSphere.transform.position = grapplePoint;
-            grappled = true;
-        }
-        extending = (Input.GetMouseButton(2));
-        updateLen();
-    }
-
-    private Vector3 getGrapplePoint()
-    {
-        RaycastHit hit;
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 50f))
-        {
-            return hit.point;
-        }
-        return cam.transform.position + cam.transform.forward * 50f;
-    }
-
-    void updateLen()
-    {
-        float factor = 20f * Time.deltaTime * (extending ? 1f : -1f);
-        
-    }*/
-
     private LineRenderer lr;
     private Vector3 grapplePoint;
     public Transform gunTip, camera, player;
@@ -83,7 +40,7 @@ public class GrapplingHook : MonoBehaviour
     void StartGrapple() {
         RaycastHit hit;
         if (Physics.Raycast(camera.position, camera.forward, out hit, maxDistance)) {
-
+            Debug.Log(hit.transform.gameObject.name);
             grapplePoint = hit.point;
             joint = player.gameObject.AddComponent<SpringJoint>();
             joint.autoConfigureConnectedAnchor = false;
