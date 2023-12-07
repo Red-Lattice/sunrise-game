@@ -13,6 +13,7 @@ public class PlayerGunHandler : MonoBehaviour
     [Header("Scriptable Objects")]
     [SerializeField] private ProjectileScriptableObjects projectileGetter;
     [SerializeField] private GunScriptableObject gunGetter;
+    [SerializeField] private GrenadesScriptableObject grenadeGetter;
 
     [Header("Other Objects Needed To Function")]
     [SerializeField] private GameObject weaponObject;
@@ -45,7 +46,12 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            GameObject newGrenade = Instantiate(grenadeGetter.getPrefab("Default"), transform.position + transform.forward, Quaternion.identity);
+            Rigidbody grenadeRB;
+            if (newGrenade.TryGetComponent<Rigidbody>(out grenadeRB)) {grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);}
+        }
         if (Input.GetKeyDown(KeyCode.Q)) // Clean this shit up later
         {
             if (gunAnimator == null)
