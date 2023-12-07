@@ -50,7 +50,12 @@ public class PlayerGunHandler : MonoBehaviour
         {
             GameObject newGrenade = Instantiate(grenadeGetter.getPrefab("Default"), transform.position + transform.forward, Quaternion.identity);
             Rigidbody grenadeRB;
-            if (newGrenade.TryGetComponent<Rigidbody>(out grenadeRB)) {grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);}
+            if (newGrenade.TryGetComponent<Rigidbody>(out grenadeRB)) 
+            {
+                grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);
+                grenadeRB.angularVelocity += Vector3.forward * Random.Range(-10.0f, 10.0f);
+                grenadeRB.angularVelocity += Vector3.left * Random.Range(-10.0f, 10.0f);
+            }
         }
         if (Input.GetKeyDown(KeyCode.Q)) // Clean this shit up later
         {
