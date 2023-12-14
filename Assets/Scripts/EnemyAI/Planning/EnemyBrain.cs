@@ -14,6 +14,7 @@ public class EnemyBrain : MonoBehaviour
 
     private Coroutine moveToCoroutine;
     private NavMeshAgent pathfinder;
+    private EnemyAwareness senses;
     private I_Action currentlyRunningAction;
 
     void Awake()
@@ -25,11 +26,14 @@ public class EnemyBrain : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(actionQueue.Head.data);
+        senses.Tick();
+
+        UpdateGoals();
+
         if (!actionQueue.Head.data.IsExecuting() && actionQueue.Head.data.CanExecute())
         {
+            Debug.Log(actionQueue.Head.data);
             if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
-            if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
             actionQueue.Head.data.ExecuteAction();
             currentlyRunningAction = actionQueue.Head.data;
         }
@@ -39,9 +43,19 @@ public class EnemyBrain : MonoBehaviour
         }
     }
 
+    private void UpdateGoals()
+    {
+        //senses.directVisionConeColliders
+    }
+
     public void Move(Vector3 location, I_Action caller)
     {
         moveToCoroutine = StartCoroutine(moveTo(location, caller));
+    }
+
+    public void StopMove(I_Action caller)
+    {
+        StopCoroutine(moveToCoroutine);
     }
 
     private IEnumerator moveTo(Vector3 location, I_Action caller) 

@@ -38,6 +38,7 @@ public class Action_Wander :  I_Action
     public void HaltAction()
     {
         isExecuting = false;
+        executor.StopMove(this);
     }
 
     public bool IsExecuted()
