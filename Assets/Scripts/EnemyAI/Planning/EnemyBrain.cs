@@ -11,6 +11,7 @@ using UnityEngine.AI;
 public class EnemyBrain : MonoBehaviour
 {
     private SafelyLinkedList<I_Action> actionQueue;
+    private SafelyLinkedList<I_Goal> goalQueue;
 
     private Coroutine moveToCoroutine;
     private NavMeshAgent pathfinder;
@@ -21,7 +22,10 @@ public class EnemyBrain : MonoBehaviour
     void Awake()
     {
         actionQueue = new SafelyLinkedList<I_Action>(new Action_Idle());
+        goalQueue = new SafelyLinkedList<I_Goal>(new Goal_Idle());
         pathfinder = transform.gameObject.GetComponent<NavMeshAgent>();
+        senses = transform.gameObject.GetComponent<EnemyAwareness>();
+
         actionQueue.Add(new Action_Wander(transform.gameObject, this));
     }
 
