@@ -16,6 +16,7 @@ public class EnemyBrain : MonoBehaviour
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
     private I_Action currentlyRunningAction;
+    private GameObject target;
 
     void Awake()
     {
@@ -46,6 +47,11 @@ public class EnemyBrain : MonoBehaviour
     private void UpdateGoals()
     {
         //senses.directVisionConeColliders
+    }
+
+    private void ProcessSenses()
+    {
+
     }
 
     public void Move(Vector3 location, I_Action caller)

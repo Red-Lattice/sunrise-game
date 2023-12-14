@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Goal_PickUpWeapon : I_Goal
 {
+    private bool holdingWeapon;
+
+    public Goal_PickUpWeapon()
+    {
+        holdingWeapon = false;
+    }
+
     public float CalculatePriority()
     {
         throw new System.NotImplementedException();
@@ -11,11 +18,19 @@ public class Goal_PickUpWeapon : I_Goal
 
     public bool IsCompleted()
     {
-        throw new System.NotImplementedException();
+        return holdingWeapon;
     }
 
     public bool SubGoalsCompleted()
     {
-        throw new System.NotImplementedException();
+        return true; // Picking up a weapon has no sub-goals that need to be completed
+    }
+
+    /// <summary>
+    /// Run this for the pick up weapon goal upon a weapon being collected
+    /// </summary>
+    public void UpdateGoal()
+    {
+        holdingWeapon = true;
     }
 }
