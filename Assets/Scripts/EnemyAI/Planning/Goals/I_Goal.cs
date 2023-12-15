@@ -8,4 +8,6 @@ public interface I_Goal
     public abstract bool SubGoalsCompleted();
     public abstract bool IsCompleted();
     public abstract void UpdateGoal();
+    public abstract I_Goal[] GetSubgoals();
+    public abstract I_Action[] GetActions();
 }

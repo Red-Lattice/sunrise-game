@@ -8,6 +8,7 @@ public class Goal_AttackEntity : I_Goal
     private float damageDoneByTarget;
     private bool completed;
     private I_Goal[] subgoals;
+    private I_Action[] actions;
 
     public Goal_AttackEntity()
     {
@@ -45,5 +46,15 @@ public class Goal_AttackEntity : I_Goal
     public void UpdateGoal()
     {
         completed = true;
+    }
+
+    public I_Goal[] GetSubgoals()
+    {
+        return subgoals;
+    }
+
+    public I_Action[] GetActions()
+    {
+        return actions;
     }
 }
