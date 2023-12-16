@@ -10,9 +10,10 @@ public class Goal_AttackEntity : I_Goal
     private I_Goal[] subgoals;
     private I_Action[] actions;
 
-    public Goal_AttackEntity()
+    public Goal_AttackEntity(GameObject target)
     {
         subgoals = new I_Goal[1] {new Goal_PickUpWeapon()};
+        this.target = target;
     }
 
     /// <summary>

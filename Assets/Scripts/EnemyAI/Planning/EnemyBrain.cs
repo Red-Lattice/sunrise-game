@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +11,7 @@ using UnityEngine.AI;
 /// </summary>
 public class EnemyBrain : MonoBehaviour
 {
-    [SerializeField] private SafelyLinkedList<I_Action> actionQueue;
+    private SafelyLinkedList<I_Action> actionQueue;
     private SafelyLinkedList<I_Goal> goalQueue;
 
     private Coroutine moveToCoroutine;
@@ -19,6 +20,7 @@ public class EnemyBrain : MonoBehaviour
     private I_Action currentlyRunningAction;
     private GameObject target;
     [SerializeField] private LayerMask dlm;
+    private Dictionary<GameObject, Goal_AttackEntity> attackGoalSet;
 
     void Awake()
     {
@@ -26,6 +28,7 @@ public class EnemyBrain : MonoBehaviour
         goalQueue = new SafelyLinkedList<I_Goal>(new Goal_Idle());
         pathfinder = transform.gameObject.GetComponent<NavMeshAgent>();
         senses = transform.gameObject.GetComponent<EnemyAwareness>();
+        attackGoalSet = new Dictionary<GameObject, Goal_AttackEntity>();
 
         actionQueue.Add(new Action_Wander(this));
     }
@@ -51,7 +54,16 @@ public class EnemyBrain : MonoBehaviour
 
     private void UpdateGoals()
     {
-        //senses.directVisionConeColliders
+        foreach (Collider entityCol in senses.directVisionConeColliders)
+        {
+            Goal_AttackEntity attackScript;
+            if (attackGoalSet.TryGetValue(entityCol.gameObject, out attackScript))
+            {
+                continue;
+            }
+            attackScript = new Goal_AttackEntity(entityCol.gameObject);
+            goalQueue.Insert(attackScript, priorityComparator);
+        }
     }
 
     private void ProcessSenses()
