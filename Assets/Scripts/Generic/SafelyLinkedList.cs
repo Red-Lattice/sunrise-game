@@ -84,6 +84,22 @@ public class SafelyLinkedList<T>
         return currentNode.data;
     }
 
+    public void Add(int index, T data)
+    {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfRangeException();
+        }
+
+        Node currentNode = Head;
+        for (int i = 0; i < index; i++) {currentNode = currentNode.nextNode;}
+
+        Node newNode = new Node(data, currentNode.nextNode, currentNode);
+        currentNode.nextNode = newNode;
+        if (currentNode == Tail) {Tail = newNode;}
+
+        size++;
+    }
+
     public void Remove()
     {
         Head = Head.nextNode;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -62,8 +63,25 @@ public class EnemyBrain : MonoBehaviour
                 continue;
             }
             attackScript = new Goal_AttackEntity(entityCol.gameObject);
-            goalQueue.Insert(attackScript, priorityComparator);
+            InsertIntoGoals(attackScript);
         }
+    }
+
+    /// <summary>
+    /// If I was smart I would have put this into the safely linked list
+    /// class with a comparator. Unfortunately I am not smart.
+    /// </summary>
+    /// <param name="goal"></param>
+    private void InsertIntoGoals(I_Goal goal)
+    {
+        SafelyLinkedList<I_Goal>.Node currentNode = goalQueue.Head;
+        int index = 0;
+        while (goal.CalculatePriority() < currentNode.data.CalculatePriority())
+        {
+            currentNode = currentNode.nextNode;
+            index++;
+        }
+        goalQueue.Add(index, goal);
     }
 
     private void ProcessSenses()
