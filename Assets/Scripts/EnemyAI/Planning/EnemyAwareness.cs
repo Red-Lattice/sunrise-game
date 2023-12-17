@@ -17,6 +17,8 @@ public class EnemyAwareness : MonoBehaviour
 
     void Start()
     {
+        unobstructedColliders = new List<Collider>();
+        directVisionConeColliders = new List<Collider>();
         enemyTransform = this.GetComponent<Transform>();
         awarenessRadius = 20f;
         maxSightlineAngle = 45f;

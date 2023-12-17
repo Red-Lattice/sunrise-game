@@ -10,4 +10,6 @@ public interface I_Goal
     public abstract void UpdateGoal();
     public abstract I_Goal[] GetSubgoals();
     public abstract I_Action[] GetActions();
+    public abstract bool IsRunning();
+    public abstract void BeginExecution();
 }

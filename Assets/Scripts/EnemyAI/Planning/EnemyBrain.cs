@@ -19,7 +19,7 @@ public class EnemyBrain : MonoBehaviour
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
     private I_Action currentlyRunningAction;
-    private GameObject target;
+    [SerializeField] private GameObject target;
     [SerializeField] private LayerMask dlm;
     private Dictionary<GameObject, Goal_AttackEntity> attackGoalSet;
 
@@ -36,21 +36,11 @@ public class EnemyBrain : MonoBehaviour
 
     void Update()
     {
-        //senses.Tick();
+        senses.Tick();
 
         UpdateGoals();
         
-        if (!actionQueue.Head.data.IsExecuting() && actionQueue.Head.data.CanExecute())
-        {
-            if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
-            actionQueue.Head.data.ExecuteAction();
-            currentlyRunningAction = actionQueue.Head.data;
-            Debug.Log(currentlyRunningAction);
-        }
-        if (UnityEngine.Random.Range(0, 1000) == 500)
-        {
-            actionQueue.Add(new Action_Wander(this));
-        }
+        Plan();
     }
 
     private void UpdateGoals()
@@ -64,6 +54,31 @@ public class EnemyBrain : MonoBehaviour
             }
             attackScript = new Goal_AttackEntity(entityCol.gameObject);
             InsertIntoGoals(attackScript);
+        }
+    }
+
+    /// <summary>
+    /// Develops the enemy's current series of actions in order to complete
+    /// the current priority goal
+    /// </summary>
+    private void Plan()
+    {
+        if (!actionQueue.Head.data.IsExecuting() && actionQueue.Head.data.CanExecute())
+        {
+            if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
+            actionQueue.Head.data.ExecuteAction();
+            currentlyRunningAction = actionQueue.Head.data;
+            Debug.Log(currentlyRunningAction);
+        }
+        if (UnityEngine.Random.Range(0, 1000) == 500)
+        {
+            actionQueue.Add(new Action_Wander(this));
+        }
+        if (goalQueue.Head.data.GetType().Name == "Goal_AttackEntity")
+        {
+            I_Goal script = goalQueue.Head.data;
+            Goal_AttackEntity convertedScript = (Goal_AttackEntity)script; // lol
+            target = convertedScript.target;
         }
     }
 

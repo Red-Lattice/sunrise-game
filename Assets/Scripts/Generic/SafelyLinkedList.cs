@@ -106,6 +106,12 @@ public class SafelyLinkedList<T>
         size--;
     }
 
+    public void Clear()
+    {
+        Head = Tail;
+        size = 1;
+    }
+
     public void Insert(T data, Comparer<T> comparer)
     {
         Node newNode = new Node(data);
