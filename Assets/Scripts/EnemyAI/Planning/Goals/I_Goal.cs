@@ -12,4 +12,5 @@ public interface I_Goal
     public abstract I_Action[] GetActions();
     public abstract bool IsRunning();
     public abstract void BeginExecution();
+    public abstract void HaltExecution();
 }

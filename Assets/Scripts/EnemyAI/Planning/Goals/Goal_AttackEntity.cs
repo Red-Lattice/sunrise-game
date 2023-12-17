@@ -9,6 +9,7 @@ public class Goal_AttackEntity : I_Goal
     private bool completed;
     private I_Goal[] subgoals;
     private I_Action[] actions;
+    private bool running;
 
     public Goal_AttackEntity(GameObject target)
     {
@@ -57,5 +58,20 @@ public class Goal_AttackEntity : I_Goal
     public I_Action[] GetActions()
     {
         return actions;
+    }
+
+    public bool IsRunning()
+    {
+        return running;
+    }
+
+    public void BeginExecution()
+    {
+        running = true;
+    }
+
+    public void HaltExecution()
+    {
+        running = false;
     }
 }

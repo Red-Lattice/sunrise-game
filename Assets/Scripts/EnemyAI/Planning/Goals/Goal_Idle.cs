@@ -9,11 +9,17 @@ public class Goal_Idle : I_Goal
 {
     private I_Action[] actions;
     private I_Goal[] subgoals;
+    private bool running;
 
     public Goal_Idle()
     {
         actions = new I_Action[1]{new Action_Idle()};
         subgoals = new I_Goal[0];
+    }
+
+    public void BeginExecution()
+    {
+        running = true;
     }
 
     public float CalculatePriority()
@@ -31,9 +37,19 @@ public class Goal_Idle : I_Goal
         return subgoals;
     }
 
+    public void HaltExecution()
+    {
+        running = false;
+    }
+
     public bool IsCompleted()
     {
         return false; // This goal is never completable
+    }
+
+    public bool IsRunning()
+    {
+        return running;
     }
 
     public bool SubGoalsCompleted()

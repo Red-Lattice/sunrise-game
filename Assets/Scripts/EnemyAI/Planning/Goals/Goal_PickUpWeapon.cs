@@ -7,6 +7,7 @@ public class Goal_PickUpWeapon : I_Goal
     private bool holdingWeapon;
     private I_Action[] actions;
     private I_Goal[] subgoals;
+    private bool running;
 
     public Goal_PickUpWeapon()
     {
@@ -15,9 +16,14 @@ public class Goal_PickUpWeapon : I_Goal
         subgoals = new I_Goal[0];
     }
 
+    public void BeginExecution()
+    {
+        running = true;
+    }
+
     public float CalculatePriority()
     {
-        throw new System.NotImplementedException();
+        return 256f;
     }
 
     public I_Action[] GetActions()
@@ -30,9 +36,19 @@ public class Goal_PickUpWeapon : I_Goal
         return subgoals;
     }
 
+    public void HaltExecution()
+    {
+        running = false;
+    }
+
     public bool IsCompleted()
     {
         return holdingWeapon;
+    }
+
+    public bool IsRunning()
+    {
+        return running;
     }
 
     public bool SubGoalsCompleted()
