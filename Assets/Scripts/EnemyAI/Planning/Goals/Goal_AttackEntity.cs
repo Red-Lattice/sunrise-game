@@ -11,7 +11,7 @@ public class Goal_AttackEntity : I_Goal
     private I_Action[] actions;
     private bool running;
 
-    public Goal_AttackEntity(GameObject target)
+    public Goal_AttackEntity(GameObject target, EnemyBrain goalee)
     {
         subgoals = new I_Goal[1] {new Goal_PickUpWeapon()};
         this.target = target;

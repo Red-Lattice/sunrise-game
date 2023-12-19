@@ -9,12 +9,15 @@ public class Action_Wander :  I_Action
     private bool finishedExecuting;
     public bool isExecuting {get; private set;}
     private EnemyBrain executor;
+    private Coroutine moveToCoroutine;
+    Vector3 location;
 
     public Action_Wander(EnemyBrain executor)
     {
         this.pathfinder = executor.transform.gameObject.GetComponent<NavMeshAgent>();
         finishedExecuting = false;
         this.executor = executor;
+        location = Vector3.zero;
     }
 
     public bool CanExecute()
@@ -27,10 +30,10 @@ public class Action_Wander :  I_Action
         isExecuting = true;
         float angle = Random.Range(-180f, 180f);
         float distance = Random.Range(0f, 3f);
-        Vector3 location = (Quaternion.Euler(0, angle, 0) * Vector3.forward * distance)
+        location = (Quaternion.Euler(0, angle, 0) * Vector3.forward * distance)
             + executor.transform.position;
 
-        executor.Move(location, this);
+        moveToCoroutine = executor.Move(location, this);
     }
 
     public void HaltAction()
@@ -47,5 +50,11 @@ public class Action_Wander :  I_Action
     public bool IsExecuting()
     {
         return isExecuting;
+    }
+
+    public void MarkCompleteness(bool status)
+    {
+        Debug.Log("Successfully Updated to: " + status);
+        finishedExecuting = status;
     }
 }

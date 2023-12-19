@@ -35,4 +35,9 @@ public class Action_MoveTo : I_Action
     {
         throw new System.NotImplementedException();
     }
+
+    public void MarkCompleteness(bool status)
+    {
+        throw new System.NotImplementedException();
+    }
 }

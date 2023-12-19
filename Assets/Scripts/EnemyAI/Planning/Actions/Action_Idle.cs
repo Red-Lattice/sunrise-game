@@ -34,4 +34,9 @@ public class Action_Idle : I_Action
     {
         return isExecuting;
     }
+
+    public void MarkCompleteness(bool status)
+    {
+        // This will not do anything
+    }
 }

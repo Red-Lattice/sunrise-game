@@ -112,6 +112,20 @@ public class SafelyLinkedList<T>
         size = 1;
     }
 
+    /// <summary>
+    /// Returns true if the list contains the specified element
+    /// </summary>
+    public bool Contains(T item)
+    {
+        Node currentNode = Head;
+        while (currentNode != null)
+        {
+            if (currentNode.data.Equals(item)) {return true;}
+            currentNode = currentNode.nextNode;
+        }
+        return false;
+    }
+
     public void Insert(T data, Comparer<T> comparer)
     {
         Node newNode = new Node(data);

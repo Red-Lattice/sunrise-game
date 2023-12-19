@@ -1,18 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class Action_Attack : MonoBehaviour
+public class Action_Attack : I_Action
 {
-    // Start is called before the first frame update
-    void Start()
+    private NavMeshAgent pathfinder;
+    private bool finishedExecuting;
+    private EnemyBrain executor;
+    
+    public Action_Attack(EnemyBrain executor)
     {
-        
+        this.pathfinder = executor.transform.gameObject.GetComponent<NavMeshAgent>();
+        finishedExecuting = false;
+        this.executor = executor;
     }
 
-    // Update is called once per frame
-    void Update()
+    public bool CanExecute()
     {
-        
+        throw new System.NotImplementedException();
+    }
+
+    public void ExecuteAction()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void HaltAction()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool IsExecuted()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool IsExecuting()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void MarkCompleteness(bool status)
+    {
+        throw new System.NotImplementedException();
     }
 }

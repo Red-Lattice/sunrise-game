@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,11 +11,19 @@ public class Goal_Idle : I_Goal
     private I_Action[] actions;
     private I_Goal[] subgoals;
     private bool running;
+    private float boredom;
+    private float requiredBoredom;
+    private EnemyBrain brain;
 
-    public Goal_Idle()
+    public Goal_Idle(EnemyBrain brain)
     {
-        actions = new I_Action[1]{new Action_Idle()};
+        boredom = 0f;
+        requiredBoredom = UnityEngine.Random.Range(200f, 1000f);
+        this.brain = brain;
+        actions = new I_Action[2]{new Action_Idle(), new Action_Wander(brain)};
         subgoals = new I_Goal[0];
+
+        actions[1].MarkCompleteness(true);
     }
 
     public void BeginExecution()
@@ -24,7 +33,7 @@ public class Goal_Idle : I_Goal
 
     public float CalculatePriority()
     {
-        return 0f;
+        return -1f;
     }
 
     public I_Action[] GetActions()
@@ -57,5 +66,14 @@ public class Goal_Idle : I_Goal
         return true; // This goal has no sub goals
     }
 
-    public void UpdateGoal() {}
+    public void UpdateGoal() 
+    {
+        boredom += Time.deltaTime * 100f;
+        if (boredom > requiredBoredom)
+        {
+            actions[1].MarkCompleteness(false);
+            boredom = 0f;
+            requiredBoredom = UnityEngine.Random.Range(200f, 1000f);
+        }
+    }
 }
