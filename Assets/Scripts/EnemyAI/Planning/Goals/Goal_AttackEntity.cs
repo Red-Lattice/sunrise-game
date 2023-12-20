@@ -13,7 +13,7 @@ public class Goal_AttackEntity : I_Goal
 
     public Goal_AttackEntity(GameObject target, EnemyBrain goalee)
     {
-        subgoals = new I_Goal[1] {new Goal_PickUpWeapon()};
+        subgoals = new I_Goal[1] {new Goal_PickUpWeapon(goalee)};
         this.target = target;
     }
 

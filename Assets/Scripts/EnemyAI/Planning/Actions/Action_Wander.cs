@@ -9,7 +9,6 @@ public class Action_Wander :  I_Action
     private bool finishedExecuting;
     public bool isExecuting {get; private set;}
     private EnemyBrain executor;
-    private Coroutine moveToCoroutine;
     Vector3 location;
 
     public Action_Wander(EnemyBrain executor)
@@ -33,7 +32,7 @@ public class Action_Wander :  I_Action
         location = (Quaternion.Euler(0, angle, 0) * Vector3.forward * distance)
             + executor.transform.position;
 
-        moveToCoroutine = executor.Move(location, this);
+        executor.Move(location, this);
     }
 
     public void HaltAction()
@@ -54,7 +53,7 @@ public class Action_Wander :  I_Action
 
     public void MarkCompleteness(bool status)
     {
-        Debug.Log("Successfully Updated to: " + status);
+        //Debug.Log("Successfully Updated to: " + status);
         finishedExecuting = status;
     }
 }

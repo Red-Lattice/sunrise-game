@@ -74,11 +74,11 @@ public class LepPlayerMovement : MonoBehaviour
 
     #endregion
 
-    void OnGUI()
+    /*void OnGUI()
     {
         GUILayout.Label("Velocity: " + new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude);
         GUILayout.Label("Upward Velocity: " + rb.velocity.y);
-    }
+    }*/
 
     void Awake()
     {

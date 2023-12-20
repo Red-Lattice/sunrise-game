@@ -11,9 +11,9 @@ public class EnemyAwareness : MonoBehaviour
     [SerializeField] private LayerMask friendlyEntityLayerMask;
     [SerializeField] private LayerMask blockerLayerMask;
     [SerializeField] private Transform head;
-    public List<Collider> unobstructedColliders {get; private set;}
-    public List<Collider> directVisionConeColliders {get; private set;}
-    public List<Collider> potentialTargets {get; private set;}
+    public List<Collider> unobstructedColliders;
+    public List<Collider> directVisionConeColliders;
+    public List<Collider> potentialTargets;
 
     void Start()
     {
@@ -34,6 +34,7 @@ public class EnemyAwareness : MonoBehaviour
     {
         unobstructedColliders.Clear();
         directVisionConeColliders.Clear();
+        potentialTargets.Clear();
 
         Vector3 center = head.position;
         Collider[] awareColliders = Physics.OverlapSphere(center, awarenessRadius, friendlyEntityLayerMask);

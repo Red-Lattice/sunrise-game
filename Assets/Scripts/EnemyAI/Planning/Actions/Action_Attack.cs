@@ -8,6 +8,7 @@ public class Action_Attack : I_Action
     private NavMeshAgent pathfinder;
     private bool finishedExecuting;
     private EnemyBrain executor;
+    private bool running;
     
     public Action_Attack(EnemyBrain executor)
     {
@@ -38,11 +39,11 @@ public class Action_Attack : I_Action
 
     public bool IsExecuting()
     {
-        throw new System.NotImplementedException();
+        return running;
     }
 
     public void MarkCompleteness(bool status)
     {
-        throw new System.NotImplementedException();
+        finishedExecuting = status;
     }
 }

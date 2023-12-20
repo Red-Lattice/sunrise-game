@@ -57,7 +57,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 50
+  far clip plane: 5
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -844,12 +844,7 @@ MonoBehaviour:
   wallStickDistance: 1
   wallFloorBarrier: 40
   wallBanTime: 4
-  grounded: 0
-  mode: 1
-  col: {fileID: 7798008654792206727}
   camCon: {fileID: 7798008653611156035}
-  camTranform: {fileID: 7798008653611156032}
-  rb: {fileID: 7798008654792206724}
 --- !u!114 &7798008654792206721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -864,6 +859,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileGetter: {fileID: 11400000, guid: 1bc3457b814077c41851fb33765c740b, type: 2}
   gunGetter: {fileID: 11400000, guid: ffd9ae523d187aa48b24188700db6505, type: 2}
+  grenadeGetter: {fileID: 0}
   weaponObject: {fileID: 7798008654595020977}
   camControl: {fileID: 7798008653611156035}
   uiCam: {fileID: 7798008653543340225}

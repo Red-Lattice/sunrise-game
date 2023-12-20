@@ -9,9 +9,9 @@ public class Goal_PickUpWeapon : I_Goal
     private I_Goal[] subgoals;
     private bool running;
 
-    public Goal_PickUpWeapon()
+    public Goal_PickUpWeapon(EnemyBrain brain)
     {
-        holdingWeapon = false;
+        holdingWeapon = brain.weaponsNeededCheck();
         actions = new I_Action[1]{new Action_MoveTo()};
         subgoals = new I_Goal[0];
     }

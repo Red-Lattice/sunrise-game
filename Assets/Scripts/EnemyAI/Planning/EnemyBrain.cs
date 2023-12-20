@@ -14,8 +14,6 @@ public class EnemyBrain : MonoBehaviour
 {
     private SafelyLinkedList<I_Action> actionQueue;
     private SafelyLinkedList<I_Goal> goalQueue;
-
-    private int unstucktime;
     private Coroutine moveToCoroutine;
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
@@ -25,10 +23,12 @@ public class EnemyBrain : MonoBehaviour
     private Dictionary<GameObject, Goal_AttackEntity> attackGoalSet;
     [SerializeField] private Weapon weapon;
     [SerializeField] private string[] LLVisualizer;
+    [SerializeField] private string[] GoalVisualizer;
 
     void Awake()
     {
         LLVisualizer = new string[5];
+        GoalVisualizer = new string[5];
         goalQueue = new SafelyLinkedList<I_Goal>(new Goal_Idle(this));
         actionQueue = new SafelyLinkedList<I_Action>(goalQueue.Head.data.GetActions()[0]);
 
@@ -39,22 +39,25 @@ public class EnemyBrain : MonoBehaviour
         weapon = transform.gameObject.GetComponentInChildren<Weapon>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         senses.Tick();
 
         ProcessSenses();
 
-        if (activeGoal != null && activeGoal.GetType().Name == "Goal_Idle")
-        {
-            ((Goal_Idle)goalQueue.Head.data).UpdateGoal();
-        }
-        
         Plan();
 
         ExecuteActions();
 
-        debugVisualizer();
+        //debugVisualizer();
+    }
+
+    void Update()
+    {
+        if (activeGoal != null && activeGoal.GetType().Name == "Goal_Idle")
+        {
+            ((Goal_Idle)goalQueue.Head.data).UpdateGoal();
+        }
     }
 
     private void debugVisualizer()
@@ -72,6 +75,20 @@ public class EnemyBrain : MonoBehaviour
             LLVisualizer[i] = "";
             i++;
         }
+
+        SafelyLinkedList<I_Goal>.Node currentGoalNode = goalQueue.Head;
+        int j = 0;
+        while (currentGoalNode != null)
+        {
+            GoalVisualizer[j] = currentGoalNode.data.GetType().Name;
+            j++;
+            currentGoalNode = currentGoalNode.nextNode;
+        }
+        while (j < 5)
+        {
+            GoalVisualizer[j] = "";
+            j++;
+        }
     }
 
     /// <summary>
@@ -84,27 +101,31 @@ public class EnemyBrain : MonoBehaviour
         I_Goal[] headSubGoals = goalQueue.Head.data.GetSubgoals();
         if (activeGoal != goalQueue.Head.data || !headSubGoals.Contains(activeGoal))
         {
+            if (goalQueue.Head.data.GetType().Name == "Goal_AttackEntity")
+            {
+                target = ((Goal_AttackEntity)goalQueue.Head.data).target;
+            }
             foreach (I_Goal subgoal in headSubGoals)
             {
                 if (!subgoal.IsCompleted())
                 {
                     activeGoal = subgoal;
                     actionQueue.Clear();
-                    actionPlan();
+                    actionPlan(activeGoal);
                     return;
                 }
             }
             activeGoal = goalQueue.Head.data;
             actionQueue.Clear();
-            actionPlan();
+            actionPlan(activeGoal);
             return;
         }
-        actionPlan();
+        actionPlan(activeGoal);
     }
 
-    private void actionPlan()
+    private void actionPlan(I_Goal goal)
     {
-        I_Action[] actionList = activeGoal.GetActions();
+        I_Action[] actionList = goal.GetActions();
         foreach (I_Action action in actionList)
         {
             if (!action.IsExecuted() && action.CanExecute() && !actionQueue.Contains(action))
@@ -121,10 +142,6 @@ public class EnemyBrain : MonoBehaviour
             if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
             actionQueue.Head.data.ExecuteAction();
             currentlyRunningAction = actionQueue.Head.data;
-        }
-        if (activeGoal.GetType().Name == "Goal_AttackEntity")
-        {
-            target = ((Goal_AttackEntity)activeGoal).target;
         }
     }
 
@@ -160,9 +177,9 @@ public class EnemyBrain : MonoBehaviour
         }
     }
 
-    public Coroutine Move(Vector3 location, I_Action caller)
+    public void Move(Vector3 location, I_Action caller)
     {
-        return moveToCoroutine = StartCoroutine(moveTo(location, caller));
+        moveToCoroutine = StartCoroutine(moveTo(location, caller));
     }
 
     public void StopMove(I_Action caller)
@@ -191,7 +208,6 @@ public class EnemyBrain : MonoBehaviour
             {
                 if (Mathf.Abs(unstuckPosition - transform.position.magnitude) < 0.001f)
                 {
-                    Debug.Log("Path fail");
                     caller.MarkCompleteness(true);
                     pathfinder.ResetPath();
                     actionQueue.Remove();
@@ -203,7 +219,6 @@ public class EnemyBrain : MonoBehaviour
                     unstuckPosition = transform.position.magnitude;
                 }
             }
-            //Debug.Log(location);
             yield return null;
         }
         caller.MarkCompleteness(true);
