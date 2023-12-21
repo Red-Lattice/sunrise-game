@@ -107,6 +107,7 @@ public class EnemyBrain : MonoBehaviour
             }
             foreach (I_Goal subgoal in headSubGoals)
             {
+                Debug.Log(subgoal.IsCompleted());
                 if (!subgoal.IsCompleted())
                 {
                     activeGoal = subgoal;
@@ -188,6 +189,9 @@ public class EnemyBrain : MonoBehaviour
         if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
     }
 
+    /// <summary>
+    /// Returns true if there is no weapon
+    /// </summary>
     public bool weaponsNeededCheck()
     {
         return weapon == null;
@@ -195,6 +199,11 @@ public class EnemyBrain : MonoBehaviour
     public void setWeapon(string weaponName)
     {
 
+    }
+
+    public List<Collider> GetSmartObjectList()
+    {
+        return senses.smartObjects;
     }
 
     private IEnumerator moveTo(Vector3 location, I_Action caller) 

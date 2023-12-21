@@ -14,6 +14,7 @@ public class EnemyAwareness : MonoBehaviour
     public List<Collider> unobstructedColliders;
     public List<Collider> directVisionConeColliders;
     public List<Collider> potentialTargets;
+    public List<Collider> smartObjects;
 
     void Start()
     {
@@ -58,6 +59,11 @@ public class EnemyAwareness : MonoBehaviour
             if (dvcCol.gameObject.layer == LayerMask.NameToLayer("FriendlyEntity"))
             {
                 potentialTargets.Add(dvcCol);
+                continue;
+            }
+            if (dvcCol.gameObject.layer == LayerMask.NameToLayer("objects"))
+            {
+                smartObjects.Add(dvcCol);
             }
         }
     }

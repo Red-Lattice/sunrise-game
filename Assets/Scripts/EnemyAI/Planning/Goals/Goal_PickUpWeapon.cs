@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Goal_PickUpWeapon : I_Goal
@@ -8,11 +9,13 @@ public class Goal_PickUpWeapon : I_Goal
     private I_Action[] actions;
     private I_Goal[] subgoals;
     private bool running;
+    private EnemyBrain brain;
 
-    public Goal_PickUpWeapon(EnemyBrain brain)
+    public Goal_PickUpWeapon(EnemyBrain brain, Vector3 position)
     {
+        this.brain = brain;
         holdingWeapon = brain.weaponsNeededCheck();
-        actions = new I_Action[1]{new Action_MoveTo()};
+        actions = new I_Action[1]{new Action_MoveTo(brain, position)};
         subgoals = new I_Goal[0];
     }
 
@@ -43,7 +46,7 @@ public class Goal_PickUpWeapon : I_Goal
 
     public bool IsCompleted()
     {
-        return holdingWeapon;
+        return brain.weaponsNeededCheck() || brain.GetSmartObjectList().Count == 0;
     }
 
     public bool IsRunning()
@@ -53,7 +56,7 @@ public class Goal_PickUpWeapon : I_Goal
 
     public bool SubGoalsCompleted()
     {
-        return true; // Picking up a weapon has no sub-goals that need to be completed
+        return true;
     }
 
     /// <summary>

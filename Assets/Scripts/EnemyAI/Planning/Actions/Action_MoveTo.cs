@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Action_MoveTo : I_Action
 {
-    
-    public Action_MoveTo()
+    private Vector3 position;
+    private EnemyBrain brain;
+    public Action_MoveTo(EnemyBrain brain, Vector3 position)
     {
+        this.position = position;
+        this.brain = brain;
     }
 
     public bool CanExecute()
