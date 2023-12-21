@@ -89,6 +89,7 @@ public class SafelyLinkedList<T>
         if (index < 0 || index >= size) {
             throw new IndexOutOfRangeException();
         }
+        if (index == 0) {Add(data); return;}
 
         Node currentNode = Head;
         for (int i = 0; i < index; i++) {currentNode = currentNode.nextNode;}
@@ -96,8 +97,13 @@ public class SafelyLinkedList<T>
         Node newNode = new Node(data, currentNode.nextNode, currentNode);
         currentNode.nextNode = newNode;
         if (currentNode == Tail) {Tail = newNode;}
+        else {newNode.nextNode.previousNode = newNode;}
+        if (currentNode == Head) {Head = newNode;}
+        
 
         size++;
+
+        Debug.Log("SUCCESS: " + ((newNode.previousNode == null) ? "HEAD -> " : newNode.previousNode.nextNode.data) + " -> " + newNode.data + ((newNode.nextNode == null) ? " <- TAIL" : " -> " + newNode.nextNode.data));
     }
 
     public void Remove()

@@ -19,7 +19,7 @@ public class EnemyBrain : MonoBehaviour
     private EnemyAwareness senses;
     private I_Action currentlyRunningAction;
     private I_Goal activeGoal;
-    [SerializeField] private GameObject target;
+    public GameObject target {get; private set;}
     private Dictionary<GameObject, Goal_AttackEntity> attackGoalSet;
     [SerializeField] private Weapon weapon;
     [SerializeField] private string[] LLVisualizer;
@@ -49,7 +49,7 @@ public class EnemyBrain : MonoBehaviour
 
         ExecuteActions();
 
-        //debugVisualizer();
+        debugVisualizer();
     }
 
     void Update()
@@ -166,14 +166,15 @@ public class EnemyBrain : MonoBehaviour
     {
         foreach (Collider entityCol in senses.potentialTargets)
         {
-            Goal_AttackEntity attackScript;
-            if (attackGoalSet.TryGetValue(entityCol.gameObject, out attackScript))
+            GameObject go = entityCol.gameObject;
+            if (attackGoalSet.ContainsKey(go))
             {
                 continue;
             }
-            attackScript = new Goal_AttackEntity(entityCol.gameObject, this);
+            Debug.Log(go);
+            Goal_AttackEntity attackScript = new Goal_AttackEntity(go, this);
             InsertIntoGoals(attackScript);
-            attackGoalSet.Add(entityCol.gameObject, attackScript);
+            attackGoalSet.Add(go, attackScript);
         }
     }
 

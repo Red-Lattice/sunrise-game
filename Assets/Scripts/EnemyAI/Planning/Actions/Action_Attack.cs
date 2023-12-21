@@ -34,7 +34,7 @@ public class Action_Attack : I_Action
 
     public bool IsExecuted()
     {
-        throw new System.NotImplementedException();
+        return executor.target == null;
     }
 
     public bool IsExecuting()

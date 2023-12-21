@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class Action_MoveTo : I_Action
 {
-    private I_Action[] actions;
     
     public Action_MoveTo()
     {
-        actions = new I_Action[0];
     }
 
     public bool CanExecute()

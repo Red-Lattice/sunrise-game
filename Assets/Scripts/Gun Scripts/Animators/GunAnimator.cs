@@ -59,7 +59,7 @@ public class GunAnimator : MonoBehaviour
 
             currentAnimState = newAnimState;
         }
-        catch (NullReferenceException nre)
+        catch (NullReferenceException)
         {
             return;
         }
