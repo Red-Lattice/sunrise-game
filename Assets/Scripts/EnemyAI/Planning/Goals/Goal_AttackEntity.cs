@@ -13,20 +13,18 @@ public class Goal_AttackEntity : I_Goal
 
     public Goal_AttackEntity(GameObject target, EnemyBrain goalee)
     {
-        if (goalee.weaponsNeededCheck() || goalee.GetSmartObjectList().Count == 0)
+        actions = new I_Action[1] {new Action_Attack(goalee)};
+        this.target = target;
+
+        if (goalee.weaponsNeededCheck() && goalee.GetSmartObjectList().Count != 0)
         {
             subgoals = new I_Goal[1] {
                 new Goal_PickUpWeapon(goalee, 
                 goalee.GetSmartObjectList()[0].transform.position)
                 };
+            return;
         }
-        else
-        {
-            subgoals = new I_Goal[0];
-        }
-        
-        actions = new I_Action[1] {new Action_Attack(goalee)};
-        this.target = target;
+        subgoals = new I_Goal[0];
     }
 
     /// <summary>

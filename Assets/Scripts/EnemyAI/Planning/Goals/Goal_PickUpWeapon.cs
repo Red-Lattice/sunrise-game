@@ -46,7 +46,7 @@ public class Goal_PickUpWeapon : I_Goal
 
     public bool IsCompleted()
     {
-        return brain.weaponsNeededCheck() || brain.GetSmartObjectList().Count == 0;
+        return brain.weaponsNeededCheck();
     }
 
     public bool IsRunning()

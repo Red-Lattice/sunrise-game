@@ -235,4 +235,14 @@ public class EnemyBrain : MonoBehaviour
         pathfinder.ResetPath();
         actionQueue.Remove();
     }
+
+    /// <summary>
+    /// Replaces the head goal with this current one.
+    /// NOTE: The goal calling this method should only ever be the head node of the goal list.
+    /// </summary>
+    /// <param name="newGoal"></param>
+    public void Replace(I_Goal newGoal)
+    {
+        
+    }
 }

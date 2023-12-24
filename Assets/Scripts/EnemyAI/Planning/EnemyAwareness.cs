@@ -20,6 +20,7 @@ public class EnemyAwareness : MonoBehaviour
     {
         unobstructedColliders = new List<Collider>();
         directVisionConeColliders = new List<Collider>();
+        smartObjects = new List<Collider>();
         enemyTransform = head;
     }
 
@@ -36,6 +37,7 @@ public class EnemyAwareness : MonoBehaviour
         unobstructedColliders.Clear();
         directVisionConeColliders.Clear();
         potentialTargets.Clear();
+        smartObjects.Clear();
 
         Vector3 center = head.position;
         Collider[] awareColliders = Physics.OverlapSphere(center, awarenessRadius, friendlyEntityLayerMask);
@@ -53,6 +55,10 @@ public class EnemyAwareness : MonoBehaviour
             {
                 directVisionConeColliders.Add(unobCol);
             }
+            if (unobCol.gameObject.layer == LayerMask.NameToLayer("objects"))
+            {
+                smartObjects.Add(unobCol);
+            }
         }
         foreach (Collider dvcCol in directVisionConeColliders)
         {
@@ -60,10 +66,6 @@ public class EnemyAwareness : MonoBehaviour
             {
                 potentialTargets.Add(dvcCol);
                 continue;
-            }
-            if (dvcCol.gameObject.layer == LayerMask.NameToLayer("objects"))
-            {
-                smartObjects.Add(dvcCol);
             }
         }
     }
