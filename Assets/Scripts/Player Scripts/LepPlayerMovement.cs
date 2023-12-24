@@ -20,32 +20,32 @@ public class LepPlayerMovement : MonoBehaviour
     #region Fields
     //Ground
     [Header("Ground")]
-    private float groundSpeed = 6f;
-    [SerializeField] private float playerSpeed = 6f;
-    [SerializeField] private float grAccel = 20f;
+    [SerializeField] private float groundSpeed = 6f;
+    private const float playerSpeed = 6f;
+    private const float grAccel = 20f;
     [SerializeField] private float frictionConstant;
     [SerializeField] private float coefficientOfFriction;
 
     //Air
     [Header("Air")]
-    [SerializeField] private float airSpeed = 3f;
-    [SerializeField] private float airAccel = 20f;
+    private const float airSpeed = 3f;
+    private const float airAccel = 20f;
 
     //Jump
-    [Header("Jump")]
-    [SerializeField] private float jumpUpSpeed = 9.2f;
-    [SerializeField] private float dashSpeed = 6f;
+    //[Header("Jump")]
+    private const float jumpUpSpeed = 9.2f;
+    private const float dashSpeed = 6f;
 
     //Wall
-    [Header("Wall Stuff")]
-    [SerializeField] private float wallSpeed = 10f;
-    [SerializeField] private float wallClimbSpeed = 1f;
-    [SerializeField] private float wallAccel = 20f;
-    [SerializeField] private float wallRunTime = 3f;
-    [SerializeField] private float wallStickiness = 20f;
-    [SerializeField] private float wallStickDistance = 1f;
-    [SerializeField] private float wallFloorBarrier = 40f;
-    [SerializeField] private float wallBanTime = 4f;
+    //[Header("Wall Stuff")]
+    private const float wallSpeed = 10f;
+    private const float wallClimbSpeed = 1f;
+    private const float wallAccel = 20f;
+    private const float wallRunTime = 3f;
+    private const float wallStickiness = 20f;
+    private const float wallStickDistance = 1f;
+    private const float wallFloorBarrier = 40f;
+    private const float wallBanTime = 4f;
     Vector3 bannedGroundNormal;
 
     //Cooldowns
