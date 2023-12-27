@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Goal_AttackEntity : I_Goal
+public class Goal_AttackEntity : I_Goal, I_Swappable
 {
     public GameObject target {get; private set;}
     private float damageDoneByTarget;
@@ -13,7 +13,7 @@ public class Goal_AttackEntity : I_Goal
 
     public Goal_AttackEntity(GameObject target, EnemyBrain goalee)
     {
-        actions = new I_Action[1] {new Action_Attack(goalee)};
+        actions = new I_Action[1] {new Action_Attack(goalee, target)};
         this.target = target;
 
         if (goalee.weaponsNeededCheck() && goalee.GetSmartObjectList().Count != 0)
@@ -83,5 +83,10 @@ public class Goal_AttackEntity : I_Goal
     public void HaltExecution()
     {
         running = false;
+    }
+
+    public void SwapIndex(int index, I_Action newAction)
+    {
+        actions[index] = newAction;
     }
 }

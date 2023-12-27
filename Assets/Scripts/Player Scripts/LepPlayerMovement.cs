@@ -20,16 +20,16 @@ public class LepPlayerMovement : MonoBehaviour
     #region Fields
     //Ground
     [Header("Ground")]
-    [SerializeField] private float groundSpeed = 6f;
-    private const float playerSpeed = 6f;
-    private const float grAccel = 20f;
+    [SerializeField] private float groundSpeed = 8f;
+    private const float playerSpeed = 8f;
+    private const float grAccel = 30f;
     [SerializeField] private float frictionConstant;
     [SerializeField] private float coefficientOfFriction;
 
     //Air
     [Header("Air")]
-    private const float airSpeed = 3f;
-    private const float airAccel = 20f;
+    private const float airSpeed = 6f;
+    private const float airAccel = 30f;
 
     //Jump
     //[Header("Jump")]

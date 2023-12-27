@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 
 
 /// <summary>
@@ -172,7 +173,7 @@ public class EnemyBrain : MonoBehaviour
             {
                 continue;
             }
-            Debug.Log(go);
+            //Debug.Log(go);
             Goal_AttackEntity attackScript = new Goal_AttackEntity(go, this);
             InsertIntoGoals(attackScript);
             attackGoalSet.Add(go, attackScript);
@@ -241,8 +242,15 @@ public class EnemyBrain : MonoBehaviour
     /// NOTE: The goal calling this method should only ever be the head node of the goal list.
     /// </summary>
     /// <param name="newGoal"></param>
-    public void Replace(I_Goal newGoal)
+    public void Replace(I_Action swappableCaller, I_Action newAction)
     {
-        
+        I_Swappable goalWithSwap = goalQueue.Head.data as I_Swappable;
+
+        if (goalWithSwap != null)
+        {
+            goalWithSwap.SwapIndex(Array.IndexOf(goalQueue.Head.data.GetActions(), swappableCaller), newAction);
+
+            actionQueue.Replace(swappableCaller, newAction);
+        }
     }
 }

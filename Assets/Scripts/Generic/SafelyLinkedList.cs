@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEditor;
 
 /// <summary>
 /// This is an implementation of a doubly linked list, but safe.
@@ -158,6 +159,17 @@ public class SafelyLinkedList<T>
                     break;
             }
         }
+    }
+
+    public void Replace(T oldData, T newData)
+    {
+        Node currentNode = Head;
+        while (!currentNode.data.Equals(oldData))
+        {
+            currentNode = currentNode.nextNode;
+            if (currentNode == null) {return;}
+        }
+        currentNode.data = newData;
     }
 
     private Node getNode(T data)
