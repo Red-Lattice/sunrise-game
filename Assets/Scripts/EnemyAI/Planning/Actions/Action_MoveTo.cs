@@ -1,40 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Action_MoveTo : I_Action
 {
     private Vector3 position;
     private EnemyBrain brain;
+    private bool finishedExecuting;
+    private bool isExecuting;
+    private NavMeshAgent pathfinder;
+
     public Action_MoveTo(EnemyBrain brain, Vector3 position)
     {
         this.position = position;
         this.brain = brain;
+        this.pathfinder = brain.transform.gameObject.GetComponent<NavMeshAgent>();
     }
 
     public bool CanExecute()
     {
-        throw new System.NotImplementedException();
+        return pathfinder != null;
     }
 
     public void ExecuteAction()
     {
-        throw new System.NotImplementedException();
+        isExecuting = true;
+
+        brain.Move(position, this);
     }
 
     public void HaltAction()
     {
-        throw new System.NotImplementedException();
+        isExecuting = false;
+        brain.StopMove(this);
     }
 
     public bool IsExecuted()
     {
-        throw new System.NotImplementedException();
+        return finishedExecuting;
     }
 
     public bool IsExecuting()
     {
-        throw new System.NotImplementedException();
+        return isExecuting;
     }
 
     public void MarkCompleteness(bool status)
