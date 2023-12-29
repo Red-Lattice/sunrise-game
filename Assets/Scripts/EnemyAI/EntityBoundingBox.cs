@@ -8,7 +8,7 @@ public class EntityBoundingBox : MonoBehaviour
 
     void Start()
     {
-        brain = GetComponent<EnemyBrain>();
+        brain = GetComponentInParent<EnemyBrain>();
     }
 
     void OnTriggerEnter(Collider other)

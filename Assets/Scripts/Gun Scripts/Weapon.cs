@@ -13,6 +13,11 @@ public class Weapon : MonoBehaviour
         return false;
     }
 
+    public virtual bool triggerWeapon(Transform firerTransform)
+    {
+        return false;
+    }
+
     public virtual void weaponHeld()
     {
         //Empty

@@ -48,6 +48,6 @@ public class Action_MoveTo : I_Action
 
     public void MarkCompleteness(bool status)
     {
-        throw new System.NotImplementedException();
+        finishedExecuting = status;
     }
 }

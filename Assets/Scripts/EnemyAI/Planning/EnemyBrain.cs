@@ -15,16 +15,16 @@ public class EnemyBrain : MonoBehaviour
 {
     private SafelyLinkedList<I_Action> actionQueue;
     private SafelyLinkedList<I_Goal> goalQueue;
-    private Coroutine moveToCoroutine;
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
     private I_Action currentlyRunningAction;
     private I_Goal activeGoal;
-    public GameObject target {get; private set;}
+    [SerializeField] private Transform headTransform;
+    public GameObject target;
     private Dictionary<GameObject, Goal_AttackEntity> attackGoalSet;
-    [SerializeField] private Weapon weapon;
     [SerializeField] private string[] LLVisualizer;
     [SerializeField] private string[] GoalVisualizer;
+    [SerializeField] private EnemyWeaponScriptableObject gunGetter;
 
     void Awake()
     {
@@ -108,7 +108,7 @@ public class EnemyBrain : MonoBehaviour
             }
             foreach (I_Goal subgoal in headSubGoals)
             {
-                Debug.Log(subgoal.IsCompleted());
+                //Debug.Log(subgoal.IsCompleted());
                 if (!subgoal.IsCompleted())
                 {
                     activeGoal = subgoal;
@@ -143,6 +143,7 @@ public class EnemyBrain : MonoBehaviour
         {
             if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
             actionQueue.Head.data.ExecuteAction();
+            Debug.Log("Action " + actionQueue.Head.data + " Executed");
             currentlyRunningAction = actionQueue.Head.data;
         }
     }
@@ -173,7 +174,6 @@ public class EnemyBrain : MonoBehaviour
             {
                 continue;
             }
-            //Debug.Log(go);
             Goal_AttackEntity attackScript = new Goal_AttackEntity(go, this);
             InsertIntoGoals(attackScript);
             attackGoalSet.Add(go, attackScript);
@@ -190,6 +190,10 @@ public class EnemyBrain : MonoBehaviour
         if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
     }
 
+#region weaponStuff
+    [SerializeField] private Weapon weapon;
+    [SerializeField] private Transform weaponHoldPoint;
+
     /// <summary>
     /// Returns true if there is no weapon
     /// </summary>
@@ -199,13 +203,47 @@ public class EnemyBrain : MonoBehaviour
     }
     public void setWeapon(string weaponName)
     {
-
+        weapon = Instantiate(gunGetter.getObject(weaponName), weaponHoldPoint).GetComponent<Weapon>();
     }
+
+    private Weapon getAddedWeapon(string weaponName)
+    {
+        // Every time you add a new weapon type, add it to this.
+        switch (weaponName)
+        {
+            case "Pistol":
+                return weaponHoldPoint.gameObject.AddComponent<Weapon_Pistol>();
+            case "Plasma Pulser":
+                return weaponHoldPoint.gameObject.AddComponent<Weapon_PlasmaPulser>();
+            default:
+                return weaponHoldPoint.gameObject.AddComponent<Weapon>();
+        }
+    }
+#endregion
 
     public List<Collider> GetSmartObjectList()
     {
         return senses.smartObjects;
     }
+
+    /// <summary>
+    /// Replaces the head goal with this current one.
+    /// NOTE: The goal calling this method should only ever be the head node of the goal list.
+    /// </summary>
+    /// <param name="newGoal"></param>
+    public void Replace(I_Action swappableCaller, I_Action newAction)
+    {
+        I_Swappable goalWithSwap = goalQueue.Head.data as I_Swappable;
+
+        if (goalWithSwap != null)
+        {
+            goalWithSwap.SwapIndex(Array.IndexOf(goalQueue.Head.data.GetActions(), swappableCaller), newAction);
+
+            actionQueue.Replace(swappableCaller, newAction);
+        }
+    }
+
+    private Coroutine moveToCoroutine;
 
     private IEnumerator moveTo(Vector3 location, I_Action caller) 
     {
@@ -224,11 +262,8 @@ public class EnemyBrain : MonoBehaviour
                     actionQueue.Remove();
                     yield break;
                 }
-                else
-                {
-                    unstuckTimer = 0;
-                    unstuckPosition = transform.position.magnitude;
-                }
+                unstuckTimer = 0;
+                unstuckPosition = transform.position.magnitude;
             }
             yield return null;
         }
@@ -237,20 +272,28 @@ public class EnemyBrain : MonoBehaviour
         actionQueue.Remove();
     }
 
-    /// <summary>
-    /// Replaces the head goal with this current one.
-    /// NOTE: The goal calling this method should only ever be the head node of the goal list.
-    /// </summary>
-    /// <param name="newGoal"></param>
-    public void Replace(I_Action swappableCaller, I_Action newAction)
+    private Coroutine attackCoroutine;
+
+    public void Attack(I_Action caller)
     {
-        I_Swappable goalWithSwap = goalQueue.Head.data as I_Swappable;
+        if (attackCoroutine != null) {StopCoroutine(attackCoroutine);}
+        attackCoroutine = StartCoroutine(attack(caller));
+    }
 
-        if (goalWithSwap != null)
+    private IEnumerator attack(I_Action caller) 
+    {
+        while (target != null)
         {
-            goalWithSwap.SwapIndex(Array.IndexOf(goalQueue.Head.data.GetActions(), swappableCaller), newAction);
-
-            actionQueue.Replace(swappableCaller, newAction);
+            Quaternion toRot = Quaternion.LookRotation(target.transform.position - transform.position);
+            Quaternion lookRotation = Quaternion.Euler(0, toRot.eulerAngles.y, 0);
+            Quaternion headRotation = Quaternion.Euler(toRot.eulerAngles.x, toRot.eulerAngles.y, toRot.eulerAngles.z);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
+            headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
+            weapon.transform.rotation = headTransform.rotation;
+            weapon.triggerWeapon();
+            yield return null;
         }
+        caller.MarkCompleteness(true);
+        actionQueue.Remove();
     }
 }

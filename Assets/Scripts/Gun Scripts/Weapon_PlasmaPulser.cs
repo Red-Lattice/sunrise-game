@@ -45,6 +45,18 @@ public class Weapon_PlasmaPulser : Weapon
         return false;
     }
 
+    public override bool triggerWeapon(Transform firerTransform)
+    {
+        if (cooldown < 0)
+        {
+            PlasmaBullet instantiatedBolt = Instantiate(plasmaBolt, firerTransform.position, rot).GetComponent<PlasmaBullet>();
+            instantiatedBolt.initialization(this.transform.root.gameObject.name);
+            cooldown = 0.15f;
+            return true;
+        }
+        return false;
+    }
+
     public override bool punch()
     {
         return true;

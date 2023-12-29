@@ -24,12 +24,14 @@ public class Action_Attack : I_Action
 
     public bool CanExecute()
     {
-        return true; // UPDATE
+        return !executor.weaponsNeededCheck();
     }
 
     public void ExecuteAction()
     {
-        if (!SwapCheck()) {return;}
+        if (SwapCheck()) {return;}
+        Debug.Log("Attack running");
+        executor.Attack(this);
     }
 
     private bool SwapCheck()
