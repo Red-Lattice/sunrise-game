@@ -30,12 +30,13 @@ public class Action_Attack : I_Action
     public void ExecuteAction()
     {
         if (SwapCheck()) {return;}
-        Debug.Log("Attack running");
         executor.Attack(this);
     }
 
     private bool SwapCheck()
     {
+        //Debug.Log(executor.GetSmartObjectList().Count);
+        //Debug.Log(executor.weaponsNeededCheck());
         if (executor.weaponsNeededCheck() && executor.GetSmartObjectList().Count == 0) 
         {
             executor.Replace(this, new Action_MeleeAttack(executor, target));

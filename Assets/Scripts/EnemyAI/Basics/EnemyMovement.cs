@@ -13,7 +13,6 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Rigidbody enemyRB;
     [SerializeField] private Weapon plasmaGun;
-    private bool moveToTargetRunning;
     private float defaultSpeed;
 
     private Coroutine moveCoroutine;
@@ -66,7 +65,6 @@ public class EnemyMovement : MonoBehaviour
 
     private IEnumerator moveToTarget() 
     {
-        moveToTargetRunning = true;
         while (target != null && Vector3.Distance(transform.position, target.transform.position) > attackRange && !enemyAwareness.unobstructedFrom(target)) 
         {
             agent.SetDestination(target.transform.position);
@@ -74,7 +72,6 @@ public class EnemyMovement : MonoBehaviour
         }
         isChasing = false;
         agent.ResetPath();
-        moveToTargetRunning = false;
     }
 
     public void turnToTarget(Vector3 targetPos)

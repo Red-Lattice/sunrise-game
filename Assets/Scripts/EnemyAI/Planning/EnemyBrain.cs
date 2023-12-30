@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem;
+//using static AiType;
 
+/// <summary>
+/// This enum defines how aggressive a given AI should be
+/// </summary>
+/*enum AiType{
+    Aggressive,
+    Defensive,
+}*/
 
 /// <summary>
 /// This script is attached to enemies, and manages all of the goals and actions.
@@ -25,6 +31,9 @@ public class EnemyBrain : MonoBehaviour
     [SerializeField] private string[] LLVisualizer;
     [SerializeField] private string[] GoalVisualizer;
     [SerializeField] private EnemyWeaponScriptableObject gunGetter;
+
+    //[SerializeField] private AiType behavior;
+    //public Enum GetAiType() {return behavior;}
 
     void Awake()
     {
@@ -108,7 +117,6 @@ public class EnemyBrain : MonoBehaviour
             }
             foreach (I_Goal subgoal in headSubGoals)
             {
-                //Debug.Log(subgoal.IsCompleted());
                 if (!subgoal.IsCompleted())
                 {
                     activeGoal = subgoal;
@@ -143,7 +151,6 @@ public class EnemyBrain : MonoBehaviour
         {
             if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
             actionQueue.Head.data.ExecuteAction();
-            Debug.Log("Action " + actionQueue.Head.data + " Executed");
             currentlyRunningAction = actionQueue.Head.data;
         }
     }
@@ -244,7 +251,6 @@ public class EnemyBrain : MonoBehaviour
     }
 
     private Coroutine moveToCoroutine;
-
     private IEnumerator moveTo(Vector3 location, I_Action caller) 
     {
         int unstuckTimer = 0;
@@ -273,7 +279,6 @@ public class EnemyBrain : MonoBehaviour
     }
 
     private Coroutine attackCoroutine;
-
     public void Attack(I_Action caller)
     {
         if (attackCoroutine != null) {StopCoroutine(attackCoroutine);}
@@ -284,16 +289,24 @@ public class EnemyBrain : MonoBehaviour
     {
         while (target != null)
         {
-            Quaternion toRot = Quaternion.LookRotation(target.transform.position - transform.position);
-            Quaternion lookRotation = Quaternion.Euler(0, toRot.eulerAngles.y, 0);
-            Quaternion headRotation = Quaternion.Euler(toRot.eulerAngles.x, toRot.eulerAngles.y, toRot.eulerAngles.z);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
-            headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
-            weapon.transform.rotation = headTransform.rotation;
+            RotationHelper();
             weapon.triggerWeapon();
             yield return null;
         }
         caller.MarkCompleteness(true);
         actionQueue.Remove();
+    }
+
+    private void RotationHelper()
+    {
+        Quaternion toRot = Quaternion.LookRotation(target.transform.position - transform.position);
+        Quaternion lookRotation = Quaternion.Euler(0, toRot.eulerAngles.y, 0);
+
+        Quaternion headRotation = Quaternion.Euler(toRot.eulerAngles.x, 
+            toRot.eulerAngles.y, Mathf.Clamp(toRot.eulerAngles.z, -150f, 150f));
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
+        headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
+        weapon.transform.rotation = headTransform.rotation;
     }
 }

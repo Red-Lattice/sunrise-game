@@ -41,7 +41,7 @@ public class Action_MeleeAttack : I_Action
 
     public bool IsExecuted()
     {
-        throw new System.NotImplementedException();
+        return finishedExecuting;
     }
 
     public bool IsExecuting()
