@@ -19,7 +19,7 @@ public class DeathManager
     {
         if (entityName == "Player")
         {
-            Debug.Log("Player died lol");
+            //Debug.Log("Player died lol");
             return;
         }
 

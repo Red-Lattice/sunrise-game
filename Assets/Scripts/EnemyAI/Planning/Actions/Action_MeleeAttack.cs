@@ -21,7 +21,7 @@ public class Action_MeleeAttack : I_Action
 
     public bool CanExecute()
     {
-        return true;
+        return pathfinder != null;
     }
 
     public void ExecuteAction()
@@ -50,6 +50,16 @@ public class Action_MeleeAttack : I_Action
 
     public void MarkCompleteness(bool status)
     {
-        throw new System.NotImplementedException();
+        if (executor.target != null) // We've got more work to do
+        {
+            if ((executor.target.transform.position - executor.transform.position).magnitude > 1f)
+            {
+                executor.MoveToTarget(this);
+            }
+            else
+            {
+                executor.MeleeAttack(this);
+            }
+        }
     }
 }

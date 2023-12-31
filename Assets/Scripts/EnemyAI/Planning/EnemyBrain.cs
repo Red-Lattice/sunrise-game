@@ -27,6 +27,7 @@ public class EnemyBrain : MonoBehaviour
     private I_Goal activeGoal;
     [SerializeField] private Transform headTransform;
     public GameObject target;
+    private const float meleeCooldown = 2f;
     private Dictionary<GameObject, Goal_AttackEntity> attackGoalSet;
     [SerializeField] private string[] LLVisualizer;
     [SerializeField] private string[] GoalVisualizer;
@@ -325,6 +326,12 @@ public class EnemyBrain : MonoBehaviour
         attackCoroutine = StartCoroutine(attack(caller));
     }
 
+    public void MeleeAttack(I_Action caller)
+    {
+        if (attackCoroutine != null) {StopCoroutine(attackCoroutine);}
+        attackCoroutine = StartCoroutine(meleeAttack(caller));
+    }
+
     public void StopAttack(I_Action caller)
     {
         if (attackCoroutine != null) {StopCoroutine(attackCoroutine);}
@@ -342,6 +349,33 @@ public class EnemyBrain : MonoBehaviour
         actionQueue.Remove();
     }
 
+    private IEnumerator meleeAttack(I_Action caller) 
+    {
+        float cooldownTimer = -1f;
+        while (target != null)
+        {
+            RotationHelper();
+            if (cooldownTimer < 0f)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(headTransform.position, headTransform.forward, out hit, 3f))
+                {
+                    StatManager statManager; 
+                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
+                    {
+                        statManager.dealDamage(30f, "Physical");
+                    }
+                }
+                cooldownTimer = meleeCooldown;
+                yield return null;
+            }
+            cooldownTimer -= Time.deltaTime;
+            yield return null;
+        }
+        caller.MarkCompleteness(true);
+        actionQueue.Remove();
+    }
+
     private void RotationHelper()
     {
         Quaternion toRot = Quaternion.LookRotation(target.transform.position - transform.position);
@@ -352,6 +386,6 @@ public class EnemyBrain : MonoBehaviour
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
         headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
-        weapon.transform.rotation = headTransform.rotation;
+        if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
     }
 }
