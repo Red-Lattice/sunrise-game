@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class StatManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class StatManager : MonoBehaviour
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxShield;
     [SerializeField] private DeadEntitiesScriptableObject deso;
+    [SerializeField] private Animator OptUIFlash;
     
     private ShieldAnimator shieldAnimator;
     private DeathManager deathManager;
@@ -29,14 +31,26 @@ public class StatManager : MonoBehaviour
         if (shield > 0)
         {
             damageShield(damage, damageType);
+            if (OptUIFlash != null)
+            {
+                OptUIFlash.Play("UIShieldFlash");
+            }
         }
         else
         {
             health -= (damageType == "Physical") ? damage * 5 : damage;
+            if (OptUIFlash != null)
+            {
+                OptUIFlash.Play("UIHurtFlash");
+            }
         }
         if (health < 0f)
         {
             deathManager.kill();
+            if (OptUIFlash != null)
+            {
+                OptUIFlash.Play("UIHurtFlash");
+            }
         }
     }
 

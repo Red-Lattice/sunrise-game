@@ -11,16 +11,16 @@ public class EnemyAwareness : MonoBehaviour
     [SerializeField] private LayerMask entityLayers;
     [SerializeField] private LayerMask blockerLayers;
     [SerializeField] private Transform head;
-    public List<Collider> unobstructedColliders;
-    public List<Collider> directVisionConeColliders;
-    public List<Collider> potentialTargets;
-    public List<Collider> smartObjects;
+    public List<GameObject> unobstructedColliders;
+    public List<GameObject> directVisionConeColliders;
+    public List<GameObject> potentialTargets;
+    public List<GameObject> smartObjects;
 
     void Start()
     {
-        unobstructedColliders = new List<Collider>();
-        directVisionConeColliders = new List<Collider>();
-        smartObjects = new List<Collider>();
+        unobstructedColliders = new List<GameObject>();
+        directVisionConeColliders = new List<GameObject>();
+        smartObjects = new List<GameObject>();
         enemyTransform = head;
     }
 
@@ -47,26 +47,25 @@ public class EnemyAwareness : MonoBehaviour
             Vector3 dir = hitCol.gameObject.transform.position - head.position;
             if (!Physics.Raycast(head.position, dir, dir.magnitude, blockerLayers)) 
             {
-                unobstructedColliders.Add(hitCol);
+                unobstructedColliders.Add(hitCol.gameObject);
             }
         }
-        foreach (Collider unobCol in unobstructedColliders)
+        foreach (GameObject entity in unobstructedColliders)
         {
-            GameObject go = unobCol.gameObject;
-            if (Mathf.Abs(Vector3.Angle(head.forward, go.transform.position - head.position)) < maxSightlineAngle)
+            if (Mathf.Abs(Vector3.Angle(head.forward, entity.transform.position - head.position)) < maxSightlineAngle)
             {
-                directVisionConeColliders.Add(unobCol);
+                directVisionConeColliders.Add(entity);
             }
-            if (unobCol.gameObject.layer == LayerMask.NameToLayer("objects"))
+            if (entity.gameObject.layer == LayerMask.NameToLayer("objects"))
             {
-                smartObjects.Add(unobCol);
+                smartObjects.Add(entity);
             }
         }
-        foreach (Collider dvcCol in directVisionConeColliders)
+        foreach (GameObject entity in directVisionConeColliders)
         {
-            if (dvcCol.gameObject.layer == LayerMask.NameToLayer("FriendlyEntity"))
+            if (entity.layer == LayerMask.NameToLayer("FriendlyEntity"))
             {
-                potentialTargets.Add(dvcCol);
+                potentialTargets.Add(entity);
                 continue;
             }
         }

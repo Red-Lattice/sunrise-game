@@ -32,6 +32,7 @@ public class EnemyBrain : MonoBehaviour
     [SerializeField] private string[] LLVisualizer;
     [SerializeField] private string[] GoalVisualizer;
     [SerializeField] private EnemyWeaponScriptableObject gunGetter;
+    private Vector3 targetLKP; //Last Known Position
 
     //[SerializeField] private AiType behavior;
     //public Enum GetAiType() {return behavior;}
@@ -182,16 +183,21 @@ public class EnemyBrain : MonoBehaviour
 
     private void ProcessSenses()
     {
-        foreach (Collider entityCol in senses.potentialTargets)
+        if (target != null 
+            && (senses.potentialTargets.Contains(target) 
+            || Vector3.Distance(target.transform.position, transform.position) < 10f))
         {
-            GameObject go = entityCol.gameObject;
-            if (attackGoalSet.ContainsKey(go))
+            targetLKP = target.transform.position;
+        }
+        foreach (GameObject entity in senses.potentialTargets)
+        {
+            if (attackGoalSet.ContainsKey(entity))
             {
                 continue;
             }
-            Goal_AttackEntity attackScript = new Goal_AttackEntity(go, this);
+            Goal_AttackEntity attackScript = new Goal_AttackEntity(entity, this);
             InsertIntoGoals(attackScript);
-            attackGoalSet.Add(go, attackScript);
+            attackGoalSet.Add(entity, attackScript);
         }
     }
 
@@ -241,7 +247,7 @@ public class EnemyBrain : MonoBehaviour
     }
 #endregion
 
-    public List<Collider> GetSmartObjectList()
+    public List<GameObject> GetSmartObjectList()
     {
         return senses.smartObjects;
     }
@@ -295,10 +301,10 @@ public class EnemyBrain : MonoBehaviour
     {
         int unstuckTimer = 0;
         float unstuckPosition = transform.position.magnitude;
-        pathfinder.SetDestination(target.transform.position);
-        while ((target.transform.position - transform.position).magnitude > 1f)
+        pathfinder.SetDestination(targetLKP);
+        while ((targetLKP - transform.position).magnitude > 1f)
         {
-            pathfinder.SetDestination(target.transform.position);
+            pathfinder.SetDestination(targetLKP);
             unstuckTimer++;
             if (unstuckTimer >= 50)
             {
@@ -341,9 +347,23 @@ public class EnemyBrain : MonoBehaviour
     {
         while (target != null)
         {
-            RotationHelper();
-            weapon.triggerWeapon();
-            yield return null;
+            if (senses.potentialTargets.Contains(target))
+            {
+                RotationHelper();
+                weapon.triggerWeapon();
+                pathfinder.ResetPath();
+                yield return null;
+            }
+            else
+            {
+                if (senses.unobstructedColliders.Contains(target))
+                {
+                    RotationHelperOmnipotent();
+                    yield return null;
+                }
+                pathfinder.SetDestination(targetLKP);
+                yield return null;
+            }
         }
         caller.MarkCompleteness(true);
         actionQueue.Remove();
@@ -377,6 +397,19 @@ public class EnemyBrain : MonoBehaviour
     }
 
     private void RotationHelper()
+    {
+        Quaternion toRot = Quaternion.LookRotation(targetLKP - transform.position);
+        Quaternion lookRotation = Quaternion.Euler(0, toRot.eulerAngles.y, 0);
+
+        Quaternion headRotation = Quaternion.Euler(toRot.eulerAngles.x, 
+            toRot.eulerAngles.y, Mathf.Clamp(toRot.eulerAngles.z, -150f, 150f));
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
+        headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
+        if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
+    }
+
+    private void RotationHelperOmnipotent()
     {
         Quaternion toRot = Quaternion.LookRotation(target.transform.position - transform.position);
         Quaternion lookRotation = Quaternion.Euler(0, toRot.eulerAngles.y, 0);

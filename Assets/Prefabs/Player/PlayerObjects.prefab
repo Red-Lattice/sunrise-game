@@ -828,22 +828,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59df213776744a54c8265696874a9d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 8
-  grAccel: 20
+  groundSpeed: 6
   frictionConstant: 0.3
   coefficientOfFriction: 0.3
-  airSpeed: 3
-  airAccel: 20
-  jumpUpSpeed: 9.2
-  dashSpeed: 6
-  wallSpeed: 10
-  wallClimbSpeed: 4
-  wallAccel: 20
-  wallRunTime: 3
-  wallStickiness: 40
-  wallStickDistance: 1
-  wallFloorBarrier: 40
-  wallBanTime: 4
   camCon: {fileID: 7798008653611156035}
 --- !u!114 &7798008654792206721
 MonoBehaviour:
