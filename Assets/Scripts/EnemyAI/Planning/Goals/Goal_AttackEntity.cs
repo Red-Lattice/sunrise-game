@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Goal_AttackEntity : I_Goal, I_Swappable
+public class Goal_AttackEntity : I_Goal
 {
     public GameObject target {get; private set;}
     private float damageDoneByTarget;
@@ -10,9 +10,11 @@ public class Goal_AttackEntity : I_Goal, I_Swappable
     private I_Goal[] subgoals;
     private I_Action[] actions;
     private bool running;
+    private EnemyBrain executor;
 
     public Goal_AttackEntity(GameObject target, EnemyBrain goalee)
     {
+        executor = goalee;
         actions = new I_Action[1] {new Action_Attack(goalee, target)};
         this.target = target;
 
@@ -52,12 +54,9 @@ public class Goal_AttackEntity : I_Goal, I_Swappable
         return true;
     }
 
-    /// <summary>
-    /// Runs when the enemy dies or is otherwise forgotten about
-    /// </summary>
     public void UpdateGoal()
     {
-        completed = true;
+        SwapChecks();
     }
 
     public I_Goal[] GetSubgoals()
@@ -85,8 +84,27 @@ public class Goal_AttackEntity : I_Goal, I_Swappable
         running = false;
     }
 
-    public void SwapIndex(int index, I_Action newAction)
+    /// <summary>
+    /// This is a special method for attacking.
+    /// It does checks to see if it should swap its attacking actions with
+    /// different ones. Example: Swapping melee attacks vs ranged
+    /// </summary>
+    public void SwapChecks()
     {
-        actions[index] = newAction;
+        if ((actions[0].GetType().Name != "Action_MeleeAttack")
+            && executor.weaponsNeededCheck() && executor.GetSmartObjectList().Count == 0)
+        {
+            actions[0].HaltAction();
+            actions[0] = new Action_MeleeAttack(executor, target);
+            return;
+        }
+
+        if ((actions[0].GetType().Name != "Action_Attack")
+            && !executor.weaponsNeededCheck())
+        {
+            actions[0].HaltAction();
+            actions[0] = new Action_Attack(executor, target);
+            return;
+        }
     }
 }

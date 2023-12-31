@@ -59,14 +59,21 @@ public class EnemyBrain : MonoBehaviour
 
         ExecuteActions();
 
+        UpdateGoals();
+
         debugVisualizer();
     }
 
-    void Update()
+    void UpdateGoals()
     {
         if (activeGoal != null && activeGoal.GetType().Name == "Goal_Idle")
         {
             ((Goal_Idle)goalQueue.Head.data).UpdateGoal();
+            return;
+        }
+        if (activeGoal != null && activeGoal.GetType().Name == "Goal_AttackEntity")
+        {
+            ((Goal_AttackEntity)goalQueue.Head.data).UpdateGoal();
         }
     }
 
@@ -197,6 +204,11 @@ public class EnemyBrain : MonoBehaviour
         if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
     }
 
+    public void MoveToTarget(I_Action caller)
+    {
+        moveToCoroutine = StartCoroutine(moveToTarget(caller));
+    }
+
 #region weaponStuff
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform weaponHoldPoint;
@@ -278,11 +290,44 @@ public class EnemyBrain : MonoBehaviour
         actionQueue.Remove();
     }
 
+    private IEnumerator moveToTarget(I_Action caller) 
+    {
+        int unstuckTimer = 0;
+        float unstuckPosition = transform.position.magnitude;
+        pathfinder.SetDestination(target.transform.position);
+        while ((target.transform.position - transform.position).magnitude > 1f)
+        {
+            pathfinder.SetDestination(target.transform.position);
+            unstuckTimer++;
+            if (unstuckTimer >= 50)
+            {
+                if (Mathf.Abs(unstuckPosition - transform.position.magnitude) < 0.001f)
+                {
+                    caller.MarkCompleteness(true);
+                    pathfinder.ResetPath();
+                    actionQueue.Remove();
+                    yield break;
+                }
+                unstuckTimer = 0;
+                unstuckPosition = transform.position.magnitude;
+            }
+            yield return null;
+        }
+        caller.MarkCompleteness(true);
+        pathfinder.ResetPath();
+        actionQueue.Remove();
+    }
+
     private Coroutine attackCoroutine;
     public void Attack(I_Action caller)
     {
         if (attackCoroutine != null) {StopCoroutine(attackCoroutine);}
         attackCoroutine = StartCoroutine(attack(caller));
+    }
+
+    public void StopAttack(I_Action caller)
+    {
+        if (attackCoroutine != null) {StopCoroutine(attackCoroutine);}
     }
 
     private IEnumerator attack(I_Action caller) 

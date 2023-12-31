@@ -785,7 +785,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8072372981141599913, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.94
+      value: -0.29
       objectReference: {fileID: 0}
     - target: {fileID: 8072372981141599913, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4467,11 +4467,6 @@ Transform:
   m_Father: {fileID: 1660011326}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -18.709}
---- !u!4 &656648782 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3890747496886811999, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
-  m_PrefabInstance: {fileID: 3890747496716362056}
-  m_PrefabAsset: {fileID: 0}
 --- !u!43 &668934102
 Mesh:
   m_ObjectHideFlags: 0
@@ -35030,11 +35025,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d77534ef672c919488bef281eaa2c4f9, type: 3}
---- !u!4 &2060662521 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3890747495199013202, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
-  m_PrefabInstance: {fileID: 3890747496716362056}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2068809409 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4862697884638191133, guid: d77534ef672c919488bef281eaa2c4f9, type: 3}
@@ -35340,6 +35330,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 3890747495980155504, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
+      propertyPath: blockerLayers.m_Bits
+      value: 193
+      objectReference: {fileID: 0}
     - target: {fileID: 3890747495980155512, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -35384,18 +35378,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3890747495980155519, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
-      propertyPath: gunGetter
-      value: 
-      objectReference: {fileID: 11400000, guid: 2a83eecd107970d44804d26daf9009f3, type: 2}
-    - target: {fileID: 3890747495980155519, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
-      propertyPath: headTransform
-      value: 
-      objectReference: {fileID: 656648782}
-    - target: {fileID: 3890747495980155519, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
-      propertyPath: weaponHoldPoint
-      value: 
-      objectReference: {fileID: 2060662521}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a36e405dc873bcf428307d3c23b343ba, type: 3}
 --- !u!1001 &5876637673374858006

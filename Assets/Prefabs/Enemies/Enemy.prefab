@@ -148,7 +148,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 50
-  m_AngularDrag: 0.05
+  m_AngularDrag: 10
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -166,10 +166,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a04727e9e3b4545b65e79cf0357796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  headTransform: {fileID: 3890747496886811999}
   target: {fileID: 0}
-  weapon: {fileID: 0}
   LLVisualizer: []
   GoalVisualizer: []
+  gunGetter: {fileID: 11400000, guid: 2a83eecd107970d44804d26daf9009f3, type: 2}
+  weapon: {fileID: 0}
+  weaponHoldPoint: {fileID: 3890747495199013202}
 --- !u!114 &3890747495980155518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,16 +223,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyTransform: {fileID: 0}
-  friendlyEntityLayerMask:
+  entityLayers:
     serializedVersion: 2
     m_Bits: 2304
-  blockerLayerMask:
+  blockerLayers:
     serializedVersion: 2
-    m_Bits: 193
+    m_Bits: 705
   head: {fileID: 3890747496886811999}
   unobstructedColliders: []
   directVisionConeColliders: []
   potentialTargets: []
+  smartObjects: []
 --- !u!1 &3890747496049556374
 GameObject:
   m_ObjectHideFlags: 0

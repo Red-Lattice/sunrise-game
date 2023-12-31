@@ -35,19 +35,18 @@ public class Action_Attack : I_Action
 
     private bool SwapCheck()
     {
-        //Debug.Log(executor.GetSmartObjectList().Count);
-        //Debug.Log(executor.weaponsNeededCheck());
-        if (executor.weaponsNeededCheck() && executor.GetSmartObjectList().Count == 0) 
+        /*if (executor.weaponsNeededCheck() && executor.GetSmartObjectList().Count == 0) 
         {
             executor.Replace(this, new Action_MeleeAttack(executor, target));
             return true;
-        }
+        }*/
         return false;
     }
 
     public void HaltAction()
     {
-        throw new System.NotImplementedException();
+        running = false;
+        executor.StopAttack(this);
     }
 
     public bool IsExecuted()

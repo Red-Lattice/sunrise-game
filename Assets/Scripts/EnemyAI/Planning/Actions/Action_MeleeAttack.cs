@@ -10,7 +10,6 @@ public class Action_MeleeAttack : I_Action
     private EnemyBrain executor;
     private bool running;
     private Transform enemyTransform;
-    private Transform targetTransform;
     
     public Action_MeleeAttack(EnemyBrain executor, GameObject target)
     {
@@ -18,7 +17,6 @@ public class Action_MeleeAttack : I_Action
         finishedExecuting = false;
         this.executor = executor;
         enemyTransform = executor.transform;
-        targetTransform = target.transform;
     }
 
     public bool CanExecute()
@@ -28,9 +26,10 @@ public class Action_MeleeAttack : I_Action
 
     public void ExecuteAction()
     {
+        Transform targetTransform = executor.target.transform;
         if (Vector3.Distance(enemyTransform.position, targetTransform.position) > 0.1f)
         {
-            executor.Move(targetTransform.position, this);
+            executor.MoveToTarget(this);
         }
     }
 

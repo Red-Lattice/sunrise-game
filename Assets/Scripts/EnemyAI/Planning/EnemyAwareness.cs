@@ -8,8 +8,8 @@ public class EnemyAwareness : MonoBehaviour
     private const float maxSightlineAngle = 60f;
     
     [SerializeField] private Transform enemyTransform;
-    [SerializeField] private LayerMask friendlyEntityLayerMask;
-    [SerializeField] private LayerMask blockerLayerMask;
+    [SerializeField] private LayerMask entityLayers;
+    [SerializeField] private LayerMask blockerLayers;
     [SerializeField] private Transform head;
     public List<Collider> unobstructedColliders;
     public List<Collider> directVisionConeColliders;
@@ -40,18 +40,20 @@ public class EnemyAwareness : MonoBehaviour
         smartObjects.Clear();
 
         Vector3 center = head.position;
-        Collider[] awareColliders = Physics.OverlapSphere(center, awarenessRadius, friendlyEntityLayerMask);
+        Collider[] awareColliders = Physics.OverlapSphere(center, awarenessRadius, entityLayers);
 
         foreach (Collider hitCol in awareColliders)
         {
-            if (!Physics.Raycast(head.position, (hitCol.gameObject.transform.position - head.position), (hitCol.gameObject.transform.position - transform.position).magnitude, blockerLayerMask)) 
+            Vector3 dir = hitCol.gameObject.transform.position - head.position;
+            if (!Physics.Raycast(head.position, dir, dir.magnitude, blockerLayers)) 
             {
                 unobstructedColliders.Add(hitCol);
             }
         }
         foreach (Collider unobCol in unobstructedColliders)
         {
-            if (Mathf.Abs(Vector3.Angle(head.forward, (unobCol.gameObject.transform.position - head.position))) < maxSightlineAngle)
+            GameObject go = unobCol.gameObject;
+            if (Mathf.Abs(Vector3.Angle(head.forward, go.transform.position - head.position)) < maxSightlineAngle)
             {
                 directVisionConeColliders.Add(unobCol);
             }
