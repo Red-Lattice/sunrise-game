@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlasmaBullet : MonoBehaviour
 {
-    [SerializeField] private float bulletSpeed = 10f;
-    [SerializeField] private float bulletLifeTime = 10f;
+    private const float bulletSpeed = 50f;
+    private float bulletLifeTime = 3f;
     [SerializeField] private Vector3 bulletDirection;
     [SerializeField] private Rigidbody bulletRB;
     private bool initialized = false;
@@ -14,8 +14,6 @@ public class PlasmaBullet : MonoBehaviour
 
     void Start()
     {
-        bulletSpeed = 50f;
-        bulletLifeTime = 4f;
         bulletDirection = gameObject.transform.forward;
     }
     void Update()

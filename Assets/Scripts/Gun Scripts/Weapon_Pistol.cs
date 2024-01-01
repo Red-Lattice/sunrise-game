@@ -22,7 +22,7 @@ public class Weapon_Pistol : Weapon
             StatManager statManager; 
             if (hit.transform.TryGetComponent<StatManager>(out statManager))
             {
-                statManager.dealDamage(30f, "Physical", transform.root.gameObject);
+                statManager.dealDamage(30f, "Physical", cam.transform.parent.gameObject);
             }
         }
         return true;

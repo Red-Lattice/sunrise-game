@@ -422,6 +422,7 @@ public class EnemyBrain : MonoBehaviour
     public void InformOfDamage(GameObject dealer)
     {
         if (dealer == null) {return;} // Grenades trigger this.
+        if (dealer.layer == LayerMask.NameToLayer("Enemy")) {return;}
         if (attackGoalSet.ContainsKey(dealer))
         {
             return;

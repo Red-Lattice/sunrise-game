@@ -45,7 +45,8 @@ public class EnemyAwareness : MonoBehaviour
         foreach (Collider hitCol in awareColliders)
         {
             Vector3 dir = hitCol.gameObject.transform.position - head.position;
-            if (!Physics.Raycast(head.position, dir, dir.magnitude, blockerLayers)) 
+            if (!Physics.Raycast(head.position, dir, dir.magnitude, blockerLayers)
+                && !unobstructedColliders.Contains(hitCol.gameObject)) 
             {
                 unobstructedColliders.Add(hitCol.gameObject);
             }
