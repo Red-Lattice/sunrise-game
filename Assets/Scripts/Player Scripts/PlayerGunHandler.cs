@@ -67,7 +67,7 @@ public class PlayerGunHandler : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent<StatManager>(out statManager))
                     {
-                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical");
+                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical", transform.gameObject);
                     }
                 }
                 return;
@@ -82,7 +82,7 @@ public class PlayerGunHandler : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent<StatManager>(out statManager))
                     {
-                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical");
+                        statManager.dealDamage(30f + (4f * playerRB.velocity.magnitude), "Physical", transform.gameObject);
                     }
                 }
             }

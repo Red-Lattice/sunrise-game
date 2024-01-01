@@ -38,7 +38,7 @@ public class DefaultGrenade : MonoBehaviour, Interface_Grenade
                 }
                 else
                 {
-                    entityStats.dealDamage((100 / dir.magnitude) + 30, "Physical");
+                    entityStats.dealDamage((100 / dir.magnitude) + 30, "Physical", null);
                 }
             }
         }

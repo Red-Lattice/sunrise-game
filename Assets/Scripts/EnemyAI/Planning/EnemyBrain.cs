@@ -118,6 +118,18 @@ public class EnemyBrain : MonoBehaviour
     {
         // Once a new goal is created, the previous goal's action queue is destroyed
         I_Goal[] headSubGoals = goalQueue.Head.data.GetSubgoals();
+
+        foreach (I_Goal subgoal in headSubGoals)
+        {
+            if (!subgoal.IsCompleted())
+            {
+                activeGoal = subgoal;
+                actionQueue.Clear();
+                actionPlan(activeGoal);
+                return;
+            }
+        }
+
         if (activeGoal != goalQueue.Head.data || !headSubGoals.Contains(activeGoal))
         {
             if (goalQueue.Head.data.GetType().Name == "Goal_AttackEntity")
@@ -299,25 +311,10 @@ public class EnemyBrain : MonoBehaviour
 
     private IEnumerator moveToTarget(I_Action caller) 
     {
-        int unstuckTimer = 0;
-        float unstuckPosition = transform.position.magnitude;
         pathfinder.SetDestination(targetLKP);
         while ((targetLKP - transform.position).magnitude > 1f)
         {
             pathfinder.SetDestination(targetLKP);
-            unstuckTimer++;
-            if (unstuckTimer >= 50)
-            {
-                if (Mathf.Abs(unstuckPosition - transform.position.magnitude) < 0.001f)
-                {
-                    caller.MarkCompleteness(true);
-                    pathfinder.ResetPath();
-                    actionQueue.Remove();
-                    yield break;
-                }
-                unstuckTimer = 0;
-                unstuckPosition = transform.position.magnitude;
-            }
             yield return null;
         }
         caller.MarkCompleteness(true);
@@ -383,7 +380,7 @@ public class EnemyBrain : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent<StatManager>(out statManager))
                     {
-                        statManager.dealDamage(30f, "Physical");
+                        statManager.dealDamage(30f, "Physical", this.gameObject);
                     }
                 }
                 cooldownTimer = meleeCooldown;
@@ -420,5 +417,17 @@ public class EnemyBrain : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
         headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
         if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
+    }
+
+    public void InformOfDamage(GameObject dealer)
+    {
+        if (dealer == null) {return;} // Grenades trigger this.
+        if (attackGoalSet.ContainsKey(dealer))
+        {
+            return;
+        }
+        Goal_AttackEntity attackScript = new Goal_AttackEntity(dealer, this);
+        InsertIntoGoals(attackScript);
+        attackGoalSet.Add(dealer, attackScript);
     }
 }

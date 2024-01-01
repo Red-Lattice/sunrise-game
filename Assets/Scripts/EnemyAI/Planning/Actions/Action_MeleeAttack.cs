@@ -10,6 +10,7 @@ public class Action_MeleeAttack : I_Action
     private EnemyBrain executor;
     private bool running;
     private Transform enemyTransform;
+    private string currentStep;
     
     public Action_MeleeAttack(EnemyBrain executor, GameObject target)
     {
@@ -35,7 +36,9 @@ public class Action_MeleeAttack : I_Action
 
     public void HaltAction()
     {
-        throw new System.NotImplementedException();
+        executor.StopMove(this);
+        executor.StopAttack(this);
+        running = false;
     }
 
     public bool IsExecuted()
@@ -54,10 +57,14 @@ public class Action_MeleeAttack : I_Action
         {
             if ((executor.target.transform.position - executor.transform.position).magnitude > 1f)
             {
+                if (currentStep == "Moving") {return;}
+                currentStep = "Moving";
                 executor.MoveToTarget(this);
             }
             else
             {
+                if (currentStep == "Attacking") {return;}
+                currentStep = "Attacking";
                 executor.MeleeAttack(this);
             }
         }

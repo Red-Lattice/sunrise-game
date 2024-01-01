@@ -9,11 +9,11 @@ public class StatManager : MonoBehaviour
     [SerializeField] private float maxShield;
     [SerializeField] private DeadEntitiesScriptableObject deso;
     [SerializeField] private Animator OptUIFlash;
-    
     private ShieldAnimator shieldAnimator;
     private DeathManager deathManager;
     private float health;
     private float shield;
+    private EnemyBrain optionalBrain;
 
 
     // Start is called before the first frame update
@@ -24,9 +24,10 @@ public class StatManager : MonoBehaviour
         shieldAnimator = transform.GetComponentInChildren<ShieldAnimator>(false);
         string name = transform.gameObject.name;
         deathManager = new DeathManager(name, deso, this.transform.gameObject);
+        optionalBrain = GetComponent<EnemyBrain>();
     }
 
-    public void dealDamage(float damage, string damageType)
+    public void dealDamage(float damage, string damageType, GameObject dealer)
     {
         if (shield > 0)
         {
@@ -51,6 +52,10 @@ public class StatManager : MonoBehaviour
             {
                 OptUIFlash.Play("UIHurtFlash");
             }
+        }
+        if (optionalBrain != null)
+        {
+            optionalBrain.InformOfDamage(dealer);
         }
     }
 

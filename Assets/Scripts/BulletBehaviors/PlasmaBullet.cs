@@ -9,7 +9,7 @@ public class PlasmaBullet : MonoBehaviour
     [SerializeField] private Vector3 bulletDirection;
     [SerializeField] private Rigidbody bulletRB;
     private bool initialized = false;
-    private string shooter;
+    private GameObject shooter;
     // Update is called once per frame
 
     void Start()
@@ -35,18 +35,19 @@ public class PlasmaBullet : MonoBehaviour
         
         // Guards
         if (!initialized) {return;}
-        if (otherGO.transform.root.name == shooter) {return;}
+        if (otherGO == shooter) {return;}
+        if (otherGO.layer == shooter.layer) {return;}
         if (otherGO.tag == "Projectile") {return;}
 
         StatManager otherStatManager;
         if (otherGO.TryGetComponent<StatManager>(out otherStatManager))
         {
-            otherStatManager.dealDamage(30f, "Energy");
+            otherStatManager.dealDamage(30f, "Energy", shooter);
         }
         Destroy(this.gameObject);
     }
 
-    public void initialization(string shooter)
+    public void initialization(GameObject shooter)
     {
         this.shooter = shooter;
         initialized = true;
