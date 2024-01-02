@@ -20,7 +20,8 @@ using Unity.Profiling;
 /// </summary>
 public class EnemyBrain : MonoBehaviour
 {
-    private SafelyLinkedList<I_Action> actionQueue;
+    private I_Action[] actionQueue;
+    private int actionCount;
     private SafelyLinkedList<I_Goal> goalQueue;
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
@@ -45,7 +46,9 @@ public class EnemyBrain : MonoBehaviour
         LLVisualizer = new string[5];
         GoalVisualizer = new string[5];
         goalQueue = new SafelyLinkedList<I_Goal>(new Goal_Idle(this));
-        actionQueue = new SafelyLinkedList<I_Action>(goalQueue.Head.data.GetActions()[0]);
+        actionQueue = new I_Action[10];
+        actionQueue[0] = goalQueue.Head.data.GetActions()[0];
+        actionCount = 1;
 
         pathfinder = transform.gameObject.GetComponent<NavMeshAgent>();
         senses = transform.gameObject.GetComponent<EnemyAwareness>();
@@ -66,7 +69,7 @@ public class EnemyBrain : MonoBehaviour
 
         UpdateGoals();
 
-        debugVisualizer();
+        //debugVisualizer();
     }
 
     void UpdateGoals()
@@ -84,18 +87,12 @@ public class EnemyBrain : MonoBehaviour
 
     private void debugVisualizer()
     {
-        SafelyLinkedList<I_Action>.Node currentNode = actionQueue.Head;
-        int i = 0;
-        while (currentNode != null)
+        int i = 4;
+        while (i > -1)
         {
-            LLVisualizer[i] = currentNode.data.GetType().Name;
-            i++;
-            currentNode = currentNode.nextNode;
-        }
-        while (i < 5)
-        {
-            LLVisualizer[i] = "";
-            i++;
+            if (actionQueue[i] == null) {LLVisualizer[i] = "";}
+            else {LLVisualizer[i] = actionQueue[i].GetType().Name;}
+            i--;
         }
 
         SafelyLinkedList<I_Goal>.Node currentGoalNode = goalQueue.Head;
@@ -128,7 +125,7 @@ public class EnemyBrain : MonoBehaviour
             if (!subgoal.IsCompleted())
             {
                 activeGoal = subgoal;
-                actionQueue.Clear();
+                ClearActions();
                 actionPlan(activeGoal);
                 return;
             }
@@ -145,18 +142,28 @@ public class EnemyBrain : MonoBehaviour
                 if (!subgoal.IsCompleted())
                 {
                     activeGoal = subgoal;
-                    actionQueue.Clear();
+                    ClearActions();
                     actionPlan(activeGoal);
                     return;
                 }
             }
             activeGoal = goalQueue.Head.data;
-            actionQueue.Clear();
+            ClearActions();
             actionPlan(activeGoal);
             return;
         }
         actionPlan(activeGoal);
         s_PreparePerfMarker.End();
+    }
+
+    private void ClearActions()
+    {
+        int i = 1;
+        while (actionQueue[i] != null)
+        {
+            actionQueue[i] = null;
+            actionCount--;
+        }
     }
 
     private void actionPlan(I_Goal goal)
@@ -166,18 +173,20 @@ public class EnemyBrain : MonoBehaviour
         {
             if (!action.IsExecuted() && action.CanExecute() && !actionQueue.Contains(action))
             {
-                actionQueue.Add(action);
+                actionQueue[actionCount] = action;
+                actionCount++;
             }
         }
     }
 
     private void ExecuteActions()
     {
-        if (actionQueue.Head.data != currentlyRunningAction)
+        I_Action item = actionQueue[actionCount - 1];
+        if (item != currentlyRunningAction)
         {
             if (currentlyRunningAction != null) {currentlyRunningAction.HaltAction();}
-            actionQueue.Head.data.ExecuteAction();
-            currentlyRunningAction = actionQueue.Head.data;
+            item.ExecuteAction();
+            currentlyRunningAction = item;
         }
     }
 
@@ -287,7 +296,7 @@ public class EnemyBrain : MonoBehaviour
         {
             goalWithSwap.SwapIndex(Array.IndexOf(goalQueue.Head.data.GetActions(), swappableCaller), newAction);
 
-            actionQueue.Replace(swappableCaller, newAction);
+            actionQueue[Array.IndexOf(actionQueue, swappableCaller)] = newAction;
         }
     }
 
@@ -306,7 +315,8 @@ public class EnemyBrain : MonoBehaviour
                 {
                     caller.MarkCompleteness(true);
                     pathfinder.ResetPath();
-                    actionQueue.Remove();
+                    actionQueue[actionCount - 1] = null;
+                    actionCount--;
                     yield break;
                 }
                 unstuckTimer = 0;
@@ -316,7 +326,8 @@ public class EnemyBrain : MonoBehaviour
         }
         caller.MarkCompleteness(true);
         pathfinder.ResetPath();
-        actionQueue.Remove();
+        actionQueue[actionCount - 1] = null;
+        actionCount--;
     }
 
     /// Assumptions: This will only get called if there is a target
@@ -330,7 +341,8 @@ public class EnemyBrain : MonoBehaviour
         }
         caller.MarkCompleteness(true);
         pathfinder.ResetPath();
-        actionQueue.Remove();
+        actionQueue[actionCount - 1] = null;
+        actionCount--;
     }
 
     private IEnumerator moveToTarget(I_Action caller) 
@@ -343,7 +355,8 @@ public class EnemyBrain : MonoBehaviour
         }
         caller.MarkCompleteness(true);
         pathfinder.ResetPath();
-        actionQueue.Remove();
+        actionQueue[actionCount - 1] = null;
+        actionCount--;
     }
 
     private Coroutine attackCoroutine;
@@ -386,7 +399,8 @@ public class EnemyBrain : MonoBehaviour
             }
         }
         caller.MarkCompleteness(true);
-        actionQueue.Remove();
+        actionQueue[actionCount - 1] = null;
+        actionCount--;
     }
 
     private IEnumerator meleeAttack(I_Action caller) 
@@ -413,7 +427,8 @@ public class EnemyBrain : MonoBehaviour
             yield return null;
         }
         caller.MarkCompleteness(true);
-        actionQueue.Remove();
+        actionQueue[actionCount - 1] = null;
+        actionCount--;
     }
 
     private void RotationHelper()
