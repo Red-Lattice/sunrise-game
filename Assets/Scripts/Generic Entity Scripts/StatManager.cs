@@ -55,7 +55,7 @@ public class StatManager : MonoBehaviour
         }
         if (optionalBrain != null)
         {
-            optionalBrain.InformOfDamage(dealer);
+            optionalBrain.InformOfDamage(dealer, (damageType == "Physical") ? damage * 5 : damage);
         }
     }
 

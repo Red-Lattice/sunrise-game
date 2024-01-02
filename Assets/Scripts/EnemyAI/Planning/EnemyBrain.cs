@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using Unity.Profiling;
 //using static AiType;
 
 /// <summary>
@@ -33,6 +34,8 @@ public class EnemyBrain : MonoBehaviour
     [SerializeField] private string[] GoalVisualizer;
     [SerializeField] private EnemyWeaponScriptableObject gunGetter;
     private Vector3 targetLKP; //Last Known Position
+
+    static readonly ProfilerMarker s_PreparePerfMarker = new ProfilerMarker("MySystem.Prepare");
 
     //[SerializeField] private AiType behavior;
     //public Enum GetAiType() {return behavior;}
@@ -116,6 +119,7 @@ public class EnemyBrain : MonoBehaviour
     /// </summary>
     private void Plan()
     {
+        s_PreparePerfMarker.Begin();
         // Once a new goal is created, the previous goal's action queue is destroyed
         I_Goal[] headSubGoals = goalQueue.Head.data.GetSubgoals();
 
@@ -152,6 +156,7 @@ public class EnemyBrain : MonoBehaviour
             return;
         }
         actionPlan(activeGoal);
+        s_PreparePerfMarker.End();
     }
 
     private void actionPlan(I_Goal goal)
@@ -216,6 +221,11 @@ public class EnemyBrain : MonoBehaviour
     public void Move(Vector3 location, I_Action caller)
     {
         moveToCoroutine = StartCoroutine(moveTo(location, caller));
+    }
+
+    public void Strafe(Vector3 location, I_Action caller)
+    {
+        moveToCoroutine = StartCoroutine(strafeTo(location, caller));
     }
 
     public void StopMove(I_Action caller)
@@ -309,10 +319,24 @@ public class EnemyBrain : MonoBehaviour
         actionQueue.Remove();
     }
 
+    /// Assumptions: This will only get called if there is a target
+    private IEnumerator strafeTo(Vector3 location, I_Action caller) 
+    {
+        pathfinder.SetDestination(location);
+        while ((location - transform.position).magnitude > 0.1f)
+        {
+            RotationHelper();
+            yield return null;
+        }
+        caller.MarkCompleteness(true);
+        pathfinder.ResetPath();
+        actionQueue.Remove();
+    }
+
     private IEnumerator moveToTarget(I_Action caller) 
     {
         pathfinder.SetDestination(targetLKP);
-        while ((targetLKP - transform.position).magnitude > 1f)
+        while ((targetLKP - transform.position).magnitude > 1.5f)
         {
             pathfinder.SetDestination(targetLKP);
             yield return null;
@@ -348,7 +372,6 @@ public class EnemyBrain : MonoBehaviour
             {
                 RotationHelper();
                 weapon.triggerWeapon();
-                pathfinder.ResetPath();
                 yield return null;
             }
             else
@@ -378,7 +401,7 @@ public class EnemyBrain : MonoBehaviour
                 if (Physics.Raycast(headTransform.position, headTransform.forward, out hit, 3f))
                 {
                     StatManager statManager; 
-                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
+                    if (hit.transform.TryGetComponent(out statManager))
                     {
                         statManager.dealDamage(30f, "Physical", this.gameObject);
                     }
@@ -419,12 +442,15 @@ public class EnemyBrain : MonoBehaviour
         if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
     }
 
-    public void InformOfDamage(GameObject dealer)
+    public void InformOfDamage(GameObject dealer, float damage)
     {
         if (dealer == null) {return;} // Grenades trigger this.
         if (dealer.layer == LayerMask.NameToLayer("Enemy")) {return;}
         if (attackGoalSet.ContainsKey(dealer))
         {
+            Goal_AttackEntity atGoal;
+            attackGoalSet.TryGetValue(dealer, out atGoal);
+            atGoal.UpdateDamage(damage);
             return;
         }
         Goal_AttackEntity attackScript = new Goal_AttackEntity(dealer, this);

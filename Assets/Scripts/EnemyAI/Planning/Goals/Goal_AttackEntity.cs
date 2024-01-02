@@ -6,6 +6,7 @@ public class Goal_AttackEntity : I_Goal
 {
     public GameObject target {get; private set;}
     private float damageDoneByTarget;
+    private float oldDamageDoneByTarget; // This exists to check *when* an enemy recieves damage
     private bool completed;
     private I_Goal[] subgoals;
     private I_Action[] actions;
@@ -84,6 +85,11 @@ public class Goal_AttackEntity : I_Goal
         running = false;
     }
 
+    public void UpdateDamage(float damage)
+    {
+        damageDoneByTarget += damage;
+    }
+
     /// <summary>
     /// This is a special method for attacking.
     /// It does checks to see if it should swap its attacking actions with
@@ -96,6 +102,7 @@ public class Goal_AttackEntity : I_Goal
         {
             actions[0].HaltAction();
             actions[0] = new Action_MeleeAttack(executor, target);
+
             return;
         }
 
@@ -106,5 +113,20 @@ public class Goal_AttackEntity : I_Goal
             actions[0] = new Action_Attack(executor, target);
             return;
         }
+
+        if (damageDoneByTarget - oldDamageDoneByTarget > 10f)
+        {
+            if (Random.Range(0, 100) < 50)
+            {
+                /*Vector3 execPos = executor.transform.position;
+                Vector3 randomVec = new Vector3(execPos.x + Random.Range(1f, 3f), 0,
+                    execPos.z + Random.Range(1f, 3f));*/
+                Vector3 temp = (executor.transform.position - target.transform.position);
+                Vector3 normed = (new Vector3(-temp.z, 0, temp.x)).normalized;
+                
+                executor.Strafe(normed * Random.Range(-3f, 3f) + executor.transform.position, actions[0]);
+            }
+        }
+        oldDamageDoneByTarget = damageDoneByTarget;
     }
 }

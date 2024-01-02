@@ -55,15 +55,15 @@ public class Action_MeleeAttack : I_Action
     {
         if (executor.target != null) // We've got more work to do
         {
-            if ((executor.target.transform.position - executor.transform.position).magnitude > 1f)
+            if ((executor.target.transform.position - executor.transform.position).magnitude > 1.5f)
             {
-                if (currentStep == "Moving") {return;}
+                if (currentStep == "Moving") {HaltAction(); return;}
                 currentStep = "Moving";
                 executor.MoveToTarget(this);
             }
             else
             {
-                if (currentStep == "Attacking") {return;}
+                if (currentStep == "Attacking") {HaltAction(); return;}
                 currentStep = "Attacking";
                 executor.MeleeAttack(this);
             }
