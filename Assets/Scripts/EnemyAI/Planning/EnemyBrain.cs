@@ -21,7 +21,7 @@ using Unity.Profiling;
 public class EnemyBrain : MonoBehaviour
 {
     private I_Action[] actionQueue;
-    private int actionCount;
+    [SerializeField] private int actionCount;
     private SafelyLinkedList<I_Goal> goalQueue;
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
@@ -69,7 +69,7 @@ public class EnemyBrain : MonoBehaviour
 
         UpdateGoals();
 
-        //debugVisualizer();
+        debugVisualizer();
     }
 
     void UpdateGoals()
@@ -87,12 +87,12 @@ public class EnemyBrain : MonoBehaviour
 
     private void debugVisualizer()
     {
-        int i = 4;
-        while (i > -1)
+        int i = 0;
+        while (i < 5)
         {
             if (actionQueue[i] == null) {LLVisualizer[i] = "";}
             else {LLVisualizer[i] = actionQueue[i].GetType().Name;}
-            i--;
+            i++;
         }
 
         SafelyLinkedList<I_Goal>.Node currentGoalNode = goalQueue.Head;
@@ -341,8 +341,6 @@ public class EnemyBrain : MonoBehaviour
         }
         caller.MarkCompleteness(true);
         pathfinder.ResetPath();
-        actionQueue[actionCount - 1] = null;
-        actionCount--;
     }
 
     private IEnumerator moveToTarget(I_Action caller) 

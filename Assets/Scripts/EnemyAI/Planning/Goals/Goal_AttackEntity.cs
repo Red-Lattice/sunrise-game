@@ -121,11 +121,17 @@ public class Goal_AttackEntity : I_Goal
                 /*Vector3 execPos = executor.transform.position;
                 Vector3 randomVec = new Vector3(execPos.x + Random.Range(1f, 3f), 0,
                     execPos.z + Random.Range(1f, 3f));*/
-                Vector3 temp = (executor.transform.position - target.transform.position);
+                Vector3 temp = executor.transform.position - target.transform.position;
                 Vector3 normed = (new Vector3(-temp.z, 0, temp.x)).normalized;
                 
                 executor.Strafe(normed * Random.Range(-3f, 3f) + executor.transform.position, actions[0]);
             }
+        }
+
+        if (Vector3.Distance(executor.target.transform.position, executor.transform.position) < 5f)
+        {
+            Vector3 temp = executor.transform.position - target.transform.position;
+            executor.Strafe(temp * 0.5f + executor.transform.position, actions[0]);
         }
         oldDamageDoneByTarget = damageDoneByTarget;
     }
