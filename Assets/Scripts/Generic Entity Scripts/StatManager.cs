@@ -61,7 +61,7 @@ public class StatManager : MonoBehaviour
 
     void damageShield(float damage, string damageType)
     {
-        shield -= (damageType == "Plasma") ? damage * 3 : damage;
+        shield -= (damageType == "Energy") ? damage * 2 : damage;
 
         if (shieldAnimator == null) {return;}
 

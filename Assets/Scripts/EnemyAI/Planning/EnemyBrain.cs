@@ -21,7 +21,7 @@ using Unity.Profiling;
 public class EnemyBrain : MonoBehaviour
 {
     private I_Action[] actionQueue;
-    [SerializeField] private int actionCount;
+    [SerializeField] private byte actionCount;
     private SafelyLinkedList<I_Goal> goalQueue;
     private NavMeshAgent pathfinder;
     private EnemyAwareness senses;
@@ -377,12 +377,23 @@ public class EnemyBrain : MonoBehaviour
 
     private IEnumerator attack(I_Action caller) 
     {
+        float attackCooldown = 0f;
+        byte counter = 0;
         while (target != null)
         {
+            attackCooldown -= Time.deltaTime;
             if (senses.potentialTargets.Contains(target))
             {
                 RotationHelper();
-                weapon.triggerWeapon();
+                if (attackCooldown <= 0f && weapon.triggerWeapon())
+                {
+                    counter++;
+                }
+                if (counter >= 4)
+                {
+                    attackCooldown = 1f;
+                    counter = 0;
+                }
                 yield return null;
             }
             else
