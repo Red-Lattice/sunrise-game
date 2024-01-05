@@ -50,6 +50,7 @@ MonoBehaviour:
   gunTip: {fileID: 6400752512400585881}
   playerCamera: {fileID: 7798008653611156032}
   player: {fileID: 7798008654792206726}
+  playerMovement: {fileID: 0}
 --- !u!120 &3415242252478164594
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -1141,7 +1142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileGetter: {fileID: 11400000, guid: 1bc3457b814077c41851fb33765c740b, type: 2}
   gunGetter: {fileID: 11400000, guid: ffd9ae523d187aa48b24188700db6505, type: 2}
-  grenadeGetter: {fileID: 0}
+  grenadeGetter: {fileID: 11400000, guid: e373538ed532aaa4182510823a80da93, type: 2}
   weaponObject: {fileID: 7798008654595020977}
   camControl: {fileID: 7798008653611156035}
   uiCam: {fileID: 7798008653543340225}

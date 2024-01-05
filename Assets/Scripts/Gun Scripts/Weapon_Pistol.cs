@@ -6,9 +6,11 @@ public class Weapon_Pistol : Weapon
 {
     [SerializeField] private Camera cam;
     [SerializeField] private LayerMask shootableLayers;
+    private float cooldown;
     
     void Start()
     {
+        cooldown = 0f;
         cam = this.transform.parent.GetComponentInChildren<Camera>();
         shootableLayers = LayerMask.GetMask("Default", "whatIsWall", "whatIsGround", "Enemy");
         weaponName = "Pistol";
@@ -16,6 +18,8 @@ public class Weapon_Pistol : Weapon
 
     public override bool triggerWeapon()
     {
+        if (cooldown > 0f) {return false;}
+        cooldown = 0.15f;
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, shootableLayers))
         {
@@ -26,6 +30,14 @@ public class Weapon_Pistol : Weapon
             }
         }
         return true;
+    }
+
+    void Update()
+    {
+        if (cooldown >= 0f)
+        {
+            cooldown -= Time.deltaTime;
+        }
     }
 
     public override bool punch()

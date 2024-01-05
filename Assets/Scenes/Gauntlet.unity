@@ -35279,6 +35279,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7025812606411218885, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
+      propertyPath: grappleSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 7798008653611156035, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
       propertyPath: interpValue
       value: 0.1
@@ -35335,10 +35339,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerObjects
       objectReference: {fileID: 0}
-    - target: {fileID: 7798008654792206721, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
-      propertyPath: grenadeGetter
-      value: 
-      objectReference: {fileID: 11400000, guid: e373538ed532aaa4182510823a80da93, type: 2}
     - target: {fileID: 7798008654792206724, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
       propertyPath: m_AngularDrag
       value: 0

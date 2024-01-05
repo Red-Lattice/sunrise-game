@@ -102,13 +102,13 @@ public class LepPlayerMovement : MonoBehaviour
 
         dir = Direction();
 
-        crouched = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C));
-        jump = (Input.GetKeyDown(KeyCode.Space)) ? true : jump;
+        crouched = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
+        jump = Input.GetKeyDown(KeyCode.Space) ? true : jump;
     }
 
     void FixedUpdate()
     {
-        crouched = (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C));
+        crouched = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
 
         bannedGroundNormal = (wallStickTimer == 0f && wallBan > 0f) 
             ? groundNormal : Vector3.zero;
@@ -549,4 +549,13 @@ public class LepPlayerMovement : MonoBehaviour
         return Math.Abs(rb.velocity.x + rb.velocity.z);
     }
     #endregion
+
+    public void GrapplingStart()
+    {
+        canDJump = true;
+        if (mode == Wallruning)
+        {
+            EnterFlying();
+        }
+    }
 }

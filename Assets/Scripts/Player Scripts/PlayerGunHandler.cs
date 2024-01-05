@@ -105,8 +105,11 @@ public class PlayerGunHandler : MonoBehaviour
             if (activeWeaponScript.triggerWeapon())
             {
                 gunAnimator.fire();
-                camControl.Punch(new Vector2(0f, 1f));
-                recoilMovement += 1f;
+                if (recoilMovement < 1f)
+                {
+                    camControl.Punch(new Vector2(0f, 1f));
+                    recoilMovement += 1f;
+                }
             }
         }
         updateContinuousAnimations();
