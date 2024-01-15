@@ -13,6 +13,12 @@ public class Weapon : MonoBehaviour
         return false;
     }
 
+    public static bool StaticTriggerWeapon()
+    {
+        Debug.LogError("Default static weapon fire method triggered (This should not happen)");
+        return false;
+    }
+
     public virtual bool triggerWeapon(Transform firerTransform)
     {
         return false;

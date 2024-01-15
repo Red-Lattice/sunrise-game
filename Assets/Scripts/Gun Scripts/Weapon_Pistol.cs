@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Weapon_Pistol : Weapon
@@ -15,7 +16,7 @@ public class Weapon_Pistol : Weapon
         shootableLayers = LayerMask.GetMask("Default", "whatIsWall", "whatIsGround", "Enemy");
         weaponName = "Pistol";
     }
-
+    
     public override bool triggerWeapon()
     {
         if (cooldown > 0f) {return false;}
@@ -23,10 +24,10 @@ public class Weapon_Pistol : Weapon
         RaycastHit hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 100f, shootableLayers))
         {
-            StatManager statManager; 
-            if (hit.transform.TryGetComponent<StatManager>(out statManager))
+            IDamageable damageableComponent; 
+            if (hit.transform.TryGetComponent(out damageableComponent))
             {
-                statManager.dealDamage(30f, "Physical", cam.transform.parent.gameObject);
+                damageableComponent.DealDamage(30f, "Kinetic_Small", cam.transform.parent.gameObject);
             }
         }
         return true;

@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using static DamageType;
 
-public class StatManager : MonoBehaviour
+public class StatManager : MonoBehaviour, IDamageable
 {
     [SerializeField] private float maxHealth;
     [SerializeField] private float maxShield;
@@ -27,8 +28,9 @@ public class StatManager : MonoBehaviour
         optionalBrain = GetComponent<EnemyBrain>();
     }
 
-    public void dealDamage(float damage, string damageType, GameObject dealer)
+    public void DealDamage(float damage, string bulletType, GameObject dealer)
     {
+        DamageType damageType = Damage.bulletToDamageType(bulletType);
         if (shield > 0)
         {
             damageShield(damage, damageType);
@@ -39,7 +41,7 @@ public class StatManager : MonoBehaviour
         }
         else
         {
-            health -= (damageType == "Physical") ? damage * 5 : damage;
+            health -= (damageType == Kinetic) ? damage * 5 : damage;
             if (OptUIFlash != null)
             {
                 OptUIFlash.Play("UIHurtFlash");
@@ -55,13 +57,13 @@ public class StatManager : MonoBehaviour
         }
         if (optionalBrain != null)
         {
-            optionalBrain.InformOfDamage(dealer, (damageType == "Physical") ? damage * 5 : damage);
+            optionalBrain.InformOfDamage(dealer, (damageType == Kinetic) ? damage * 5 : damage);
         }
     }
 
-    void damageShield(float damage, string damageType)
+    void damageShield(float damage, DamageType damageType)
     {
-        shield -= (damageType == "Energy") ? damage * 2 : damage;
+        shield -= (damageType == Energy) ? damage * 2 : damage;
 
         if (shieldAnimator == null) {return;}
 

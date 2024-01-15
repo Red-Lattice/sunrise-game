@@ -30,7 +30,7 @@ public class DefaultGrenade : MonoBehaviour, Interface_Grenade
                 }
             }
             StatManager entityStats;
-            if (hitCol.TryGetComponent<StatManager>(out entityStats))
+            if (hitCol.TryGetComponent(out entityStats))
             {
                 if (dir.magnitude == 0f)
                 {
@@ -38,7 +38,7 @@ public class DefaultGrenade : MonoBehaviour, Interface_Grenade
                 }
                 else
                 {
-                    entityStats.dealDamage((100 / dir.magnitude) + 30, "Physical", null);
+                    entityStats.DealDamage((100 / dir.magnitude) + 30, "Grenade", null);
                 }
             }
         }

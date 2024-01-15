@@ -426,7 +426,7 @@ public class EnemyBrain : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent(out statManager))
                     {
-                        statManager.dealDamage(30f, "Physical", this.gameObject);
+                        statManager.DealDamage(30f, "Physical", this.gameObject);
                     }
                 }
                 cooldownTimer = meleeCooldown;

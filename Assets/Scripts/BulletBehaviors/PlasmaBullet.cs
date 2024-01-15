@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlasmaBullet : MonoBehaviour
+public class PlasmaBullet : MonoBehaviour, ICapturable
 {
     private const float bulletSpeed = 50f;
     private float bulletLifeTime = 3f;
@@ -10,15 +10,19 @@ public class PlasmaBullet : MonoBehaviour
     [SerializeField] private Rigidbody bulletRB;
     private bool initialized = false;
     private GameObject shooter;
+    private bool captured;
     // Update is called once per frame
 
     void Start()
     {
         bulletDirection = gameObject.transform.forward;
+        captured = false;
     }
     void Update()
     {
-        transform.position += (bulletDirection * Time.deltaTime * bulletSpeed);
+        if (captured) {return;}
+
+        transform.position += bulletDirection * Time.deltaTime * bulletSpeed;
 
         bulletLifeTime -= Time.deltaTime;
         if (bulletLifeTime < 0f)
@@ -37,10 +41,10 @@ public class PlasmaBullet : MonoBehaviour
         if (otherGO.layer == shooter.layer) {return;}
         if (otherGO.tag == "Projectile") {return;}
 
-        StatManager otherStatManager;
-        if (otherGO.TryGetComponent<StatManager>(out otherStatManager))
+        IDamageable damageableComponent;
+        if (otherGO.TryGetComponent(out damageableComponent))
         {
-            otherStatManager.dealDamage(30f, "Energy", shooter);
+            damageableComponent.DealDamage(30f, "Plasma_Pistol_Round", shooter);
         }
         Destroy(this.gameObject);
     }
@@ -49,5 +53,11 @@ public class PlasmaBullet : MonoBehaviour
     {
         this.shooter = shooter;
         initialized = true;
+    }
+
+    public void Release(GameObject shooter)
+    {
+        this.shooter = shooter;
+        captured = false;
     }
 }
