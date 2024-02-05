@@ -90,6 +90,7 @@ public class LepPlayerMovement : MonoBehaviour
     #region Update
     void Update()
     {
+        if (rb.drag > 0.2f) {rb.drag = 0f;}
         if (slideTimer > 0f)
         {
             slideTimer = (!crouched) ? slideTimer - Time.deltaTime : slideTimer;
@@ -98,9 +99,10 @@ public class LepPlayerMovement : MonoBehaviour
         {
             slideBoostApplied = false;
         }
-        rb.useGravity = !(mode == Mode.Walking || mode == Mode.Sliding);
+        rb.useGravity = mode != Mode.Walking && mode != Mode.Sliding;
 
         dir = Direction();
+        if (dir.magnitude < 0.1f && getPlayerSpeed() < 0.5f) {rb.drag = 11f;}
 
         crouched = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
         jump = Input.GetKeyDown(KeyCode.Space) ? true : jump;
@@ -149,7 +151,7 @@ public class LepPlayerMovement : MonoBehaviour
         }
         else
         {
-            col.height = Mathf.Min(1.8f, col.height + Time.deltaTime * 5f);
+            col.height = Mathf.Min(1.5f, col.height + Time.deltaTime * 5f);
             groundSpeed = playerSpeed;
         }
 
@@ -546,7 +548,7 @@ public class LepPlayerMovement : MonoBehaviour
 
     public float getPlayerSpeed()
     {
-        return Math.Abs(rb.velocity.x + rb.velocity.z);
+        return Math.Abs(rb.velocity.magnitude);
     }
     #endregion
 

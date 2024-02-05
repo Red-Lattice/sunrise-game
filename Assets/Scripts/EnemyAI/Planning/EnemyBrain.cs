@@ -229,11 +229,13 @@ public class EnemyBrain : MonoBehaviour
 
     public void Move(Vector3 location, I_Action caller)
     {
+        if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
         moveToCoroutine = StartCoroutine(moveTo(location, caller));
     }
 
     public void Strafe(Vector3 location, I_Action caller)
     {
+        if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
         moveToCoroutine = StartCoroutine(strafeTo(location, caller));
     }
 
@@ -244,6 +246,7 @@ public class EnemyBrain : MonoBehaviour
 
     public void MoveToTarget(I_Action caller)
     {
+        if (moveToCoroutine != null) {StopCoroutine(moveToCoroutine);}
         moveToCoroutine = StartCoroutine(moveToTarget(caller));
     }
 
