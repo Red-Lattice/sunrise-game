@@ -10,7 +10,7 @@ public class PlayerBoundingBox : MonoBehaviour
     void Start()
     {
         highlightedWeapon = "";
-        pgh = GetComponent<PlayerGunHandler>();
+        pgh = transform.parent.gameObject.GetComponent<PlayerGunHandler>();
     }
 
     void OnTriggerEnter(Collider other)

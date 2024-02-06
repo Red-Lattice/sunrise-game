@@ -15,6 +15,7 @@ public class WarpWall : MonoBehaviour, IDamageable
         wallMesh = GetComponent<MeshRenderer>();
         wallCollider.enabled = false;
         wallMesh.enabled = false;
+        arr = new List<string>();
     }
 
     void Update()

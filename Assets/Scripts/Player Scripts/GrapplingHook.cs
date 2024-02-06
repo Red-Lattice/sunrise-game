@@ -12,6 +12,7 @@ public class GrapplingHook : MonoBehaviour
     private bool grappling;
     private const float grappleSpeed = 15f;
     [SerializeField] private LepPlayerMovement playerMovement;
+    [SerializeField] private LayerMask lm;
 
     void Awake() {
         lr = GetComponent<LineRenderer>();
@@ -38,7 +39,7 @@ public class GrapplingHook : MonoBehaviour
 
     void StartGrapple() {
         RaycastHit hit;
-        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, maxDistance)) {
+        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, maxDistance, lm)) {
             playerMovement.GrapplingStart();
             grappling = true;
             grapplePoint = hit.point;

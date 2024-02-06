@@ -43,7 +43,7 @@ public class Goal_AttackEntity : I_Goal
 
     public bool IsCompleted()
     {
-        return completed;
+        return (target == null || target.active == false);
     }
 
     public bool SubGoalsCompleted()

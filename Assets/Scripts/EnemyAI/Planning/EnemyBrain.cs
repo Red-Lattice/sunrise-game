@@ -74,14 +74,19 @@ public class EnemyBrain : MonoBehaviour
 
     void UpdateGoals()
     {
-        if (activeGoal != null && activeGoal.GetType().Name == "Goal_Idle")
+        if (activeGoal == null) {return;}
+        if (activeGoal.GetType().Name == "Goal_Idle")
         {
             ((Goal_Idle)goalQueue.Head.data).UpdateGoal();
             return;
         }
-        if (activeGoal != null && activeGoal.GetType().Name == "Goal_AttackEntity")
+        if (activeGoal.GetType().Name == "Goal_AttackEntity")
         {
             ((Goal_AttackEntity)goalQueue.Head.data).UpdateGoal();
+        }
+        if (activeGoal.IsCompleted())
+        {
+            goalQueue.Remove();
         }
     }
 
