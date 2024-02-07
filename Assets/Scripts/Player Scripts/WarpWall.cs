@@ -2,18 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WarpWall : MonoBehaviour, IDamageable
+public class WarpWall : MonoBehaviour
 {
-    private bool capturing = false;
-    private BoxCollider wallCollider;
+    public bool capturing = false;
     private MeshRenderer wallMesh;
     private List<string> arr;
 
     void Awake()
     {
-        wallCollider = GetComponent<BoxCollider>();
         wallMesh = GetComponent<MeshRenderer>();
-        wallCollider.enabled = false;
         wallMesh.enabled = false;
         arr = new List<string>();
     }
@@ -24,20 +21,20 @@ public class WarpWall : MonoBehaviour, IDamageable
 
         if (Input.GetMouseButtonDown(1))
         {
-            wallCollider.enabled = true;
             wallMesh.enabled = true;
+            capturing = true;
             return;
         }
         if (Input.GetMouseButtonUp(1))
         {
-            wallCollider.enabled = false;
             wallMesh.enabled = false;
+            capturing = false;
         }
     }
 
-    public void DealDamage(float damage, string bulletType, GameObject dealer)
+    public void AddBullet()
     {
-        arr.Add(bulletType);
+
     }
 
     private void Release()

@@ -38,7 +38,7 @@ public class DefaultGrenade : MonoBehaviour, Interface_Grenade
                 }
                 else
                 {
-                    entityStats.DealDamage((100 / dir.magnitude) + 30, "Grenade", null);
+                    entityStats.DealDamage((100 / dir.magnitude) + 30, "Grenade", null, transform.position);
                 }
             }
         }

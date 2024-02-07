@@ -44,29 +44,9 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
         IDamageable damageableComponent;
         if (otherGO.TryGetComponent(out damageableComponent))
         {
-            damageableComponent.DealDamage(30f, "Plasma_Pistol_Round", shooter);
+            damageableComponent.DealDamage(30f, "Plasma_Pistol_Round", shooter, transform.position);
         }
         Destroy(this.gameObject);
-    }
-
-    public void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("Triggered");
-        GameObject otherGO = other.gameObject;
-        
-        // Guards
-        if (!initialized) {return;}
-        if (otherGO == shooter) {return;}
-        if (otherGO.layer == shooter.layer) {return;}
-        if (otherGO.tag == "Projectile") {return;}
-
-        IDamageable damageableComponent;
-        if (otherGO.TryGetComponent(out damageableComponent))
-        {
-            damageableComponent.DealDamage(30f, "Plasma_Pistol_Round", shooter);
-            Debug.Log("Destroyed");
-            Destroy(this.gameObject);
-        }
     }
 
     public void initialization(GameObject shooter)

@@ -27,7 +27,7 @@ public class Weapon_Pistol : Weapon
             IDamageable damageableComponent; 
             if (hit.transform.TryGetComponent(out damageableComponent))
             {
-                damageableComponent.DealDamage(30f, "Kinetic_Small", cam.transform.parent.gameObject);
+                damageableComponent.DealDamage(30f, "Kinetic_Small", cam.transform.parent.gameObject, hit.transform.position);
             }
         }
         return true;

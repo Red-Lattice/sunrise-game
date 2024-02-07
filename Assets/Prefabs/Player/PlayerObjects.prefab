@@ -51,6 +51,9 @@ MonoBehaviour:
   playerCamera: {fileID: 7798008653611156032}
   player: {fileID: 7798008654792206726}
   playerMovement: {fileID: 0}
+  lm:
+    serializedVersion: 2
+    m_Bits: 3831
 --- !u!120 &3415242252478164594
 LineRenderer:
   m_ObjectHideFlags: 0

@@ -67,7 +67,7 @@ public class PlayerGunHandler : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent<StatManager>(out statManager))
                     {
-                        statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject);
+                        statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
                     }
                 }
                 return;
@@ -82,7 +82,7 @@ public class PlayerGunHandler : MonoBehaviour
                     StatManager statManager; 
                     if (hit.transform.TryGetComponent<StatManager>(out statManager))
                     {
-                        statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject);
+                        statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
                     }
                 }
             }
