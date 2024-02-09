@@ -21,6 +21,7 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
     void Update()
     {
         if (captured) {return;}
+        if (!initialized) {return;}
 
         transform.position += bulletDirection * Time.deltaTime * bulletSpeed;
 
@@ -34,7 +35,7 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
     public void OnCollisionEnter(Collision other)
     {
         GameObject otherGO = other.gameObject;
-        
+        Debug.Log(other.gameObject);
         // Guards
         if (!initialized) {return;}
         if (otherGO == shooter) {return;}

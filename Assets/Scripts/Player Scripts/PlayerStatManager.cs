@@ -11,6 +11,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     [SerializeField] private DeadEntitiesScriptableObject deso;
     [SerializeField] private Animator OptUIFlash;
     [SerializeField] private WarpWall wall;
+    [SerializeField] private Transform camTransform;
     private DeathManager deathManager;
     private float health;
     private float shield;
@@ -28,8 +29,8 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos)
     {
         DamageType damageType = Damage.bulletToDamageType(bulletType);
-        if (wall.capturing && CaptureCheck(damageType, hitPos)) {
-            wall.AddBullet();
+        if (wall.capturing && CaptureCheck(damageType, transform.position + hitPos)) {
+            wall.AddBullet(bulletType);
             return;
         }
         if (shield > 0)
@@ -61,7 +62,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     private bool CaptureCheck(DamageType damageType, Vector3 position)
     {
         if (damageType == Physical || damageType == Explosion) {return false;}
-        return (Mathf.Abs(Vector3.Angle(position, transform.forward)) < 90f);
+        return (Mathf.Abs(Vector3.Angle(position, camTransform.position + camTransform.forward)) < 90f);
     }
 
     void damageShield(float damage, DamageType damageType)
