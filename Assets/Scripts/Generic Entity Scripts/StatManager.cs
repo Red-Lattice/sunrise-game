@@ -57,7 +57,7 @@ public class StatManager : MonoBehaviour, IDamageable
         }
         if (optionalBrain != null)
         {
-            optionalBrain.InformOfDamage(dealer, (damageType == Kinetic) ? damage * 5 : damage);
+            optionalBrain.InformOfDamage(dealer, (damageType == Kinetic) ? damage * 5 : damage, damageType);
         }
     }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WarpWall : MonoBehaviour
+public class WarpWall : MonoBehaviour, IDamageable
 {
     public bool capturing = false;
     private MeshRenderer wallMesh;
@@ -34,6 +34,11 @@ public class WarpWall : MonoBehaviour
         }
     }
 
+    public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos) 
+    {
+        AddBullet(bulletType);
+    }
+
     public void AddBullet(string bulletName)
     {
         arr.Add(bulletName);
@@ -55,7 +60,7 @@ public class WarpWall : MonoBehaviour
             case "Plasma_Pistol_Round":
                 float angle = Random.Range(-180f, 180f);
                 float distance = Random.Range(0f, 1.25f);
-                var location = (Quaternion.Euler(0, angle, 0) * firer.forward * distance);
+                var location = (Quaternion.Euler(0, angle, 0) * firer.right * distance);
                 Instantiate(pso.plasmaBall, firer.position + location, firer.parent.rotation).GetComponent<PlasmaBullet>().initialization(firer.parent.parent.gameObject);
                 return;
             default:

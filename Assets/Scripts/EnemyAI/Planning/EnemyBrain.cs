@@ -35,6 +35,8 @@ public class EnemyBrain : MonoBehaviour
     [SerializeField] private string[] GoalVisualizer;
     [SerializeField] private EnemyWeaponScriptableObject gunGetter;
     private Vector3 targetLKP; //Last Known Position
+    private bool staggered;
+    private float staggerTimer = 0f;
 
     static readonly ProfilerMarker s_PreparePerfMarker = new ProfilerMarker("MySystem.Prepare");
 
@@ -43,6 +45,7 @@ public class EnemyBrain : MonoBehaviour
 
     void Awake()
     {
+        staggered = false;
         LLVisualizer = new string[5];
         GoalVisualizer = new string[5];
         goalQueue = new SafelyLinkedList<I_Goal>(new Goal_Idle(this));
@@ -59,6 +62,9 @@ public class EnemyBrain : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (staggered) {staggerTimer -= Time.fixedDeltaTime;}
+        if (staggerTimer < 0f) {staggered = false;}
+
         senses.Tick();
 
         ProcessSenses();
@@ -93,8 +99,7 @@ public class EnemyBrain : MonoBehaviour
     private void debugVisualizer()
     {
         int i = 0;
-        while (i < 5)
-        {
+        while (i < 5) {
             if (actionQueue[i] == null) {LLVisualizer[i] = "";}
             else {LLVisualizer[i] = actionQueue[i].GetType().Name;}
             i++;
@@ -102,14 +107,12 @@ public class EnemyBrain : MonoBehaviour
 
         SafelyLinkedList<I_Goal>.Node currentGoalNode = goalQueue.Head;
         int j = 0;
-        while (currentGoalNode != null)
-        {
+        while (currentGoalNode != null) {
             GoalVisualizer[j] = currentGoalNode.data.GetType().Name;
             j++;
             currentGoalNode = currentGoalNode.nextNode;
         }
-        while (j < 5)
-        {
+        while (j < 5) {
             GoalVisualizer[j] = "";
             j++;
         }
@@ -341,10 +344,11 @@ public class EnemyBrain : MonoBehaviour
     /// Assumptions: This will only get called if there is a target
     private IEnumerator strafeTo(Vector3 location, I_Action caller) 
     {
+        if (staggered) {yield return null;}
         pathfinder.SetDestination(location);
         while ((location - transform.position).magnitude > 0.1f)
         {
-            RotationHelper();
+            if (!staggered) {RotationHelper();}
             yield return null;
         }
         caller.MarkCompleteness(true);
@@ -356,7 +360,8 @@ public class EnemyBrain : MonoBehaviour
         pathfinder.SetDestination(targetLKP);
         while ((targetLKP - transform.position).magnitude > 1.5f)
         {
-            pathfinder.SetDestination(targetLKP);
+            if (!staggered) {pathfinder.SetDestination(targetLKP);}
+            else {pathfinder.ResetPath();}
             yield return null;
         }
         caller.MarkCompleteness(true);
@@ -389,31 +394,33 @@ public class EnemyBrain : MonoBehaviour
         byte counter = 0;
         while (target != null)
         {
-            attackCooldown -= Time.deltaTime;
-            if (senses.potentialTargets.Contains(target))
-            {
-                RotationHelper();
-                if (attackCooldown <= 0f && weapon.triggerWeapon())
+            if (!staggered) {
+                attackCooldown -= Time.deltaTime;
+                if (senses.potentialTargets.Contains(target))
                 {
-                    counter++;
-                }
-                if (counter >= 4)
-                {
-                    attackCooldown = 1f;
-                    counter = 0;
-                }
-                yield return null;
-            }
-            else
-            {
-                if (senses.unobstructedColliders.Contains(target))
-                {
-                    RotationHelperOmnipotent();
+                    RotationHelper();
+                    if (attackCooldown <= 0f && weapon.triggerWeapon())
+                    {
+                        counter++;
+                    }
+                    if (counter >= 4)
+                    {
+                        attackCooldown = 1f;
+                        counter = 0;
+                    }
                     yield return null;
                 }
-                pathfinder.SetDestination(targetLKP);
-                yield return null;
-            }
+                else
+                {
+                    if (senses.unobstructedColliders.Contains(target))
+                    {
+                        RotationHelperOmnipotent();
+                        yield return null;
+                    }
+                    pathfinder.SetDestination(targetLKP);
+                    yield return null;
+                }
+            } else {yield return null;}
         }
         caller.MarkCompleteness(true);
         actionQueue[actionCount - 1] = null;
@@ -422,6 +429,7 @@ public class EnemyBrain : MonoBehaviour
 
     private IEnumerator meleeAttack(I_Action caller) 
     {
+        if (staggered) {yield return null;}
         float cooldownTimer = -1f;
         while (target != null)
         {
@@ -474,8 +482,9 @@ public class EnemyBrain : MonoBehaviour
         if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
     }
 
-    public void InformOfDamage(GameObject dealer, float damage)
+    public void InformOfDamage(GameObject dealer, float damage, DamageType damageType)
     {
+        if (damageType == DamageType.Physical) {staggered = true; staggerTimer = 1.5f;}
         if (dealer == null) {return;} // Grenades trigger this.
         if (dealer.layer == LayerMask.NameToLayer("Enemy")) {return;}
         if (attackGoalSet.ContainsKey(dealer))

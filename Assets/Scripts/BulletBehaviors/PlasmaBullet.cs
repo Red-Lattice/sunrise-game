@@ -50,6 +50,25 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
         Destroy(this.gameObject);
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        GameObject otherGO = other.gameObject;
+        Debug.Log(other.gameObject);
+        // Guards
+        if (!initialized) {return;}
+        if (otherGO == shooter) {return;}
+        if (otherGO.name == "BoundingBox") {return;}
+        if (otherGO.layer == shooter.layer) {return;}
+        if (otherGO.tag == "Projectile") {return;}
+
+        IDamageable damageableComponent;
+        if (otherGO.TryGetComponent(out damageableComponent))
+        {
+            damageableComponent.DealDamage(30f, "Plasma_Pistol_Round", shooter, transform.position);
+        }
+        Destroy(this.gameObject);
+    }
+
     public void initialization(GameObject shooter)
     {
         this.shooter = shooter;

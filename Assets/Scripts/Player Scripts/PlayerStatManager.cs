@@ -29,7 +29,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos)
     {
         DamageType damageType = Damage.bulletToDamageType(bulletType);
-        if (wall.capturing && CaptureCheck(damageType, transform.position + hitPos)) {
+        if (wall.capturing && CaptureCheck(damageType, hitPos)) {
             wall.AddBullet(bulletType);
             return;
         }
@@ -62,7 +62,8 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     private bool CaptureCheck(DamageType damageType, Vector3 position)
     {
         if (damageType == Physical || damageType == Explosion) {return false;}
-        return (Mathf.Abs(Vector3.Angle(position, camTransform.position + camTransform.forward)) < 90f);
+        Debug.Log(Vector3.Angle(camTransform.InverseTransformPoint(position), camTransform.forward));
+        return (Mathf.Abs(Vector3.Angle(camTransform.InverseTransformPoint(position), camTransform.forward)) < 90f);
     }
 
     void damageShield(float damage, DamageType damageType)
