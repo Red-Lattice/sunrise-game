@@ -1,19 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static BulletType;
 
 public class WarpWall : MonoBehaviour, IDamageable
 {
     public bool capturing = false;
     private MeshRenderer wallMesh;
-    private List<string> arr;
+    private List<BulletType> arr;
     [SerializeField] private ProjectileScriptableObjects projectiles;
 
     void Awake()
     {
         wallMesh = GetComponent<MeshRenderer>();
         wallMesh.enabled = false;
-        arr = new List<string>();
+        arr = new List<BulletType>();
     }
 
     void Update()
@@ -36,32 +37,35 @@ public class WarpWall : MonoBehaviour, IDamageable
 
     public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos) 
     {
-        AddBullet(bulletType);
+        AddBullet(BulletSingleton.StringToBulletType(bulletType));
     }
 
-    public void AddBullet(string bulletName)
+    public void AddBullet(BulletType damageType)
     {
-        arr.Add(bulletName);
+        arr.Add(damageType);
     }
 
     private void Release()
     {
-        foreach (string bullet in arr)
+        foreach (BulletType bullet in arr)
         {
             FireBullet(transform, bullet, projectiles);
         }
         arr.Clear();
     }
 
-    private static void FireBullet(Transform firer, string bulletType, ProjectileScriptableObjects pso)
+    private static void FireBullet(Transform firer, BulletType bulletType, ProjectileScriptableObjects pso)
     {
         switch (bulletType)
         {
-            case "Plasma_Pistol_Round":
+            case Plasma_Pistol_Round:
                 float angle = Random.Range(-180f, 180f);
                 float distance = Random.Range(0f, 1.25f);
                 var location = (Quaternion.Euler(0, angle, 0) * firer.right * distance);
-                Instantiate(pso.plasmaBall, firer.position + location, firer.parent.rotation).GetComponent<PlasmaBullet>().initialization(firer.parent.parent.gameObject);
+                GameObject bullet = BulletSingleton.instance.GetBullet(bulletType);
+                bullet.transform.position = firer.position + location;
+                bullet.transform.rotation = firer.parent.rotation;
+                bullet.GetComponent<PlasmaBullet>().initialization(firer.parent.parent.gameObject);
                 return;
             default:
                 break;

@@ -30,7 +30,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     {
         DamageType damageType = Damage.bulletToDamageType(bulletType);
         if (wall.capturing && CaptureCheck(damageType, hitPos)) {
-            wall.AddBullet(bulletType);
+            wall.AddBullet(BulletSingleton.StringToBulletType(bulletType));
             return;
         }
         if (shield > 0)

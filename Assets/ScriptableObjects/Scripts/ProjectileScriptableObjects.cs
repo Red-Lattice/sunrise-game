@@ -6,4 +6,6 @@ using UnityEngine;
 public class ProjectileScriptableObjects : ScriptableObject
 {
     public GameObject plasmaBall;
+
+    public GameObject[] bullets = new GameObject[4];
 }
