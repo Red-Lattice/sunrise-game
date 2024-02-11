@@ -63,7 +63,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     {
         if (damageType == Physical || damageType == Explosion) {return false;}
         Debug.Log(Vector3.Angle(camTransform.InverseTransformPoint(position), camTransform.forward));
-        return (Mathf.Abs(Vector3.Angle(camTransform.InverseTransformPoint(position), camTransform.forward)) < 90f);
+        return (Mathf.Abs(Vector3.Angle((position), camTransform.TransformPoint(camTransform.forward))) < 90f);
     }
 
     void damageShield(float damage, DamageType damageType)

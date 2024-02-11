@@ -15,6 +15,7 @@ public class BulletSingleton : MonoBehaviour {
 
     [SerializeField] private ProjectileScriptableObjects pso;
     public static List<GameObject>[] pooledObjects = new List<GameObject>[4]; // The index corresponds to the enum index
+    public static LayerMask shootableLayers = 1 | 256 | 512 | 2048;
     
     public static BulletType StringToBulletType(string bulletType)
     {

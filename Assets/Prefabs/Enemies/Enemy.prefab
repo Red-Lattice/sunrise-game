@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a04727e9e3b4545b65e79cf0357796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionCount: 0
   headTransform: {fileID: 3890747496886811999}
   target: {fileID: 0}
   LLVisualizer: []
@@ -215,7 +216,7 @@ MonoBehaviour:
     m_Bits: 2304
   blockerLayers:
     serializedVersion: 2
-    m_Bits: 193
+    m_Bits: 129
   head: {fileID: 3890747496886811999}
   unobstructedColliders: []
   directVisionConeColliders: []

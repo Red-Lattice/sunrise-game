@@ -8,12 +8,15 @@ public class WarpWall : MonoBehaviour, IDamageable
     public bool capturing = false;
     private MeshRenderer wallMesh;
     private List<BulletType> arr;
+    private BoxCollider trigger;
     [SerializeField] private ProjectileScriptableObjects projectiles;
 
     void Awake()
     {
         wallMesh = GetComponent<MeshRenderer>();
         wallMesh.enabled = false;
+        trigger = GetComponent<BoxCollider>();
+        trigger.enabled = false;
         arr = new List<BulletType>();
     }
 
@@ -24,12 +27,14 @@ public class WarpWall : MonoBehaviour, IDamageable
         if (Input.GetMouseButtonDown(1))
         {
             wallMesh.enabled = true;
+            trigger.enabled = true;
             capturing = true;
             return;
         }
         if (Input.GetMouseButtonUp(1))
         {
             wallMesh.enabled = false;
+            trigger.enabled = false;
             capturing = false;
             Release();
         }
@@ -60,7 +65,7 @@ public class WarpWall : MonoBehaviour, IDamageable
         {
             case Plasma_Pistol_Round:
                 float angle = Random.Range(-180f, 180f);
-                float distance = Random.Range(0f, 1.25f);
+                float distance = Random.Range(0f, 0.5f);
                 var location = (Quaternion.Euler(0, angle, 0) * firer.right * distance);
                 GameObject bullet = BulletSingleton.instance.GetBullet(bulletType);
                 bullet.transform.position = firer.position + location;
