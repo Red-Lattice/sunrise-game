@@ -13,3 +13,8 @@ MonoBehaviour:
   m_Name: ProjectileScriptableObjects
   m_EditorClassIdentifier: 
   plasmaBall: {fileID: 6245491676161645225, guid: 20ce753b4ac3c4040baea08345370641, type: 3}
+  bullets:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 6245491676161645225, guid: 20ce753b4ac3c4040baea08345370641, type: 3}
+  - {fileID: 0}

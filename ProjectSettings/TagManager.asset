@@ -10,21 +10,22 @@ TagManager:
   - Gun
   - Debug
   - Weapon
+  - DoNotTarget
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Uninteractable
   - Water
   - UI
-  - whatIsWall
-  - whatIsGround
+  - NoTarget
+  - 
   - FriendlyEntity
   - Enemy
   - Projectile
   - objects
   - Hidden
-  - Player
+  - 
   - 
   - 
   - 
