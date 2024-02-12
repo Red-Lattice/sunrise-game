@@ -32,7 +32,6 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
         RaycastHit hit;
         if (Physics.Raycast(transform.position, bulletDirection, out hit, factor, shootableLayers))
         {
-            Debug.Log("Detected: " + hit.transform.gameObject);
             if (!Guards(hit.transform)) {return false;}
             IDamageable damageable; 
             if (hit.transform.TryGetComponent(out damageable))

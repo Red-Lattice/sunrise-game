@@ -62,7 +62,6 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     private bool CaptureCheck(DamageType damageType, Vector3 position)
     {
         if (damageType == Physical || damageType == Explosion) {return false;}
-        Debug.Log(Vector3.Angle(camTransform.InverseTransformPoint(position), camTransform.forward));
         return (Mathf.Abs(Vector3.Angle((position), camTransform.TransformPoint(camTransform.forward))) < 90f);
     }
 
