@@ -14,7 +14,9 @@ public class BulletSingleton : MonoBehaviour {
     public static BulletSingleton instance { get; private set; }
 
     [SerializeField] private ProjectileScriptableObjects pso;
+    [SerializeField] private CapturedBulletScriptableObject cbso;
     public static List<GameObject>[] pooledObjects = new List<GameObject>[4]; // The index corresponds to the enum index
+    public static List<GameObject>[] pooledCapturedBullets = new List<GameObject>[4]; // Same here
     public static LayerMask shootableLayers = 1 | 256 | 512 | 2048;
     
     public static BulletType StringToBulletType(string bulletType)
@@ -68,4 +70,35 @@ public class BulletSingleton : MonoBehaviour {
     private GameObject FindBulletPrefabFromType(BulletType bulletType) {
         return pso.bullets[(int)bulletType];
     }
+
+    // ********************************
+
+    public GameObject GetCapturedBullet(BulletType bulletType) {
+        return FindValidCapturedBullet(pooledObjects[(int)bulletType], bulletType);
+    }
+
+    private GameObject FindValidCapturedBullet(List<GameObject> objs, BulletType bulletType) {
+        foreach (GameObject bullet in objs) {
+            if (!bullet.activeInHierarchy) {
+                return ActivateBullet(bullet);
+            }
+        }
+        return ActivateCapturedBullet(AddNewCapturedBulletToPool(objs, bulletType));
+    }
+
+    private static GameObject ActivateCapturedBullet(GameObject go) {
+        go.SetActive(true);
+        return go;
+    }
+
+    private GameObject AddNewCapturedBulletToPool(List<GameObject> objList, BulletType bulletType) {
+        GameObject go = Instantiate(FindCapturedBulletPrefabFromType(bulletType));
+        objList.Add(go);
+        go.SetActive(false);
+        return go;
+    }
+    private GameObject FindCapturedBulletPrefabFromType(BulletType bulletType) {
+        return pso.bullets[(int)bulletType];
+    }
+
 }
