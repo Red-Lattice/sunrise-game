@@ -7,9 +7,12 @@ public class WarpWall : MonoBehaviour, IDamageable
 {
     public bool capturing = false;
     private MeshRenderer wallMesh;
-    private List<BulletType> arr;
+    private List<CapturedBullet> capturedBullets;
     private BoxCollider trigger;
+    [SerializeField] private Transform WarpWallCenter;
+    [SerializeField] private Transform cameraTransform;
     [SerializeField] private ProjectileScriptableObjects projectiles;
+    [SerializeField] private CapturedBulletScriptableObject capturedPrefabs;
 
     void Awake()
     {
@@ -17,12 +20,15 @@ public class WarpWall : MonoBehaviour, IDamageable
         wallMesh.enabled = false;
         trigger = GetComponent<BoxCollider>();
         trigger.enabled = false;
-        arr = new List<BulletType>();
+        capturedBullets = new List<CapturedBullet>();
     }
 
     void Update()
     {
         capturing = Input.GetMouseButton(1);
+        if (capturing) {
+            RotateCenter(transform);
+        }
 
         if (Input.GetMouseButtonDown(1))
         {
@@ -39,6 +45,9 @@ public class WarpWall : MonoBehaviour, IDamageable
             Release();
         }
     }
+    private static void RotateCenter(Transform center) {
+        center.RotateAround(center.position, center.up, 250f * Time.deltaTime);
+    }
 
     public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos) 
     {
@@ -47,33 +56,57 @@ public class WarpWall : MonoBehaviour, IDamageable
 
     public void AddBullet(BulletType damageType)
     {
-        arr.Add(damageType);
+        CapturedBullet bullet = new(BulletSingleton.instance.GetCapturedBullet(damageType), damageType);
+        capturedBullets.Add(bullet);
+
+        float angle = Random.Range(-180f, 180f);
+        float distance = Random.Range(0f, 0.5f);
+        var location = (Quaternion.Euler(0, angle, 0) * WarpWallCenter.right * distance);
+
+        bullet.bulletTransform.position = WarpWallCenter.position + location;
+        bullet.bulletTransform.rotation = transform.rotation;
+
+        bullet.bulletTransform.SetParent(WarpWallCenter);
     }
 
     private void Release()
     {
-        foreach (BulletType bullet in arr)
+        foreach (CapturedBullet bullet in capturedBullets)
         {
-            FireBullet(transform, bullet, projectiles);
+            FireBullet(bullet.bulletTransform, bullet.capturedBulletType, projectiles, cameraTransform);
+            bullet.bullet.SetActive(false);
         }
-        arr.Clear();
+        capturedBullets.Clear();
     }
 
-    private static void FireBullet(Transform firer, BulletType bulletType, ProjectileScriptableObjects pso)
+    private static void FireBullet(Transform bulletTransform, BulletType bulletType,
+        ProjectileScriptableObjects pso, Transform firer)
     {
         switch (bulletType)
         {
             case Plasma_Pistol_Round:
                 float angle = Random.Range(-180f, 180f);
                 float distance = Random.Range(0f, 0.5f);
-                var location = (Quaternion.Euler(0, angle, 0) * firer.right * distance);
+                var location = (Quaternion.Euler(0, angle, 0) * bulletTransform.right * distance);
                 GameObject bullet = BulletSingleton.instance.GetBullet(bulletType);
-                bullet.transform.position = firer.position + location;
-                bullet.transform.rotation = firer.parent.rotation;
-                bullet.GetComponent<PlasmaBullet>().initialization(firer.parent.parent.gameObject);
+                bullet.transform.position = bulletTransform.position + location;
+                bullet.transform.rotation = firer.rotation;
+                bullet.GetComponent<PlasmaBullet>().initialization(firer.parent.gameObject);
                 return;
             default:
                 break;
+        }
+    }
+
+    struct CapturedBullet {
+        public GameObject bullet;
+        public Transform bulletTransform;
+        public BulletType capturedBulletType;
+
+        public CapturedBullet(GameObject bullet, BulletType capturedBulletType) {
+            this.bullet = bullet;
+            this.bulletTransform = bullet.transform;
+            this.capturedBulletType = capturedBulletType;
         }
     }
 }

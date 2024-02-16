@@ -41,6 +41,11 @@ public class BulletSingleton : MonoBehaviour {
         for (int i = 0; i < 4; i++) {
             AddNewBulletToPool(pooledObjects[(int)Plasma_Pistol_Round], Plasma_Pistol_Round);
         }
+
+        pooledCapturedBullets[(int)Plasma_Pistol_Round] = new List<GameObject>();
+        for (int i = 0; i < 4; i++) {
+            AddNewCapturedBulletToPool(pooledCapturedBullets[(int)Plasma_Pistol_Round], Plasma_Pistol_Round);
+        }
     }
 
     public GameObject GetBullet(BulletType bulletType) {
@@ -74,7 +79,7 @@ public class BulletSingleton : MonoBehaviour {
     // ********************************
 
     public GameObject GetCapturedBullet(BulletType bulletType) {
-        return FindValidCapturedBullet(pooledObjects[(int)bulletType], bulletType);
+        return FindValidCapturedBullet(pooledCapturedBullets[(int)bulletType], bulletType);
     }
 
     private GameObject FindValidCapturedBullet(List<GameObject> objs, BulletType bulletType) {
@@ -98,7 +103,7 @@ public class BulletSingleton : MonoBehaviour {
         return go;
     }
     private GameObject FindCapturedBulletPrefabFromType(BulletType bulletType) {
-        return pso.bullets[(int)bulletType];
+        return cbso.bulletsArray[(int)bulletType];
     }
 
 }
