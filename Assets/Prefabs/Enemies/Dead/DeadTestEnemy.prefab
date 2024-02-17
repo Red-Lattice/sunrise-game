@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8440909457511559009}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: DeadTestEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 8440909459412201764}
   - component: {fileID: 8440909459412201771}
   - component: {fileID: 8440909459412201770}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Capsule
   m_TagString: NoWallrun
   m_Icon: {fileID: 0}
@@ -202,6 +202,38 @@ PrefabInstance:
     - target: {fileID: 8072372981141599914, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
       propertyPath: m_Name
       value: Plasma Pulser
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372981151638969, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372981235736329, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372981260246115, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372981475847976, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372981827052133, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372982229290564, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372982478264089, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072372982831990831, guid: bb4dbae195086e942a3e001781e50caa, type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb4dbae195086e942a3e001781e50caa, type: 3}

@@ -17,7 +17,7 @@ public class BulletSingleton : MonoBehaviour {
     [SerializeField] private CapturedBulletScriptableObject cbso;
     public static List<GameObject>[] pooledObjects = new List<GameObject>[4]; // The index corresponds to the enum index
     public static List<GameObject>[] pooledCapturedBullets = new List<GameObject>[4]; // Same here
-    public static LayerMask shootableLayers = 1 | (1 << 8) | 512 | 2048;
+    public static LayerMask shootableLayers = (1 << 0) | (1 << 8) | (1 << 9) | (1 << 11);
 
     public static BulletType StringToBulletType(string bulletType)
     {
@@ -42,12 +42,12 @@ public class BulletSingleton : MonoBehaviour {
         if (instance != null) {Destroy(gameObject); return;}
         instance = this;
         pooledObjects[(int)Plasma_Pistol_Round] = new List<GameObject>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
             AddNewBulletToPool(pooledObjects[(int)Plasma_Pistol_Round], Plasma_Pistol_Round);
         }
 
         pooledCapturedBullets[(int)Plasma_Pistol_Round] = new List<GameObject>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
             AddNewCapturedBulletToPool(pooledCapturedBullets[(int)Plasma_Pistol_Round], Plasma_Pistol_Round);
         }
     }

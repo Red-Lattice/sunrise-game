@@ -26,7 +26,7 @@ public static class GunAnimator
     public static void PlayAnimation(AnimationInfo animationInfo) {
         if (!Interruptable(animationInfo.activeAnimation)) {return;}
 
-        animationInfo.gunAnimator.Play(((AnimationState)animationInfo.animation).ToString());
+        animationInfo.gunAnimator.Play(animationInfo.animation.ToString());
     }
     
     // Pure functions

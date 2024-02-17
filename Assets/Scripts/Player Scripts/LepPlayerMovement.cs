@@ -436,7 +436,6 @@ public class LepPlayerMovement : MonoBehaviour
             case Walking:
             case Sliding:
                 rb.AddForce(new Vector3(0, upForce, 0), ForceMode.VelocityChange);
-                StartCoroutine(jumpCooldownCoroutine(0.2f));
                 EnterFlying(true);
                 break;
             default:
@@ -528,15 +527,6 @@ public class LepPlayerMovement : MonoBehaviour
             return hit.point - position;
         }
         return Vector3.positiveInfinity;
-    }
-    #endregion
-
-    #region Coroutines
-    IEnumerator jumpCooldownCoroutine(float time)
-    {
-        canJump = false;
-        yield return new WaitForSeconds(time);
-        canJump = true;
     }
     #endregion
 

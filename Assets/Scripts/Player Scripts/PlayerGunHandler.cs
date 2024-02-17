@@ -28,8 +28,6 @@ public class PlayerGunHandler : MonoBehaviour
     private int weaponSelected;
     private Weapon[] availableWeapons;
     private Weapon activeWeaponScript;
-    private LepPlayerMovement playerMovement;
-    private string currentMode;
     private float recoilMovement;
     private float recoilDecay = 2f;
     private Animator gun;
@@ -41,7 +39,6 @@ public class PlayerGunHandler : MonoBehaviour
         recoilDecay = 3f;
         availableWeapons = new Weapon[maxWeapons];
         guns = new Animator[maxWeapons];
-        playerMovement = transform.GetComponent<LepPlayerMovement>();
         playerRB = transform.GetComponent<Rigidbody>();
     }
 
@@ -57,15 +54,7 @@ public class PlayerGunHandler : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Q)) // Clean this shit up later
         {
-            RaycastHit hit;
-            if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
-            {
-                StatManager statManager; 
-                if (hit.transform.TryGetComponent<StatManager>(out statManager))
-                {
-                    statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
-                }
-            }
+            PunchSomething();
             AnimatePunch();
             return;
         }
@@ -95,7 +84,7 @@ public class PlayerGunHandler : MonoBehaviour
     private void ThrowGrenade() {
         GameObject newGrenade = Instantiate(grenadeGetter.getPrefab("Default"), transform.position + transform.forward, Quaternion.identity);
         Rigidbody grenadeRB;
-        if (newGrenade.TryGetComponent<Rigidbody>(out grenadeRB)) 
+        if (newGrenade.TryGetComponent(out grenadeRB)) 
         {
             grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);
             grenadeRB.angularVelocity += Vector3.forward * Random.Range(-10.0f, 10.0f);
@@ -103,12 +92,26 @@ public class PlayerGunHandler : MonoBehaviour
         }
     }
 
+    private void PunchSomething() {
+        if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out RaycastHit hit, 3f))
+        {
+            if (hit.transform.TryGetComponent(out StatManager statManager))
+            {
+                statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
+            }
+        }
+    }
+
     private void AnimatePunch() {
-        GunAnimator.PlayAnimation(new AnimationInfo(Punch, gun, GunAnimator.FindAnimationState(gun)));
+        GunAnimator.PlayAnimation(MakeAnimInfoStruct(Punch));
     }
 
     private void AnimateGunfire() {
-        GunAnimator.PlayAnimation(new AnimationInfo(Fire, gun, GunAnimator.FindAnimationState(gun)));
+        GunAnimator.PlayAnimation(MakeAnimInfoStruct(Fire));
+    }
+
+    private AnimationInfo MakeAnimInfoStruct(AnimationState toState) {
+        return new AnimationInfo(Fire, gun, GunAnimator.FindAnimationState(gun));
     }
 
     
@@ -126,7 +129,7 @@ public class PlayerGunHandler : MonoBehaviour
             activeWeaponScript = getAddedWeapon(weaponName);
             numberOfWeapons++;
             availableWeapons[numberOfWeapons - 1] = activeWeaponScript;
-            guns[numberOfWeapons - 1] = (gun = Instantiate(gunInQuestion, uiCam.transform).GetComponent<Animator>());
+            guns[numberOfWeapons - 1] = gun = Instantiate(gunInQuestion, uiCam.transform).GetComponent<Animator>();
 
             weaponSelected++;
             return;
@@ -177,7 +180,7 @@ public class PlayerGunHandler : MonoBehaviour
 
     public bool weaponsNeededCheck()
     {
-        return (numberOfWeapons < maxWeapons);
+        return numberOfWeapons < maxWeapons;
     }
 }
 

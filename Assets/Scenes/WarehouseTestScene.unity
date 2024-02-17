@@ -2844,6 +2844,10 @@ PrefabInstance:
       propertyPath: m_RenderPostProcessing
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7798008653611156061, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4055
+      objectReference: {fileID: 0}
     - target: {fileID: 7798008653996385441, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
       propertyPath: m_IsActive
       value: 0
