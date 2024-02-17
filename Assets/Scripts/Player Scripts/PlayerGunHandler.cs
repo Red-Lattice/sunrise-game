@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static AnimationState;
 
 public class PlayerGunHandler : MonoBehaviour
 {
@@ -21,23 +22,25 @@ public class PlayerGunHandler : MonoBehaviour
     private Rigidbody playerRB;
     
     [Header("Parameters")]
-    [SerializeField] private int maxWeapons = 2;
+    public int maxWeapons = 2;
 
     private int numberOfWeapons;
     private int weaponSelected;
     private Weapon[] availableWeapons;
     private Weapon activeWeaponScript;
-    private GunAnimator gunAnimator;
     private LepPlayerMovement playerMovement;
     private string currentMode;
     private float recoilMovement;
     private float recoilDecay = 2f;
+    private Animator gun;
+    private Animator[] guns;
 
     void Start()
     {
         weaponSelected = 0;
         recoilDecay = 3f;
         availableWeapons = new Weapon[maxWeapons];
+        guns = new Animator[maxWeapons];
         playerMovement = transform.GetComponent<LepPlayerMovement>();
         playerRB = transform.GetComponent<Rigidbody>();
     }
@@ -45,119 +48,97 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ProcessRecoil();
+
         if (Input.GetKeyDown(KeyCode.F))
         {
-            GameObject newGrenade = Instantiate(grenadeGetter.getPrefab("Default"), transform.position + transform.forward, Quaternion.identity);
-            Rigidbody grenadeRB;
-            if (newGrenade.TryGetComponent<Rigidbody>(out grenadeRB)) 
-            {
-                grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);
-                grenadeRB.angularVelocity += Vector3.forward * Random.Range(-10.0f, 10.0f);
-                grenadeRB.angularVelocity += Vector3.left * Random.Range(-10.0f, 10.0f);
-            }
+            ThrowGrenade();
+            return;
         }
         if (Input.GetKeyDown(KeyCode.Q)) // Clean this shit up later
         {
-            if (gunAnimator == null)
+            RaycastHit hit;
+            if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
             {
-                RaycastHit hit;
-                if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
+                StatManager statManager; 
+                if (hit.transform.TryGetComponent<StatManager>(out statManager))
                 {
-                    StatManager statManager; 
-                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
-                    {
-                        statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
-                    }
-                }
-                return;
-            }
-            if (!gunAnimator.getActionsBlocked())
-            {
-                gunAnimator.punch();
-
-                RaycastHit hit;
-                if (Physics.Raycast(camControl.transform.position, camControl.transform.forward, out hit, 3f))
-                {
-                    StatManager statManager; 
-                    if (hit.transform.TryGetComponent<StatManager>(out statManager))
-                    {
-                        statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
-                    }
+                    statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
                 }
             }
+            AnimatePunch();
+            return;
         }
+        
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {switchWeapon();} // Switches weapon
 
+        if (Input.GetMouseButtonDown(0) && activeWeaponScript != null)
+        {
+            if (!activeWeaponScript.triggerWeapon()) {return;}
+
+            AnimateGunfire();
+
+            if (recoilMovement >= 1f) {return;}
+            camControl.Punch(new Vector2(0f, 1f));
+            recoilMovement += 1f;
+        }
+    }
+
+    private void ProcessRecoil() {
         if (recoilMovement > 0f)
         {
             camControl.Punch(new Vector2(0f, -Time.deltaTime * recoilDecay));
             recoilMovement -= Time.deltaTime * recoilDecay;
         }
-        // Switches weapon
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            switchWeapon();
-        }
-
-        if (gunAnimator == null) {return;}
-        if (Input.GetMouseButtonDown(0) && activeWeaponScript != null && !gunAnimator.getActionsBlocked())
-        {
-            if (activeWeaponScript.triggerWeapon())
-            {
-                gunAnimator.fire();
-                if (recoilMovement < 1f)
-                {
-                    camControl.Punch(new Vector2(0f, 1f));
-                    recoilMovement += 1f;
-                }
-            }
-        }
-        updateContinuousAnimations();
     }
 
-    // Updating the running vs idling animation
-    void updateContinuousAnimations()
-    {
-        if (gunAnimator == null) {return;}
-
-        currentMode = playerMovement.getMode();       
-        if (playerMovement.getMode() == "Walking" && playerMovement.getPlayerSpeed() > 5)
+    private void ThrowGrenade() {
+        GameObject newGrenade = Instantiate(grenadeGetter.getPrefab("Default"), transform.position + transform.forward, Quaternion.identity);
+        Rigidbody grenadeRB;
+        if (newGrenade.TryGetComponent<Rigidbody>(out grenadeRB)) 
         {
-            gunAnimator.setContinuousState("Running");
-            return;
+            grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);
+            grenadeRB.angularVelocity += Vector3.forward * Random.Range(-10.0f, 10.0f);
+            grenadeRB.angularVelocity += Vector3.left * Random.Range(-10.0f, 10.0f);
         }
-        gunAnimator.setContinuousState("Idle");
     }
 
-    /**
-    * This code manages adding a weapon.
-    * It also automatically switches to the new weapon.
-    */
+    private void AnimatePunch() {
+        GunAnimator.PlayAnimation(new AnimationInfo(Punch, gun, GunAnimator.FindAnimationState(gun)));
+    }
+
+    private void AnimateGunfire() {
+        GunAnimator.PlayAnimation(new AnimationInfo(Fire, gun, GunAnimator.FindAnimationState(gun)));
+    }
+
+    
+    /// <summary>
+    /// This code manages adding a weapon. It also automatically switches to the new weapon.
+    /// </summary>
     public void setWeapon(string weaponName)
     {
         GameObject gunInQuestion = gunGetter.getGunPrefab(weaponName);
-
         // This runs when you're adding a new weapon
-        if (numberOfWeapons < maxWeapons)
-        {
-            if (gunAnimator != null)
-            {
-                Destroy(gunAnimator.gameObject);
-                Destroy(gunAnimator);
+        if (numberOfWeapons < maxWeapons) {
+            if (gun != null) {
+                gun.gameObject.SetActive(false);
             }
             activeWeaponScript = getAddedWeapon(weaponName);
             numberOfWeapons++;
             availableWeapons[numberOfWeapons - 1] = activeWeaponScript;
-            gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
+            guns[numberOfWeapons - 1] = (gun = Instantiate(gunInQuestion, uiCam.transform).GetComponent<Animator>());
+
             weaponSelected++;
             return;
         }
 
-        Destroy(gunAnimator.transform.gameObject);
+        gun.gameObject.SetActive(false);
 
-        gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
+        gun = Instantiate(gunInQuestion, uiCam.transform).GetComponent<Animator>();
         activeWeaponScript = getAddedWeapon(weaponName);
         weaponSelected = weaponSelected % numberOfWeapons;
         availableWeapons[weaponSelected] = activeWeaponScript;
+        guns[weaponSelected] = gun;
         weaponSelected++;
     }
 
@@ -165,22 +146,19 @@ public class PlayerGunHandler : MonoBehaviour
     * Runs when you switch between weapons you have. 
     * Does nothing if you don't have weapons
     */
-    void switchWeapon()
-    {
-        if (numberOfWeapons > 0) // We don't want a divide by 0 error!
-        {
-            if (gunAnimator != null)
-            {
-                Destroy(gunAnimator.gameObject);
-                Destroy(gunAnimator);
-            }
-            weaponSelected = weaponSelected % numberOfWeapons;
-            weaponSelected++;
-            activeWeaponScript = availableWeapons[weaponSelected - 1];
-            string weaponName = activeWeaponScript.weaponName;
-            GameObject gunInQuestion = gunGetter.getGunPrefab(weaponName);
-            gunAnimator = Instantiate(gunInQuestion, uiCam.transform).GetComponent<GunAnimator>();
+    void switchWeapon() {
+        if (numberOfWeapons <= 0) {return;} // We don't want a divide by 0 error!
+
+        if (gun != null) {
+            activeWeaponScript.enabled = false;
+            gun.gameObject.SetActive(false);
         }
+
+        weaponSelected = weaponSelected % numberOfWeapons;
+        weaponSelected++;
+
+        (activeWeaponScript = availableWeapons[weaponSelected - 1]).enabled = true;
+        (gun = guns[weaponSelected - 1]).gameObject.SetActive(true);
     }
 
     private Weapon getAddedWeapon(string weaponName)
