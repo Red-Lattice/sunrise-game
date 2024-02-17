@@ -17,8 +17,8 @@ public class BulletSingleton : MonoBehaviour {
     [SerializeField] private CapturedBulletScriptableObject cbso;
     public static List<GameObject>[] pooledObjects = new List<GameObject>[4]; // The index corresponds to the enum index
     public static List<GameObject>[] pooledCapturedBullets = new List<GameObject>[4]; // Same here
-    public static LayerMask shootableLayers = 1 | 256 | 512 | 2048;
-    
+    public static LayerMask shootableLayers = 1 | (1 << 8) | 512 | 2048;
+
     public static BulletType StringToBulletType(string bulletType)
     {
         switch (bulletType) {
@@ -35,6 +35,10 @@ public class BulletSingleton : MonoBehaviour {
 
     void CreateSingleton()
     {
+        System.Type enumType = typeof(BulletType);
+        System.Type enumUnderlyingType = System.Enum.GetUnderlyingType(enumType);
+        int enumLen = System.Enum.GetValues(enumType).Length;
+        
         if (instance != null) {Destroy(gameObject); return;}
         instance = this;
         pooledObjects[(int)Plasma_Pistol_Round] = new List<GameObject>();
