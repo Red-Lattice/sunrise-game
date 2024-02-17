@@ -11,7 +11,6 @@ public class PlayerGunHandler : MonoBehaviour
     * All fields that have [SerializeField] need to be set in the editor
     **/
     [Header("Scriptable Objects")]
-    [SerializeField] private ProjectileScriptableObjects projectileGetter;
     [SerializeField] private GunScriptableObject gunGetter;
     [SerializeField] private GrenadesScriptableObject grenadeGetter;
 
@@ -202,13 +201,5 @@ public class PlayerGunHandler : MonoBehaviour
     {
         return (numberOfWeapons < maxWeapons);
     }
-
-    #region Getters
-
-    public ProjectileScriptableObjects getProjectileGetter()
-    {
-        return projectileGetter;
-    }
-    #endregion
 }
 

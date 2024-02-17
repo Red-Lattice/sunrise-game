@@ -2,11 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using static AnimationStates;
+
+// Get the string with nameof(Enum). This happens at compile time with no slowdown.
+enum AnimationStates {
+    Enter,
+    Fire,
+    Exit,
+    Punch,
+    Idle,
+    Running,
+}
 
 public class GunAnimator : MonoBehaviour
 {
-    #region Fields
-
     private Animator animator;
     private string currentAnimState;
     private string currentPlayerState;
@@ -17,11 +26,9 @@ public class GunAnimator : MonoBehaviour
     [SerializeField] private bool actionPlaying;
     private bool blockActions;
 
-    #endregion
-
     void Start()
     {
-        queuedAction = "Enter";
+        queuedAction = nameof(Enter);
         actionPlaying = false;
         animator = this.transform.GetComponent<Animator>();
     }

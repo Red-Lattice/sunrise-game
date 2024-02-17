@@ -5,7 +5,6 @@ using static BulletType;
 
 public class Weapon_PlasmaPulser : Weapon
 {
-    [SerializeField] private GameObject plasmaBolt;
     [SerializeField] private Camera cam;
     private float cooldown;
     private Quaternion rot;
@@ -15,10 +14,6 @@ public class Weapon_PlasmaPulser : Weapon
         cooldown = 0f;
         PlayerGunHandler pgh = this.transform.parent.GetComponent<PlayerGunHandler>();
         
-        if (pgh != null)
-        {
-            plasmaBolt = pgh.getProjectileGetter().plasmaBall;
-        }
         weaponName = "Plasma Pulser";
 
         cam = this.transform.parent.GetComponentInChildren<Camera>();
@@ -41,7 +36,6 @@ public class Weapon_PlasmaPulser : Weapon
             PlasmaBullet instantiatedBolt = BulletSingleton.instance.GetBullet(Plasma_Pistol_Round).GetComponent<PlasmaBullet>();
             instantiatedBolt.transform.position = transform.position;
             instantiatedBolt.transform.rotation = rot;
-            //PlasmaBullet instantiatedBolt = Instantiate(plasmaBolt, transform.position, rot).GetComponent<PlasmaBullet>();
             instantiatedBolt.initialization(this.transform.parent.gameObject);
             cooldown = 0.15f;
             return true;
@@ -56,7 +50,6 @@ public class Weapon_PlasmaPulser : Weapon
             PlasmaBullet instantiatedBolt = BulletSingleton.instance.GetBullet(Plasma_Pistol_Round).GetComponent<PlasmaBullet>();
             instantiatedBolt.transform.position = firerTransform.position;
             instantiatedBolt.transform.rotation = rot;
-            //PlasmaBullet instantiatedBolt = Instantiate(plasmaBolt, firerTransform.position, rot).GetComponent<PlasmaBullet>();
             instantiatedBolt.initialization(this.transform.root.gameObject);
             cooldown = 0.15f;
             return true;
