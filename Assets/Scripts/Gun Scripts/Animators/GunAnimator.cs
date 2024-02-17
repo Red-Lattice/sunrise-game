@@ -5,7 +5,6 @@ using System;
 using static AnimationState;
 using static System.Enum;
 
-// Get the string with nameof(Enum). This happens at compile time with no slowdown.
 public enum AnimationState {
     Enter,
     Fire,
