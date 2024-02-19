@@ -8,6 +8,7 @@ public class Weapon_PlasmaPulser : Weapon
     [SerializeField] private Camera cam;
     private float cooldown;
     private Quaternion rot;
+    private GameObject shooter;
     
     void Start()
     {
@@ -16,7 +17,7 @@ public class Weapon_PlasmaPulser : Weapon
         
         weaponName = "Plasma Pulser";
 
-        cam = this.transform.parent.GetComponentInChildren<Camera>();
+        cam = this.transform.root.GetComponentInChildren<Camera>();
     }
 
     void Update()
@@ -36,7 +37,7 @@ public class Weapon_PlasmaPulser : Weapon
             PlasmaBullet instantiatedBolt = BulletSingleton.instance.GetBullet(Plasma_Pistol_Round).GetComponent<PlasmaBullet>();
             instantiatedBolt.transform.position = transform.position;
             instantiatedBolt.transform.rotation = rot;
-            instantiatedBolt.initialization(this.transform.parent.gameObject);
+            instantiatedBolt.initialization(shooter);
             cooldown = 0.15f;
             return true;
         }
@@ -50,7 +51,7 @@ public class Weapon_PlasmaPulser : Weapon
             PlasmaBullet instantiatedBolt = BulletSingleton.instance.GetBullet(Plasma_Pistol_Round).GetComponent<PlasmaBullet>();
             instantiatedBolt.transform.position = firerTransform.position;
             instantiatedBolt.transform.rotation = rot;
-            instantiatedBolt.initialization(this.transform.root.gameObject);
+            instantiatedBolt.initialization(shooter);
             cooldown = 0.15f;
             return true;
         }
@@ -60,5 +61,11 @@ public class Weapon_PlasmaPulser : Weapon
     public override bool punch()
     {
         return true;
+    }
+
+    public override Weapon SetShooter(GameObject shooter)
+    {
+        this.shooter = shooter;
+        return this;
     }
 }

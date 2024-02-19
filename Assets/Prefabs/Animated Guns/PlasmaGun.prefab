@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6911075224673619664}
   - component: {fileID: 1870856849618811004}
   - component: {fileID: 7840413073572001633}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.003
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 8947885035589889783}
   - component: {fileID: 8692987254969150223}
   - component: {fileID: 5720744894940827105}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.001
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 3789713340841296056}
   - component: {fileID: 6658485687919164002}
   - component: {fileID: 8128266685384379293}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.004
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 2904775163002148265}
   - component: {fileID: 2738788389256342908}
   - component: {fileID: 6206940870495260453}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.006
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 3528816334593683103}
   - component: {fileID: 5727843521927075793}
   - component: {fileID: 219691715082813211}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.007
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 4171976651421254953}
   - component: {fileID: 42295565295017044}
   - component: {fileID: 2827139599534019839}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.008
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -509,7 +509,7 @@ GameObject:
   - component: {fileID: 6554312375217401469}
   - component: {fileID: 8691146588628166525}
   - component: {fileID: 2614071080029650303}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube
   m_TagString: Gun
   m_Icon: {fileID: 0}
@@ -590,8 +590,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2235945325942399708}
-  - component: {fileID: 402575101561389696}
-  m_Layer: 5
+  - component: {fileID: 91934363392668782}
+  m_Layer: 0
   m_Name: PlasmaGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -605,8 +605,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5712555425361308403}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.221, y: -0.1817, z: 0.2604}
+  m_LocalRotation: {x: 0.6755353, y: 0.34971625, z: 0.4312359, w: 0.48516613}
+  m_LocalPosition: {x: -0.0144, y: -0.0013, z: -0.0037}
   m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -620,8 +620,8 @@ Transform:
   - {fileID: 4171976651421254953}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &402575101561389696
+  m_LocalEulerAnglesHint: {x: 100, y: 90, z: 0}
+--- !u!95 &91934363392668782
 Animator:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -631,7 +631,7 @@ Animator:
   m_GameObject: {fileID: 5712555425361308403}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9191028b5843ecd4c8446fd004a7e88f, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -652,7 +652,7 @@ GameObject:
   - component: {fileID: 4188239189246784317}
   - component: {fileID: 2144899659011077437}
   - component: {fileID: 7531576499982314394}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Cube.002
   m_TagString: Gun
   m_Icon: {fileID: 0}

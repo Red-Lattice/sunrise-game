@@ -33,4 +33,10 @@ public class Weapon : MonoBehaviour
     {
         return false;
     }
+
+    public virtual Weapon SetShooter(GameObject shooter)
+    {
+        return this;
+        //Empty
+    }
 }

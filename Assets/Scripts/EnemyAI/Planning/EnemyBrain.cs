@@ -57,7 +57,7 @@ public class EnemyBrain : MonoBehaviour
         senses = transform.gameObject.GetComponent<EnemyAwareness>();
         attackGoalSet = new Dictionary<GameObject, Goal_AttackEntity>();
 
-        weapon = transform.gameObject.GetComponentInChildren<Weapon>();
+        weapon = transform.gameObject.GetComponentInChildren<Weapon>().SetShooter(transform.gameObject);
     }
 
     void FixedUpdate()
@@ -271,7 +271,7 @@ public class EnemyBrain : MonoBehaviour
     }
     public void setWeapon(string weaponName)
     {
-        weapon = Instantiate(gunGetter.getObject(weaponName), weaponHoldPoint).GetComponent<Weapon>();
+        weapon = Instantiate(gunGetter.getObject(weaponName), weaponHoldPoint).GetComponent<Weapon>().SetShooter(transform.gameObject);
     }
 
     private Weapon getAddedWeapon(string weaponName)

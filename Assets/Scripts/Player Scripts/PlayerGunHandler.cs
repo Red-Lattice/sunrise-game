@@ -31,10 +31,13 @@ public class PlayerGunHandler : MonoBehaviour
     private float recoilMovement;
     private float recoilDecay = 2f;
     private Animator gun;
+    [SerializeField] private Animator rightArm;
+    [SerializeField] private Animator leftArm;
     private Animator[] guns;
 
     void Start()
     {
+        rightArm.gameObject.SetActive(false);
         weaponSelected = 0;
         recoilDecay = 3f;
         availableWeapons = new Weapon[maxWeapons];
@@ -45,6 +48,7 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!rightArm.gameObject.activeInHierarchy && numberOfWeapons > 0) {rightArm.gameObject.SetActive(true);}
         ProcessRecoil();
 
         if (Input.GetKeyDown(KeyCode.F))
@@ -107,7 +111,8 @@ public class PlayerGunHandler : MonoBehaviour
     }
 
     private void AnimateGunfire() {
-        GunAnimator.PlayAnimation(MakeAnimInfoStruct(Fire));
+        if (gun != null) {GunAnimator.PlayAnimation(MakeAnimInfoStruct(Fire));}
+        GunAnimator.PlayAnimation(new AnimationInfo(Fire, rightArm, None));
     }
 
     private AnimationInfo MakeAnimInfoStruct(AnimationState toState) {
@@ -129,20 +134,22 @@ public class PlayerGunHandler : MonoBehaviour
             activeWeaponScript = getAddedWeapon(weaponName);
             numberOfWeapons++;
             availableWeapons[numberOfWeapons - 1] = activeWeaponScript;
-            guns[numberOfWeapons - 1] = gun = Instantiate(gunInQuestion, uiCam.transform).GetComponent<Animator>();
+            guns[numberOfWeapons - 1] = gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
 
             weaponSelected++;
+            GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, GunAnimator.FindAnimationState(rightArm)));
             return;
         }
 
         gun.gameObject.SetActive(false);
 
-        gun = Instantiate(gunInQuestion, uiCam.transform).GetComponent<Animator>();
+        gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
         activeWeaponScript = getAddedWeapon(weaponName);
         weaponSelected = weaponSelected % numberOfWeapons;
         availableWeapons[weaponSelected] = activeWeaponScript;
         guns[weaponSelected] = gun;
         weaponSelected++;
+        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, GunAnimator.FindAnimationState(rightArm)));
     }
 
     /**
@@ -156,6 +163,7 @@ public class PlayerGunHandler : MonoBehaviour
             activeWeaponScript.enabled = false;
             gun.gameObject.SetActive(false);
         }
+        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, GunAnimator.FindAnimationState(rightArm)));
 
         weaponSelected = weaponSelected % numberOfWeapons;
         weaponSelected++;
@@ -170,11 +178,11 @@ public class PlayerGunHandler : MonoBehaviour
         switch (weaponName)
         {
             case "Pistol":
-                return weaponObject.AddComponent<Weapon_Pistol>();
+                return weaponObject.AddComponent<Weapon_Pistol>().SetShooter(transform.gameObject);
             case "Plasma Pulser":
-                return weaponObject.AddComponent<Weapon_PlasmaPulser>();
+                return weaponObject.AddComponent<Weapon_PlasmaPulser>().SetShooter(transform.gameObject);
             default:
-                return weaponObject.AddComponent<Weapon>();
+                return weaponObject.AddComponent<Weapon>().SetShooter(transform.gameObject);
         }
     }
 
