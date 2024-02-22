@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static AnimationState;
+using static BulletType;
 
 public class PlayerGunHandler : MonoBehaviour
 {
@@ -18,29 +18,25 @@ public class PlayerGunHandler : MonoBehaviour
     [Header("Other Objects Needed To Function")]
     [SerializeField] private GameObject weaponObject;
     [SerializeField] private CameraController camControl;
-    [SerializeField] private GameObject uiCam;
+    [SerializeField] private Animator rightArm;
+    [SerializeField] private Animator leftArm;
     private Rigidbody playerRB;
     
     [Header("Parameters")]
     public int maxWeapons = 2;
 
     private int numberOfWeapons;
-    private int weaponSelected;
-    private Weapon[] availableWeapons;
-    private Weapon activeWeaponScript;
+    private int weaponSelectedIndex;
+    private WeaponStruct[] availableWeapons;
     private float recoilMovement;
-    private float recoilDecay = 2f;
     private Animator gun;
-    [SerializeField] private Animator rightArm;
-    [SerializeField] private Animator leftArm;
     private Animator[] guns;
 
     void Start()
     {
         rightArm.gameObject.SetActive(false);
-        weaponSelected = 0;
-        recoilDecay = 3f;
-        availableWeapons = new Weapon[maxWeapons];
+        weaponSelectedIndex = 0;
+        availableWeapons = new WeaponStruct[maxWeapons];
         guns = new Animator[maxWeapons];
         playerRB = transform.GetComponent<Rigidbody>();
     }
@@ -48,7 +44,12 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //DebugStructs();
+
+        UpdateCooldowns();
+
         if (!rightArm.gameObject.activeInHierarchy && numberOfWeapons > 0) {rightArm.gameObject.SetActive(true);}
+
         ProcessRecoil();
 
         if (Input.GetKeyDown(KeyCode.F))
@@ -65,9 +66,14 @@ public class PlayerGunHandler : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Alpha1)) {switchWeapon();} // Switches weapon
 
-        if (Input.GetMouseButtonDown(0) && activeWeaponScript != null)
+        if (WeaponsEmpty()) {return;}
+
+        var weapon = availableWeapons[weaponSelectedIndex - 1];
+        if (Input.GetMouseButtonDown(0) && Weapon.NotNull(weapon))
         {
-            if (!activeWeaponScript.triggerWeapon()) {return;}
+            if (weapon.cooldown > 0f) {return;}
+            Weapon.Fire(transform.gameObject, weapon, camControl.transform);
+            availableWeapons[weaponSelectedIndex - 1].cooldown = Weapon.cooldowns[(int)weapon.gunType]; // Structs are weird
 
             AnimateGunfire();
 
@@ -77,22 +83,44 @@ public class PlayerGunHandler : MonoBehaviour
         }
     }
 
+    private void UpdateCooldowns() {
+        for (int i = 0; i < availableWeapons.Length; i++) {
+            if (availableWeapons[i].cooldown > 0f) {availableWeapons[i].cooldown -= Time.deltaTime;}
+        }
+    }
+
+    /*public List<string> debug_ActiveWeapons;
+    private void DebugStructs() {
+        debug_ActiveWeapons.Clear();
+        foreach (WeaponStruct wep in availableWeapons) {
+            debug_ActiveWeapons.Add(wep.gunType.ToString());
+        }
+    }*/
+
+    private bool WeaponsEmpty() {
+        foreach (WeaponStruct wep in availableWeapons) {
+            if (Weapon.NotNull(wep)) {return false;}
+        }
+        return true;
+    }
+
     private void ProcessRecoil() {
         if (recoilMovement > 0f)
         {
-            camControl.Punch(new Vector2(0f, -Time.deltaTime * recoilDecay));
-            recoilMovement -= Time.deltaTime * recoilDecay;
+            camControl.Punch(new Vector2(0f, -Time.deltaTime * 3f));
+            recoilMovement -= Time.deltaTime * 3f;
         }
     }
 
     private void ThrowGrenade() {
-        GameObject newGrenade = Instantiate(grenadeGetter.getPrefab("Default"), transform.position + transform.forward, Quaternion.identity);
-        Rigidbody grenadeRB;
-        if (newGrenade.TryGetComponent(out grenadeRB)) 
+        GameObject newGrenade = Instantiate(grenadeGetter.defaultGrenade, transform.position + transform.forward, Quaternion.identity);
+        if (newGrenade.TryGetComponent(out Rigidbody grenadeRB))
         {
             grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);
-            grenadeRB.angularVelocity += Vector3.forward * Random.Range(-10.0f, 10.0f);
-            grenadeRB.angularVelocity += Vector3.left * Random.Range(-10.0f, 10.0f);
+            
+            grenadeRB.angularVelocity += 
+                Vector3.forward * Random.Range(-10.0f, 10.0f)
+                + Vector3.left * Random.Range(-10.0f, 10.0f);
         }
     }
 
@@ -101,7 +129,8 @@ public class PlayerGunHandler : MonoBehaviour
         {
             if (hit.transform.TryGetComponent(out StatManager statManager))
             {
-                statManager.DealDamage(30f + (4f * playerRB.velocity.magnitude), "Melee", transform.gameObject, transform.position);
+                float dmg = 30f + (4f * playerRB.velocity.magnitude);
+                statManager.DealDamage(dmg, Melee, transform.gameObject, transform.position);
             }
         }
     }
@@ -128,28 +157,27 @@ public class PlayerGunHandler : MonoBehaviour
         GameObject gunInQuestion = gunGetter.getGunPrefab(weaponName);
         // This runs when you're adding a new weapon
         if (numberOfWeapons < maxWeapons) {
+
             if (gun != null) {
                 gun.gameObject.SetActive(false);
             }
-            activeWeaponScript = getAddedWeapon(weaponName);
             numberOfWeapons++;
-            availableWeapons[numberOfWeapons - 1] = activeWeaponScript;
+            availableWeapons[numberOfWeapons - 1] = Weapon.WeaponStructFromName(weaponName);
             guns[numberOfWeapons - 1] = gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
 
-            weaponSelected++;
-            GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, GunAnimator.FindAnimationState(rightArm)));
+            weaponSelectedIndex++;
+            GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, None));
             return;
         }
 
         gun.gameObject.SetActive(false);
-
         gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
-        activeWeaponScript = getAddedWeapon(weaponName);
-        weaponSelected = weaponSelected % numberOfWeapons;
-        availableWeapons[weaponSelected] = activeWeaponScript;
-        guns[weaponSelected] = gun;
-        weaponSelected++;
-        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, GunAnimator.FindAnimationState(rightArm)));
+
+        weaponSelectedIndex = weaponSelectedIndex % numberOfWeapons;
+        availableWeapons[weaponSelectedIndex - 1] = Weapon.WeaponStructFromName(weaponName);
+        guns[weaponSelectedIndex - 1] = gun;
+        weaponSelectedIndex++;
+        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, None));
     }
 
     /**
@@ -160,35 +188,16 @@ public class PlayerGunHandler : MonoBehaviour
         if (numberOfWeapons <= 0) {return;} // We don't want a divide by 0 error!
 
         if (gun != null) {
-            activeWeaponScript.enabled = false;
             gun.gameObject.SetActive(false);
         }
-        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, GunAnimator.FindAnimationState(rightArm)));
+        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, None));
 
-        weaponSelected = weaponSelected % numberOfWeapons;
-        weaponSelected++;
+        weaponSelectedIndex = weaponSelectedIndex % numberOfWeapons;
+        weaponSelectedIndex++;
 
-        (activeWeaponScript = availableWeapons[weaponSelected - 1]).enabled = true;
-        (gun = guns[weaponSelected - 1]).gameObject.SetActive(true);
+        (gun = guns[weaponSelectedIndex - 1]).gameObject.SetActive(true);
     }
 
-    private Weapon getAddedWeapon(string weaponName)
-    {
-        // Every time you add a new weapon type, add it to this.
-        switch (weaponName)
-        {
-            case "Pistol":
-                return weaponObject.AddComponent<Weapon_Pistol>().SetShooter(transform.gameObject);
-            case "Plasma Pulser":
-                return weaponObject.AddComponent<Weapon_PlasmaPulser>().SetShooter(transform.gameObject);
-            default:
-                return weaponObject.AddComponent<Weapon>().SetShooter(transform.gameObject);
-        }
-    }
-
-    public bool weaponsNeededCheck()
-    {
-        return numberOfWeapons < maxWeapons;
-    }
+    public bool weaponsNeededCheck() {return numberOfWeapons < maxWeapons;}
 }
 

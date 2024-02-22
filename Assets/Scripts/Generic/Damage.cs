@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static DamageType;
+using static BulletType;
 
 public enum DamageType
 {
@@ -13,17 +14,17 @@ public enum DamageType
 
 public class Damage : MonoBehaviour
 {
-    public static DamageType bulletToDamageType(string bulletType)
+    public static DamageType BulletTypeToDamageType(BulletType bulletType)
     {
         switch (bulletType)
         {
-            case "Melee":
+            case Melee:
                 return Physical;
-            case "Kinetic_Small": 
+            case Kinetic_Small: 
                 return Kinetic;
-            case "Plasma_Pistol_Round":
+            case Plasma_Pistol_Round:
                 return Energy;
-            case "Grenade":
+            case Grenade:
                 return Explosion;
             default:
                 #if UNITY_EDITOR

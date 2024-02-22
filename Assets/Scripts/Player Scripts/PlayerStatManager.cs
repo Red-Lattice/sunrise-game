@@ -26,11 +26,11 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
         deathManager = new DeathManager(name, deso, this.transform.gameObject);
     }
 
-    public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos)
+    public void DealDamage(float damage, BulletType bulletType, GameObject dealer, Vector3 hitPos)
     {
-        DamageType damageType = Damage.bulletToDamageType(bulletType);
+        DamageType damageType = Damage.BulletTypeToDamageType(bulletType);
         if (wall.capturing && CaptureCheck(damageType, hitPos)) {
-            wall.AddBullet(BulletSingleton.StringToBulletType(bulletType));
+            wall.AddBullet(bulletType);
             return;
         }
         if (shield > 0)
@@ -62,7 +62,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     private bool CaptureCheck(DamageType damageType, Vector3 position)
     {
         if (damageType == Physical || damageType == Explosion) {return false;}
-        return (Mathf.Abs(Vector3.Angle((position), camTransform.TransformPoint(camTransform.forward))) < 90f);
+        return Mathf.Abs(Vector3.Angle(position, camTransform.TransformPoint(camTransform.forward))) < 90f;
     }
 
     void damageShield(float damage, DamageType damageType)

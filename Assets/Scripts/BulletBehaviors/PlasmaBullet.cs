@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static BulletSingleton;
 
-public class PlasmaBullet : MonoBehaviour, ICapturable
+public class PlasmaBullet : MonoBehaviour, IInitializable
 {
     private const float bulletSpeed = 50f;
     private float bulletLifeTime = 3f;
@@ -36,7 +36,7 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
             IDamageable damageable; 
             if (hit.transform.TryGetComponent(out damageable))
             {
-                damageable.DealDamage(30f, "Plasma_Pistol_Round", shooter, hit.point);
+                damageable.DealDamage(30f, BulletType.Plasma_Pistol_Round, shooter, hit.point);
             }
             return true;
         }
@@ -44,10 +44,10 @@ public class PlasmaBullet : MonoBehaviour, ICapturable
     }
 
     private bool Guards(Transform hitObject) {
-        return ((hitObject.gameObject.layer & shooter.layer) > 0); // Return if they're on different layers
+        return (hitObject.gameObject.layer & shooter.layer) > 0; // Return if they're on different layers
     }
 
-    public void initialization(GameObject shooter)
+    public void Initialize(GameObject shooter)
     {
         factor = Time.fixedDeltaTime * bulletSpeed;
         this.shooter = shooter;

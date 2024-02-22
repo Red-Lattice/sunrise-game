@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.Profiling;
+using System.Diagnostics.Tracing;
+using Mono.Cecil.Cil;
 //using static AiType;
 
 /// <summary>
@@ -20,6 +22,7 @@ using Unity.Profiling;
 /// </summary>
 public class EnemyBrain : MonoBehaviour
 {
+    public GunType defaultGun;
     private I_Action[] actionQueue;
     [SerializeField] private byte actionCount;
     private SafelyLinkedList<I_Goal> goalQueue;
@@ -57,13 +60,21 @@ public class EnemyBrain : MonoBehaviour
         senses = transform.gameObject.GetComponent<EnemyAwareness>();
         attackGoalSet = new Dictionary<GameObject, Goal_AttackEntity>();
 
-        weapon = transform.gameObject.GetComponentInChildren<Weapon>().SetShooter(transform.gameObject);
+        weapon = Weapon.BuildWeaponStruct(defaultGun, 100, 100);
+        GameObject obj = gunGetter.GetObject(defaultGun);
+        if (obj != null) {
+            Instantiate(obj, weaponHoldPoint.position, weaponHoldPoint.rotation)
+                .transform
+                .SetParent(weaponHoldPoint);
+        }
     }
 
     void FixedUpdate()
     {
         if (staggered) {staggerTimer -= Time.fixedDeltaTime;}
         if (staggerTimer < 0f) {staggered = false;}
+
+        UpdateCooldowns();
 
         senses.Tick();
 
@@ -76,6 +87,12 @@ public class EnemyBrain : MonoBehaviour
         UpdateGoals();
 
         debugVisualizer();
+    }
+
+    void UpdateCooldowns() {
+        if (Weapon.NotNull(weapon) && weapon.cooldown > 0f) {
+            weapon.cooldown -= Time.fixedDeltaTime;
+        }
     }
 
     void UpdateGoals()
@@ -259,7 +276,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
 #region weaponStuff
-    [SerializeField] private Weapon weapon;
+    [SerializeField] private WeaponStruct weapon = Weapon.BuildWeaponStruct(GunType.None, 0, 0);
     [SerializeField] private Transform weaponHoldPoint;
 
     /// <summary>
@@ -267,25 +284,11 @@ public class EnemyBrain : MonoBehaviour
     /// </summary>
     public bool weaponsNeededCheck()
     {
-        return weapon == null;
+        return weapon.gunType == GunType.None;
     }
     public void setWeapon(string weaponName)
     {
-        weapon = Instantiate(gunGetter.getObject(weaponName), weaponHoldPoint).GetComponent<Weapon>().SetShooter(transform.gameObject);
-    }
-
-    private Weapon getAddedWeapon(string weaponName)
-    {
-        // Every time you add a new weapon type, add it to this.
-        switch (weaponName)
-        {
-            case "Pistol":
-                return weaponHoldPoint.gameObject.AddComponent<Weapon_Pistol>();
-            case "Plasma Pulser":
-                return weaponHoldPoint.gameObject.AddComponent<Weapon_PlasmaPulser>();
-            default:
-                return weaponHoldPoint.gameObject.AddComponent<Weapon>();
-        }
+        weapon = Weapon.WeaponStructFromName(weaponName);
     }
 #endregion
 
@@ -399,8 +402,10 @@ public class EnemyBrain : MonoBehaviour
                 if (senses.potentialTargets.Contains(target))
                 {
                     RotationHelper();
-                    if (attackCooldown <= 0f && weapon.triggerWeapon())
+                    if (attackCooldown <= 0f && weapon.cooldown <= 0f)
                     {
+                        Weapon.Fire(transform.gameObject, weapon, weaponHoldPoint);
+                        weapon.cooldown = Weapon.cooldowns[(int)weapon.gunType];
                         counter++;
                     }
                     if (counter >= 4)
@@ -439,10 +444,10 @@ public class EnemyBrain : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(headTransform.position, headTransform.forward, out hit, 3f))
                 {
-                    StatManager statManager; 
+                    StatManager statManager;
                     if (hit.transform.TryGetComponent(out statManager))
                     {
-                        statManager.DealDamage(30f, "Melee", this.gameObject, transform.position);
+                        statManager.DealDamage(30f, BulletType.Melee, gameObject, transform.position);
                     }
                 }
                 cooldownTimer = meleeCooldown;
@@ -466,7 +471,7 @@ public class EnemyBrain : MonoBehaviour
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
         headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
-        if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
+        weaponHoldPoint.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
     }
 
     private void RotationHelperOmnipotent()
@@ -479,7 +484,7 @@ public class EnemyBrain : MonoBehaviour
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
         headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
-        if (weapon != null) {weapon.transform.rotation = headTransform.rotation;}
+        weaponHoldPoint.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
     }
 
     public void InformOfDamage(GameObject dealer, float damage, DamageType damageType)

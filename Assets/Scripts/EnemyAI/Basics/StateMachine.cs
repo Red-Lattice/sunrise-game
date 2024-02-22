@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -162,7 +162,7 @@ public class StateMachine : MonoBehaviour
     // This method handles that
     void randomSwitchStates()
     {
-        float randomGeneratedNumber = Random.Range(0, 100) / 100;
+        float randomGeneratedNumber = Random.Range(0, 100) / 100;*/
         /*if (state == State.Idle)
         {
             randomChanceToSwitchState += Time.deltaTime / 10f;
@@ -170,7 +170,7 @@ public class StateMachine : MonoBehaviour
             return;
         }*/
 
-        if (state == State.AttackingLKP)
+        /*if (state == State.AttackingLKP)
         {
             chargeInTimer -= Time.deltaTime;
             if (chargeInTimer < 0)
@@ -182,4 +182,4 @@ public class StateMachine : MonoBehaviour
 
         randomChanceToSwitchState = (state == State.Wandering || state == State.Dodging) ? 0f : randomChanceToSwitchState;
     }
-}
+}*/
