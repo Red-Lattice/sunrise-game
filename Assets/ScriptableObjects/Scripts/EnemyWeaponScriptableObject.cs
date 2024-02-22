@@ -7,11 +7,11 @@ public class EnemyWeaponScriptableObject : ScriptableObject
 {
     public GameObject plasmaPulser;
 
-    public GameObject getObject(string weaponName)
+    public GameObject GetObject(GunType weaponType)
     {
-        switch (weaponName)
+        switch (weaponType)
         {
-            case "Plasma Pulser":
+            case GunType.PlasmaPulser:
                 return plasmaPulser;
             default:
                 return null;

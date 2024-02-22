@@ -49,9 +49,9 @@ public class WarpWall : MonoBehaviour, IDamageable
         center.RotateAround(center.position, center.up, 250f * Time.deltaTime);
     }
 
-    public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos) 
+    public void DealDamage(float damage, BulletType bulletType, GameObject dealer, Vector3 hitPos) 
     {
-        AddBullet(BulletSingleton.StringToBulletType(bulletType));
+        AddBullet(bulletType);
     }
 
     public void AddBullet(BulletType damageType)
@@ -87,11 +87,11 @@ public class WarpWall : MonoBehaviour, IDamageable
             case Plasma_Pistol_Round:
                 float angle = Random.Range(-180f, 180f);
                 float distance = Random.Range(0f, 0.5f);
-                var location = (Quaternion.Euler(0, angle, 0) * bulletTransform.right * distance);
+                var location = Quaternion.Euler(0, angle, 0) * bulletTransform.right * distance;
                 GameObject bullet = BulletSingleton.instance.GetBullet(bulletType);
                 bullet.transform.position = bulletTransform.position + location;
                 bullet.transform.rotation = firer.rotation;
-                bullet.GetComponent<PlasmaBullet>().initialization(firer.parent.gameObject);
+                bullet.GetComponent<PlasmaBullet>().Initialize(firer.parent.gameObject);
                 return;
             default:
                 break;

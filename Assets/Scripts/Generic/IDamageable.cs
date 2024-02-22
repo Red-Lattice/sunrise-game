@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos);
+    public void DealDamage(float damage, BulletType bulletType, GameObject dealer, Vector3 hitPos);
 }

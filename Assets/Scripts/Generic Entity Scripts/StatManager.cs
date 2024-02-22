@@ -28,9 +28,9 @@ public class StatManager : MonoBehaviour, IDamageable
         optionalBrain = GetComponent<EnemyBrain>();
     }
 
-    public void DealDamage(float damage, string bulletType, GameObject dealer, Vector3 hitPos)
+    public void DealDamage(float damage, BulletType bulletType, GameObject dealer, Vector3 hitPos)
     {
-        DamageType damageType = Damage.bulletToDamageType(bulletType);
+        DamageType damageType = Damage.BulletTypeToDamageType(bulletType);
         if (shield > 0)
         {
             damageShield(damage, damageType);

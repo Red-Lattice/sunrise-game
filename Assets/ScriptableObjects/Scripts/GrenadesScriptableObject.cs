@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GrenadesScriptableObject", menuName = "ScriptableObjects/Grenades")] 
 public class GrenadesScriptableObject : ScriptableObject
 {
-    [SerializeField] private GameObject defaultGrenade;
+    public GameObject defaultGrenade;
 
     public GameObject getPrefab(string grenadeName)
     {

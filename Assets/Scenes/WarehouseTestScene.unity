@@ -1065,7 +1065,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2486523382057850047, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
-      value: Gun 4
+      value: Gun
       objectReference: {fileID: 0}
     - target: {fileID: 2486523383445090185, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
@@ -1224,7 +1224,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-8152
+  m_Name: pb_Mesh-2650
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1644,7 +1644,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2486523382057850047, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
-      value: Gun 3
+      value: Gun
       objectReference: {fileID: 0}
     - target: {fileID: 2486523383445090185, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
@@ -2334,7 +2334,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2486523382057850047, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
-      value: Gun 2
+      value: Gun
       objectReference: {fileID: 0}
     - target: {fileID: 2486523383445090185, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
@@ -3380,7 +3380,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2486523382057850047, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name
-      value: Gun 1
+      value: Gun
       objectReference: {fileID: 0}
     - target: {fileID: 2486523383445090185, guid: 6d2055b1ddf303e43bd64b3d2d2c95ce, type: 3}
       propertyPath: m_Name

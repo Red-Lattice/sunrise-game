@@ -92,7 +92,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 194541783683741237}
-  - component: {fileID: 8118759530986824508}
   m_Layer: 9
   m_Name: PlasmaGun
   m_TagString: Gun
@@ -123,21 +122,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8118759530986824508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 718594707076213903}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18bca828b870e6c4f8303a31b330fec9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponName: 
-  plasmaBolt: {fileID: 6245491676161645225, guid: 20ce753b4ac3c4040baea08345370641, type: 3}
-  cam: {fileID: 0}
 --- !u!1 &1060030681222996922
 GameObject:
   m_ObjectHideFlags: 0
