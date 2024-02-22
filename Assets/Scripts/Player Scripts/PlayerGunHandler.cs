@@ -24,7 +24,7 @@ public class PlayerGunHandler : MonoBehaviour
     
     [Header("Parameters")]
     public int maxWeapons = 2;
-
+    //****************************
     private int numberOfWeapons;
     private int weaponSelectedIndex;
     private WeaponStruct[] availableWeapons;
@@ -64,7 +64,7 @@ public class PlayerGunHandler : MonoBehaviour
             return;
         }
         
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {switchWeapon();} // Switches weapon
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {SwitchWeapon();} // Switches weapon
 
         if (WeaponsEmpty()) {return;}
 
@@ -145,46 +145,30 @@ public class PlayerGunHandler : MonoBehaviour
     }
 
     private AnimationInfo MakeAnimInfoStruct(AnimationState toState) {
-        return new AnimationInfo(Fire, gun, GunAnimator.FindAnimationState(gun));
+        return new AnimationInfo(toState, gun, GunAnimator.FindAnimationState(gun));
     }
 
     
     /// <summary>
     /// This code manages adding a weapon. It also automatically switches to the new weapon.
     /// </summary>
-    public void setWeapon(string weaponName)
+    public void SetWeapon(string weaponName)
     {
         GameObject gunInQuestion = gunGetter.getGunPrefab(weaponName);
-        // This runs when you're adding a new weapon
-        if (numberOfWeapons < maxWeapons) {
-
-            if (gun != null) {
-                gun.gameObject.SetActive(false);
-            }
-            numberOfWeapons++;
-            availableWeapons[numberOfWeapons - 1] = Weapon.WeaponStructFromName(weaponName);
-            guns[numberOfWeapons - 1] = gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
-
-            weaponSelectedIndex++;
-            GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, None));
-            return;
+        if (gun != null) {
+            gun.gameObject.SetActive(false);
         }
-
-        gun.gameObject.SetActive(false);
-        gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
-
-        weaponSelectedIndex = weaponSelectedIndex % numberOfWeapons;
-        availableWeapons[weaponSelectedIndex - 1] = Weapon.WeaponStructFromName(weaponName);
-        guns[weaponSelectedIndex - 1] = gun;
-        weaponSelectedIndex++;
-        GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, None));
+        numberOfWeapons++;
+        availableWeapons[numberOfWeapons - 1] = Weapon.WeaponStructFromName(weaponName);
+        guns[numberOfWeapons - 1] = gun = Instantiate(gunInQuestion, weaponObject.transform).GetComponent<Animator>();
+        SwitchWeapon();
     }
 
     /**
     * Runs when you switch between weapons you have. 
     * Does nothing if you don't have weapons
     */
-    void switchWeapon() {
+    void SwitchWeapon() {
         if (numberOfWeapons <= 0) {return;} // We don't want a divide by 0 error!
 
         if (gun != null) {

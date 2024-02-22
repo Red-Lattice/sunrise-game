@@ -8,10 +8,41 @@ using static GunType;
     Plasma_Pistol_Round,
     Grenade,
 }*/
+public struct WeaponStructTemplate {
+    public GunType gunType;
+    public BulletType bulletType;
+    public float range;
+    public float damage;
+}
+
+public struct WeaponStruct {
+    public GunType gunType;
+    public BulletType bulletType;
+    public float range;
+    public float damage;
+    public float cooldown;
+    public ushort ammo;
+    public ushort reserveAmmo;
+}
+
+public enum GunType {
+    None,
+    Pistol,
+    PlasmaPulser,
+}
+
 
 public static class Weapon
 {
+    // FIELDS
     public static readonly float[] cooldowns = {0f, 0.2f, 0.2f};
+    public readonly static WeaponStructTemplate[] WeaponStructs = {new WeaponStructTemplate {gunType = None},
+        new WeaponStructTemplate {gunType = Pistol, bulletType = Kinetic_Small, range = float.PositiveInfinity, damage = 30f,},
+        new WeaponStructTemplate {gunType = PlasmaPulser, bulletType = Plasma_Pistol_Round, range = float.PositiveInfinity, damage = 30f,}
+    };
+    public readonly static float[] BulletDamage = {0f, 30f, 30f};
+
+    // METHODS
     public static void Fire(GameObject firer, WeaponStruct weaponInfo, Transform firePosition) {
         switch (weaponInfo.bulletType) {
             case Melee:
@@ -24,35 +55,42 @@ public static class Weapon
                 FireProjectile(firer, weaponInfo, firePosition);
                 break;
             default:
-                Debug.LogError("Case not handled: " + weaponInfo.bulletType.ToString());
+                Debug.LogError("Case not handled: " + weaponInfo.bulletType);
                 break;
         }
         // Cooldown is YOUR responsibility to handle. The static class doesn't like it :(
     }
 
-    public static bool Fireable(WeaponStruct weaponInfo) {
-        return weaponInfo.cooldown <= 0f && weaponInfo.ammo > 0;
-    }
-
     public static void FireHitscan(GameObject firer, WeaponStruct weaponInfo, Transform firePosition) {
         LayerMask layer = BulletSingleton.shootableLayers & ~(1 << firer.layer);
-
-        if (Physics.Raycast(firePosition.position, firePosition.forward, out RaycastHit hit, 100f, layer))
+        RaycastHit hit;
+        if (Physics.Raycast(firePosition.position, firePosition.forward, out hit, 100f, layer))
         {
-            if (hit.transform.TryGetComponent(out IDamageable damageableComponent))
+            IDamageable damageableComponent;
+            if (hit.transform.TryGetComponent(out damageableComponent))
             {
-                damageableComponent.DealDamage(weaponInfo.damage, weaponInfo.bulletType, firer, hit.transform.position);
+                damageableComponent.DealDamage(
+                    weaponInfo.damage, 
+                    weaponInfo.bulletType, 
+                    firer, 
+                    hit.transform.position);
             }
         }
     }
 
     public static void FireRangedHitscan(GameObject firer, WeaponStruct weaponInfo, Transform firePosition) {
         LayerMask layer = BulletSingleton.shootableLayers & (~firer.layer);
-        if (Physics.Raycast(firePosition.position, firePosition.forward, out RaycastHit hit, weaponInfo.range, layer))
+        RaycastHit hit;
+        if (Physics.Raycast(firePosition.position, firePosition.forward, out hit, weaponInfo.range, layer))
         {
-            if (hit.transform.TryGetComponent(out IDamageable damageableComponent))
+            IDamageable damageableComponent;
+            if (hit.transform.TryGetComponent(out damageableComponent))
             {
-                damageableComponent.DealDamage(weaponInfo.damage, weaponInfo.bulletType, firer, hit.transform.position);
+                damageableComponent.DealDamage(
+                    weaponInfo.damage, 
+                    weaponInfo.bulletType, 
+                    firer, 
+                    hit.transform.position);
             }
         }
     }
@@ -66,13 +104,7 @@ public static class Weapon
 
         initializableScript.Initialize(firer);
     }
-    public readonly static WeaponStructTemplate[] WeaponStructs = {new WeaponStructTemplate {gunType = None},
-        new WeaponStructTemplate {gunType = Pistol, bulletType = Kinetic_Small, range = float.PositiveInfinity, damage = 30f,},
-        new WeaponStructTemplate {gunType = PlasmaPulser, bulletType = Plasma_Pistol_Round, range = float.PositiveInfinity, damage = 30f,}
-    };
-
-    public readonly static float[] BulletDamage = {0f, 30f, 30f};
-
+    
     public static WeaponStruct BuildWeaponStruct(GunType gunType, ushort ammo, ushort reserveAmmo) {
         WeaponStructTemplate template = WeaponStructs[(int)gunType];
         return new WeaponStruct {
@@ -97,31 +129,5 @@ public static class Weapon
         }
     }
 
-    public static bool NotNull(WeaponStruct weapon) {
-        return weapon.gunType != None;
-    }
-}
-
-
-public struct WeaponStructTemplate {
-    public GunType gunType;
-    public BulletType bulletType;
-    public float range;
-    public float damage;
-}
-
-public struct WeaponStruct {
-    public GunType gunType;
-    public BulletType bulletType;
-    public float range;
-    public float damage;
-    public float cooldown;
-    public ushort ammo;
-    public ushort reserveAmmo;
-}
-
-public enum GunType {
-    None,
-    Pistol,
-    PlasmaPulser,
+    public static bool NotNull(WeaponStruct weapon) {return weapon.gunType != None;}
 }

@@ -36,13 +36,9 @@ public class PlayerBoundingBox : MonoBehaviour
         highlightedWeapon = go.name;
         if (pgh.weaponsNeededCheck())
         {
-            pgh.setWeapon(highlightedWeapon);
+            pgh.SetWeapon(highlightedWeapon);
             Destroy(go);
         }
-    }
-
-    void Update()
-    {
     }
 
     public string getHighlightedWeapon()
