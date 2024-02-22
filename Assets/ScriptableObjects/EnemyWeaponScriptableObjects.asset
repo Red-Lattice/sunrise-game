@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: EnemyWeaponScriptableObjects
   m_EditorClassIdentifier: 
   plasmaPulser: {fileID: 718594707076213903, guid: 907000337c478af49a2a2b3005eec25f, type: 3}
+  pistol: {fileID: 7576998901860775635, guid: ced6ed47c89986a48a86e8e8250b1e78, type: 3}

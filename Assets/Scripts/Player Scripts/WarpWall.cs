@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 using static BulletType;
 
@@ -11,8 +12,6 @@ public class WarpWall : MonoBehaviour, IDamageable
     private BoxCollider trigger;
     [SerializeField] private Transform WarpWallCenter;
     [SerializeField] private Transform cameraTransform;
-    [SerializeField] private ProjectileScriptableObjects projectiles;
-    [SerializeField] private CapturedBulletScriptableObject capturedPrefabs;
 
     void Awake()
     {
@@ -61,7 +60,7 @@ public class WarpWall : MonoBehaviour, IDamageable
 
         float angle = Random.Range(-180f, 180f);
         float distance = Random.Range(0f, 0.5f);
-        var location = (Quaternion.Euler(0, angle, 0) * WarpWallCenter.right * distance);
+        var location = Quaternion.Euler(0, angle, 0) * WarpWallCenter.right * distance;
 
         bullet.bulletTransform.position = WarpWallCenter.position + location;
         bullet.bulletTransform.rotation = transform.rotation;
@@ -73,29 +72,24 @@ public class WarpWall : MonoBehaviour, IDamageable
     {
         foreach (CapturedBullet bullet in capturedBullets)
         {
-            FireBullet(bullet.bulletTransform, bullet.capturedBulletType, projectiles, cameraTransform);
+            FireBullet(bullet.bulletTransform, bullet.capturedBulletType, cameraTransform.parent, cameraTransform.rotation);
             bullet.bullet.SetActive(false);
         }
         capturedBullets.Clear();
     }
 
-    private static void FireBullet(Transform bulletTransform, BulletType bulletType,
-        ProjectileScriptableObjects pso, Transform firer)
+    private static void FireBullet(Transform bulletTransform, BulletType bulletType, Transform firer, Quaternion rotation)
     {
-        switch (bulletType)
-        {
-            case Plasma_Pistol_Round:
-                float angle = Random.Range(-180f, 180f);
-                float distance = Random.Range(0f, 0.5f);
-                var location = Quaternion.Euler(0, angle, 0) * bulletTransform.right * distance;
-                GameObject bullet = BulletSingleton.instance.GetBullet(bulletType);
-                bullet.transform.position = bulletTransform.position + location;
-                bullet.transform.rotation = firer.rotation;
-                bullet.GetComponent<PlasmaBullet>().Initialize(firer.parent.gameObject);
-                return;
-            default:
-                break;
-        }
+        bulletTransform.rotation = rotation;
+        Weapon.Fire(firer.gameObject, new WeaponStruct {
+            gunType = GunType.None,
+            bulletType = bulletType, 
+            range = 100f, 
+            damage = Weapon.BulletDamage[(int)bulletType],
+            cooldown = 0f, 
+            ammo = 1,
+            reserveAmmo = 1,
+        }, bulletTransform);
     }
 
     struct CapturedBullet {

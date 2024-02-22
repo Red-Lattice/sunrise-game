@@ -47,7 +47,9 @@ public class BulletSingleton : MonoBehaviour {
         }
 
         pooledCapturedBullets[(int)Plasma_Pistol_Round] = new List<GameObject>();
+        pooledCapturedBullets[(int)Kinetic_Small] = new List<GameObject>();
         for (int i = 0; i < 8; i++) {
+            AddNewCapturedBulletToPool(pooledCapturedBullets[(int)Kinetic_Small], Kinetic_Small);
             AddNewCapturedBulletToPool(pooledCapturedBullets[(int)Plasma_Pistol_Round], Plasma_Pistol_Round);
         }
     }

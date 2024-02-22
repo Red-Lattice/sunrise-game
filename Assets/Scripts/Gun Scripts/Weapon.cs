@@ -71,6 +71,8 @@ public static class Weapon
         new WeaponStructTemplate {gunType = PlasmaPulser, bulletType = Plasma_Pistol_Round, range = float.PositiveInfinity, damage = 30f,}
     };
 
+    public readonly static float[] BulletDamage = {0f, 30f, 30f};
+
     public static WeaponStruct BuildWeaponStruct(GunType gunType, ushort ammo, ushort reserveAmmo) {
         WeaponStructTemplate template = WeaponStructs[(int)gunType];
         return new WeaponStruct {
