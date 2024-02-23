@@ -35,6 +35,7 @@ public class PlayerGunHandler : MonoBehaviour
     void Start()
     {
         rightArm.gameObject.SetActive(false);
+        leftArm.gameObject.SetActive(false);
         weaponSelectedIndex = 0;
         availableWeapons = new WeaponStruct[maxWeapons];
         guns = new Animator[maxWeapons];
@@ -44,11 +45,21 @@ public class PlayerGunHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetMouseButtonDown(1))
+        {
+            GunAnimator.PlayAnimation(new AnimationInfo(Wall, leftArm, None));
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            GunAnimator.PlayAnimation(new AnimationInfo(Idle, leftArm, None));
+        }
+
         //DebugStructs();
 
         UpdateCooldowns();
 
         if (!rightArm.gameObject.activeInHierarchy && numberOfWeapons > 0) {rightArm.gameObject.SetActive(true);}
+        if (!leftArm.gameObject.activeInHierarchy && numberOfWeapons > 0) {leftArm.gameObject.SetActive(true);}
 
         ProcessRecoil();
 
@@ -142,6 +153,7 @@ public class PlayerGunHandler : MonoBehaviour
     private void AnimateGunfire() {
         if (gun != null) {GunAnimator.PlayAnimation(MakeAnimInfoStruct(Fire));}
         GunAnimator.PlayAnimation(new AnimationInfo(Fire, rightArm, None));
+        GunAnimator.PlayAnimation(new AnimationInfo(Fire, leftArm, None));
     }
 
     private AnimationInfo MakeAnimInfoStruct(AnimationState toState) {
@@ -175,6 +187,7 @@ public class PlayerGunHandler : MonoBehaviour
             gun.gameObject.SetActive(false);
         }
         GunAnimator.PlayAnimation(new AnimationInfo(Enter, rightArm, None));
+        GunAnimator.PlayAnimation(new AnimationInfo(Enter, leftArm, None));
 
         weaponSelectedIndex = weaponSelectedIndex % numberOfWeapons;
         weaponSelectedIndex++;

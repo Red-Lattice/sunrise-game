@@ -13,6 +13,7 @@ public enum AnimationState {
     Idle,
     Running,
     None,
+    Wall,
 }
 
 public static class GunAnimator
