@@ -34,14 +34,6 @@ public enum GunType {
 
 public static class Weapon
 {
-    // FIELDS
-    public static readonly float[] cooldowns = {0f, 0.2f, 0.2f};
-    public readonly static WeaponStructTemplate[] WeaponStructs = {new WeaponStructTemplate {gunType = None},
-        new WeaponStructTemplate {gunType = Pistol, bulletType = Kinetic_Small, range = float.PositiveInfinity, damage = 30f,},
-        new WeaponStructTemplate {gunType = PlasmaPulser, bulletType = Plasma_Pistol_Round, range = float.PositiveInfinity, damage = 30f,}
-    };
-    public readonly static float[] BulletDamage = {0f, 30f, 30f};
-
     // METHODS
     public static void Fire(GameObject firer, WeaponStruct weaponInfo, Transform firePosition) {
         switch (weaponInfo.bulletType) {
@@ -106,12 +98,14 @@ public static class Weapon
     }
     
     public static WeaponStruct BuildWeaponStruct(GunType gunType, ushort ammo, ushort reserveAmmo) {
-        WeaponStructTemplate template = WeaponStructs[(int)gunType];
+        if (ScriptableObjectHoarder.instance == null) {return new WeaponStruct{};}
+        SO_WeaponTemplate template = WeaponTemplate(gunType);
+        SO_Bullet bullet = Bullet(template.bulletType);
         return new WeaponStruct {
             gunType = template.gunType,
             bulletType = template.bulletType, 
             range = template.range, 
-            damage = template.damage,
+            damage = bullet.damage,
             cooldown = 0f, 
             ammo = ammo,
             reserveAmmo = reserveAmmo,
@@ -119,6 +113,7 @@ public static class Weapon
     }
 
     public static WeaponStruct WeaponStructFromName(string weaponName) {
+        if (ScriptableObjectHoarder.instance == null) {return new WeaponStruct{};}
         switch (weaponName) {
             case "Pistol":
                 return BuildWeaponStruct(Pistol, 100, 100);
@@ -127,6 +122,14 @@ public static class Weapon
             default:
                 throw new Exception("Weapon Struct not associated with weapon name: " + weaponName);
         }
+    }
+
+    public static SO_WeaponTemplate WeaponTemplate(GunType gunType) {
+        return ScriptableObjectHoarder.instance.WeaponTemplates[(int)gunType];
+    }
+
+    public static SO_Bullet Bullet(BulletType bulletType) {
+        return ScriptableObjectHoarder.instance.Bullets[(int)bulletType];
     }
 
     public static bool NotNull(WeaponStruct weapon) {return weapon.gunType != None;}

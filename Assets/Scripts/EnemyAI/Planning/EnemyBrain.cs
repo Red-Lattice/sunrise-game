@@ -7,6 +7,7 @@ using UnityEngine.AI;
 using Unity.Profiling;
 using System.Diagnostics.Tracing;
 using Mono.Cecil.Cil;
+using System.Diagnostics.CodeAnalysis;
 //using static AiType;
 
 /// <summary>
@@ -46,8 +47,7 @@ public class EnemyBrain : MonoBehaviour
     //[SerializeField] private AiType behavior;
     //public Enum GetAiType() {return behavior;}
 
-    void Awake()
-    {
+    void Awake() {
         staggered = false;
         LLVisualizer = new string[5];
         GoalVisualizer = new string[5];
@@ -59,7 +59,10 @@ public class EnemyBrain : MonoBehaviour
         pathfinder = transform.gameObject.GetComponent<NavMeshAgent>();
         senses = transform.gameObject.GetComponent<EnemyAwareness>();
         attackGoalSet = new Dictionary<GameObject, Goal_AttackEntity>();
-
+    }
+    // This CANNOT go in Awake
+    void Start()
+    {
         weapon = Weapon.BuildWeaponStruct(defaultGun, 100, 100);
         GameObject obj = gunGetter.GetObject(defaultGun);
         if (obj != null) {
@@ -276,7 +279,7 @@ public class EnemyBrain : MonoBehaviour
     }
 
 #region weaponStuff
-    [SerializeField] private WeaponStruct weapon = Weapon.BuildWeaponStruct(GunType.None, 0, 0);
+    [SerializeField] private WeaponStruct weapon;
     [SerializeField] private Transform weaponHoldPoint;
 
     /// <summary>
@@ -405,7 +408,7 @@ public class EnemyBrain : MonoBehaviour
                     if (attackCooldown <= 0f && weapon.cooldown <= 0f)
                     {
                         Weapon.Fire(transform.gameObject, weapon, weaponHoldPoint);
-                        weapon.cooldown = Weapon.cooldowns[(int)weapon.gunType];
+                        weapon.cooldown = Weapon.WeaponTemplate(weapon.gunType).cooldown;
                         counter++;
                     }
                     if (counter >= 4)

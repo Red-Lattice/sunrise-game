@@ -12,6 +12,6 @@ public static class Overwatch
     }
 
     public static void UpdateAI() {
-        Debug.Log("Hello");
+        
     }
 }

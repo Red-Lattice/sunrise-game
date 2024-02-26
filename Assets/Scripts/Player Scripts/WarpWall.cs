@@ -45,7 +45,7 @@ public class WarpWall : MonoBehaviour, IDamageable
         }
     }
     private static void RotateCenter(Transform center) {
-        center.RotateAround(center.position, center.up, 250f * Time.deltaTime);
+        center.RotateAround(center.position, center.forward, 250f * Time.deltaTime);
     }
 
     public void DealDamage(float damage, BulletType bulletType, GameObject dealer, Vector3 hitPos) 
@@ -85,7 +85,7 @@ public class WarpWall : MonoBehaviour, IDamageable
             gunType = GunType.None,
             bulletType = bulletType, 
             range = 100f, 
-            damage = Weapon.BulletDamage[(int)bulletType],
+            damage = Weapon.Bullet(bulletType).damage,
             cooldown = 0f, 
             ammo = 1,
             reserveAmmo = 1,

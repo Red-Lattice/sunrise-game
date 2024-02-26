@@ -84,7 +84,7 @@ public class PlayerGunHandler : MonoBehaviour
         {
             if (weapon.cooldown > 0f) {return;}
             Weapon.Fire(transform.gameObject, weapon, camControl.transform);
-            availableWeapons[weaponSelectedIndex - 1].cooldown = Weapon.cooldowns[(int)weapon.gunType]; // Structs are weird
+            availableWeapons[weaponSelectedIndex - 1].cooldown = ScriptableObjectHoarder.instance.WeaponTemplates[(int)weapon.gunType].cooldown; // Structs are weird
 
             AnimateGunfire();
 
