@@ -1466,6 +1466,51 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &416581937
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 416581939}
+  - component: {fileID: 416581938}
+  m_Layer: 0
+  m_Name: Watcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &416581938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416581937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59bdc8ca54d39ea47b01435a1fa3574e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1447198383}
+--- !u!4 &416581939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416581937}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.815895, y: -38.108006, z: 36.271797}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &438043781
 GameObject:
   m_ObjectHideFlags: 0
@@ -4009,6 +4054,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1447198383 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7798008654792206731, guid: 4d1a7419285fda343a8b8e596b8be881, type: 3}
+  m_PrefabInstance: {fileID: 2061956290}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1455608234
 GameObject:
   m_ObjectHideFlags: 0
