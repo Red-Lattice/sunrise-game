@@ -134,5 +134,4 @@ public static class Weapon
 
     public static bool NotNull(WeaponStruct weapon) {return weapon.gunType != None;}
     public static bool NotNull(ref WeaponStruct weapon) {return weapon.gunType != None;}
-    public static unsafe bool NotNull(WeaponStruct* weapon) {return (*weapon).gunType != None;}
 }

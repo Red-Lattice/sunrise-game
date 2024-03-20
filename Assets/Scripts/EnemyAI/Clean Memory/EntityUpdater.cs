@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EntityUpdater : MonoBehaviour
 {
     public static EntityUpdater instance;
-    public List<CleanAI> aiList;
+    [HideInInspector] public List<CleanAI> aiList;
+    public SO_AIList aIList;
     void Awake() {
         if (instance != null) {
             Destroy(this);
@@ -18,13 +20,17 @@ public class EntityUpdater : MonoBehaviour
     public static void Subscribe(CleanAI ai) {
         instance.aiList.Add(ai);
     }
+    private byte timeSinceUpdate = 0;
+    private const byte updateTime = 5;
+    void FixedUpdate() {
+        ++timeSinceUpdate;
+        if (timeSinceUpdate > updateTime) {timeSinceUpdate = 0;} else {return;}
 
-    unsafe void FixedUpdate() {
         foreach (CleanAI ai in aiList) {
-            if (Weapon.NotNull(ai.weaponPtr) && (*ai.weaponPtr).cooldown > 0f) {
+            ai.StaggeredUpdate();
+            if (Weapon.NotNull(ai.HeldWeapon()) && ai.HeldWeapon().cooldown > 0f) {
                 ai.UpdateCooldowns();
             }
-            if (ai.needToBeUpdated) {ai.UpdateThis();}
         }
     }
 }
