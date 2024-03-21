@@ -11,4 +11,5 @@ public class SO_WeaponTemplate : ScriptableObject
     [field: SerializeField] public float range {get; private set;}
     [field: SerializeField] public uint maxAmmo {get; private set;}
     [field: SerializeField] public uint maxReserveAmmo {get; private set;}
+    [field: SerializeField] public GameObject prefab {get; private set;}
 }

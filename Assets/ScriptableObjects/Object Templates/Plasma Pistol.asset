@@ -18,3 +18,4 @@ MonoBehaviour:
   <range>k__BackingField: 100
   <maxAmmo>k__BackingField: 64
   <maxReserveAmmo>k__BackingField: 0
+  <prefab>k__BackingField: {fileID: 5712555425361308403, guid: fda759b96fa619b4b8fdf0349bb2b71b, type: 3}

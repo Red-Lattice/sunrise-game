@@ -27,13 +27,20 @@ public partial class CleanAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         targets = new Target[5];
         weapon = Weapon.BuildWeaponStruct(defaultGun, 100, 100);
+        Debug.Log(hasWeapon);
 
         aiData = new BrainData(transform.position, Quaternion.identity);
 
         EntityUpdater.Subscribe(this);
+        if (hasWeapon) {InitializeWeapon();}
         InitializeStats();
         BeginMoving();
         //StartDebug();
+    }
+    public GameObject gun;
+    private void InitializeWeapon() {
+        gun = Instantiate(ScriptableObjectHoarder.instance.WeaponTemplates[(int)weapon.gunType].prefab, weaponHoldPoint);
+        //weaponHoldPoint.transform.LookAt(-transform.forward);
     }
 
     /// <summary>
