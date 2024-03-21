@@ -17,6 +17,7 @@ public partial class CleanAI : MonoBehaviour
     public Transform weaponHoldPoint;
     public bool hasWeapon => Weapon.NotNull(ref weapon);
     public bool strafe = false;
+    public byte boredom;
 
     void Start() {
         #if UNITY_EDITOR 
@@ -69,8 +70,12 @@ public partial class CleanAI : MonoBehaviour
     public bool HasLineOfSightToTarget() {
         return !Physics.Raycast(weaponHoldPoint.position, 
             targetPosition, 
-            Vector3.Distance(transform.position, targetPosition), 
+            DistanceToTarget(), 
             blockingLayerMask);
+    }
+
+    public float DistanceToTarget() {
+        return Vector3.Distance(transform.position, targetPosition);
     }
 }
 
