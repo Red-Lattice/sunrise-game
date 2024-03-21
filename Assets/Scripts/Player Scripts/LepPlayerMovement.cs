@@ -172,11 +172,13 @@ public class LepPlayerMovement : MonoBehaviour
     #region Collisions
     void OnCollisionStay(Collision collision)
     {
-        if (collision.contactCount == 0) {return;}
-        float angle;
+        int count = collision.contactCount;
+        if (count == 0) {return;}
 
-        foreach (ContactPoint contact in collision.contacts)
+        float angle;
+        for (int i = 0; i < count; i++) // Uglier than the foreach but generates 0 garbage
         {
+            ContactPoint contact = collision.GetContact(i);
             angle = Vector3.Angle(contact.normal, Vector3.up);
             if (angle >= wallFloorBarrier) {continue;}
 
