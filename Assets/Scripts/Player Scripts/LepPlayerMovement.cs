@@ -172,62 +172,60 @@ public class LepPlayerMovement : MonoBehaviour
     #region Collisions
     void OnCollisionStay(Collision collision)
     {
-        if (collision.contactCount > 0)
+        if (collision.contactCount == 0) {return;}
+        float angle;
+
+        foreach (ContactPoint contact in collision.contacts)
         {
-            float angle;
+            angle = Vector3.Angle(contact.normal, Vector3.up);
+            if (angle >= wallFloorBarrier) {continue;}
 
-            foreach (ContactPoint contact in collision.contacts)
+            if (crouched)
             {
-                angle = Vector3.Angle(contact.normal, Vector3.up);
-                if (angle >= wallFloorBarrier) {continue;}
+                EnterSliding();
+            }
+            else
+            {
+                EnterWalking();
+            }
+            
+            grounded = true;
+            groundNormal = contact.normal;
+            ground = contact.otherCollider;
+            return;
+        }
 
-                if (crouched)
-                {
-                    EnterSliding();
-                }
-                else
-                {
-                    EnterWalking();
-                }
-                
+        if (VectorToGround().magnitude > 0.2f)
+        {
+            grounded = false;
+        }
+
+        if (grounded) {return;}
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            if (contact.otherCollider.tag == "NoWallrun" || mode == Walking)
+            {
+                continue;
+            }
+
+            angle = Vector3.Angle(contact.normal, Vector3.up);
+            if (angle > wallFloorBarrier && angle < 120f)
+            {
                 grounded = true;
                 groundNormal = contact.normal;
                 ground = contact.otherCollider;
+                EnterWallrun();
                 return;
-            }
-
-            if (VectorToGround().magnitude > 0.2f)
-            {
-                grounded = false;
-            }
-
-            if (grounded) {return;}
-            foreach (ContactPoint contact in collision.contacts)
-            {
-                if (contact.otherCollider.tag == "NoWallrun" || mode == Walking)
-                {
-                    continue;
-                }
-
-                angle = Vector3.Angle(contact.normal, Vector3.up);
-                if (angle > wallFloorBarrier && angle < 120f)
-                {
-                    grounded = true;
-                    groundNormal = contact.normal;
-                    ground = contact.otherCollider;
-                    EnterWallrun();
-                    return;
-                }
             }
         }
     }
 
-    void OnCollisionExit(Collision collision)
+    void OnCollisionExit()
     {
-        if (collision.contactCount == 0)
-        {
+        //if (collision.contactCount == 0)
+        //{
             EnterFlying();
-        }
+        //}
     }
     #endregion
 

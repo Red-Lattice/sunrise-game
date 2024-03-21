@@ -18,14 +18,17 @@ public static class DecisionMaker {
         Quaternion newRotation = ai.aiData.lookAtRot;
         if (ai.HasLineOfSightToTarget()) {
             newRotation = Quaternion.LookRotation(ai.targetPosition - ai.transform.position);
-            if (ai.DistanceCheck(newPosition)) {
-                Vector3 randomPos = ai.RandomBackUp();
-                if (Vector3.Distance(newPosition, ai.targetPosition) < 10f) {newPosition = randomPos;}
-            }
-        } else {
-            newPosition = ai.targetPosition;
-            newRotation = Quaternion.identity;
+            
+            if (!ai.DistanceCheck(newPosition)) {goto FINISH;}
+
+            Vector3 randomPos = ai.RandomBackUp();
+            if (Vector3.Distance(newPosition, ai.targetPosition) < 10f) {newPosition = randomPos;}
+            goto FINISH;
         }
+        newPosition = ai.targetPosition;
+        newRotation = Quaternion.identity;
+
+        FINISH:
         ai.aiData = new BrainData(newPosition, newRotation);
     }
 

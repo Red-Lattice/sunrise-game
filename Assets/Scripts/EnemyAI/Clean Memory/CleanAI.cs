@@ -18,6 +18,7 @@ public partial class CleanAI : MonoBehaviour
     public bool hasWeapon => Weapon.NotNull(ref weapon);
     public bool strafe = false;
     public byte boredom;
+    static readonly ProfilerMarker staggeredUpdateCall = new ProfilerMarker("StaggeredUpdate()");
 
     void Start() {
         #if UNITY_EDITOR 
@@ -51,7 +52,9 @@ public partial class CleanAI : MonoBehaviour
     }
 
     public void StaggeredUpdate() {
+        staggeredUpdateCall.Begin();
         this.GenerateActions();
+        staggeredUpdateCall.End();
     }
 
     public ref WeaponStruct HeldWeapon() {

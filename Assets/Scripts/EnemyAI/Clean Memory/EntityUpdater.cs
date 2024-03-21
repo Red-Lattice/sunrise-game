@@ -24,10 +24,13 @@ public class EntityUpdater : MonoBehaviour
     private const byte updateTime = 5;
     void FixedUpdate() {
         ++timeSinceUpdate;
-        if (timeSinceUpdate > updateTime) {timeSinceUpdate = 0;} else {return;}
+        if (timeSinceUpdate >= updateTime) {timeSinceUpdate = 0;}
 
+        for (int i = timeSinceUpdate; i < aiList.Count; i += updateTime) {
+            aiList[i].StaggeredUpdate();
+        }
         foreach (CleanAI ai in aiList) {
-            ai.StaggeredUpdate();
+            //ai.StaggeredUpdate();
             if (Weapon.NotNull(ai.HeldWeapon()) && ai.HeldWeapon().cooldown > 0f) {
                 ai.UpdateCooldowns();
             }
