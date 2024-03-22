@@ -4,12 +4,12 @@ using UnityEngine;
 public static class DecisionMaker {
 
     public static void GenerateActions(this CleanAI ai) {
+        if (ai.stunValue > 0f) {return;}
         if (ai.hasTarget) {ai.GenerateTargetActions(); return;}
         ai.GenerateNonTargetActions();
     }
 
 #region entryPoints
-
     /// <summary>
     /// Generates the actions an entity should take if it is not actively seeking a target
     /// </summary>
@@ -42,13 +42,14 @@ public static class DecisionMaker {
 
         FiringLogic(ai);
 
-        if (!ai.DistanceCheck(newPosition)) {FiringLogic(ai); goto FINISH;}
+        if (!ai.DistanceCheck(newPosition)) {goto FINISH;}
 
         if (!ai.CanHitTarget()) {newPosition = ai.RandomStrafe(); goto FINISH;}
 
         if (ai.DistanceToTarget() < 10f) {newPosition = ai.RandomBackUp(); goto FINISH;}
 
-        Tuple<bool,Vector3> tup = ai.TargetBoredom(); if (tup.Item1) {newPosition = tup.Item2;}
+        Tuple<bool,Vector3> tup = ai.TargetBoredom();
+        if (tup.Item1) {newPosition = tup.Item2;}
 
         // Result ---------------------------------------------------------------------------
         FINISH:
@@ -60,7 +61,7 @@ public static class DecisionMaker {
     /// This method assumes that the ai having a valid line of sight was already passed.
     /// </summary>
     private static void FiringLogic(CleanAI ai) {
-        ai.fireTrigger = ai.AcceptableAngleToTarget() && ai.CanHitTarget();;
+        ai.fireTrigger = ai.AcceptableAngleToTarget() && ai.CanHitTarget();
     }
     private static Tuple<bool,Vector3> TargetBoredom(this CleanAI ai) {
         if (ai.boredom >= UnityEngine.Random.Range(25,255)) {
@@ -69,6 +70,10 @@ public static class DecisionMaker {
         }
         ++ai.boredom;
         return new(false, Vector3.zero);
+    }
+
+    public static void Stun(CleanAI ai) {
+        ai.aiData = new(ai.transform.position, Quaternion.identity);
     }
 
 #region randomHelperFunctions
@@ -85,11 +90,16 @@ public static class DecisionMaker {
                 * ai.transform.forward * randomMagnitude;
     }
     public static Vector3 RandomStrafe(this CleanAI ai) {
-        float randomMagnitude = ((UnityEngine.Random.Range(-1f, 1f) > 0) ? 1f : -1f) * UnityEngine.Random.Range(1f, 2f);
+        float randomMagnitude = RandomPositiveOrNegative()
+            * UnityEngine.Random.Range(1f, 2f);
         return ai.transform.position + ai.transform.right * randomMagnitude;
     }
     public static Quaternion RandomSmallAngle() {
         return Quaternion.Euler(0, UnityEngine.Random.Range(-15f, 15f), 0);
+    }
+
+    public static float RandomPositiveOrNegative() {
+        return (UnityEngine.Random.Range(0, 1) > 0) ? 1f : -1f;
     }
 #endregion
 #region helpers

@@ -19,6 +19,6 @@ MonoBehaviour:
   <range>k__BackingField: 100
   <maxAmmo>k__BackingField: 64
   <maxReserveAmmo>k__BackingField: 0
-  <countShots>k__BackingField: 0
-  <maxShotsInRow>k__BackingField: 255
-  <entityFiringCooldown>k__BackingField: 0
+  <countShots>k__BackingField: 1
+  <maxShotsInRow>k__BackingField: 4
+  <entityFiringCooldown>k__BackingField: 1

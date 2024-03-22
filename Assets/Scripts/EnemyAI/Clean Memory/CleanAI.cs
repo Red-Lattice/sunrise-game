@@ -6,6 +6,7 @@ using Unity.Profiling;
 using UnityEngine.AI;
 using UnityEngine.Animations;
 using System.Data.Common;
+using Unity.VisualScripting;
 
 public partial class CleanAI : MonoBehaviour
 {
@@ -53,8 +54,14 @@ public partial class CleanAI : MonoBehaviour
     /// </summary>
     public void UpdateCooldowns() {
         //UpdateDebug();
-        weapon.cooldown -= Time.fixedDeltaTime;
-        fireCooldown -= Time.fixedDeltaTime;
+        DecrementIfNonZero(ref weapon.cooldown);
+        DecrementIfNonZero(ref fireCooldown);
+        DecrementIfNonZero(ref entityStun);
+    }
+
+    public static void DecrementIfNonZero(ref float value) {
+        if (value <= 0f) {return;}
+        value -= Time.fixedDeltaTime;
     }
 
     #if UNITY_EDITOR
@@ -112,6 +119,7 @@ public partial class CleanAI : MonoBehaviour {
 
     private IEnumerator BigCoroutine() {
         while (true) {
+            if (entityStun > 0f) {agent.ResetPath(); goto STOP;}
             if (agent.destination != aiData.moveToLocation) {
                 agent.SetDestination(aiData.moveToLocation);
             }
@@ -123,12 +131,14 @@ public partial class CleanAI : MonoBehaviour {
             else {agent.updateRotation = true;}
 
             if (fireTrigger) {Fire();}
+            STOP:
             yield return null;
         }
     }
     private byte timesShot;
     private float fireCooldown = 0f;
     private void Fire() {
+        if (DistanceToTarget() < 2f) {MeleeAttack(); MeleeStun(); return;}
         if (fireCooldown > 0f) {return;}
         if (!Weapon.Fire(gameObject, ref weapon, weaponHoldPoint)) {return;}
 
@@ -140,6 +150,26 @@ public partial class CleanAI : MonoBehaviour {
             timesShot = 0;
             fireCooldown = weaponTemplate.entityFiringCooldown;
         }
+    }
+    [field: SerializeField] private float entityStun = 0f;
+    public float stunValue => entityStun; // Lmao
+    private const float stunLength = 1.5f;
+    private void MeleeAttack() {
+        if (!Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, 3f)) {return;}
+
+        if (hit.transform.TryGetComponent(out IDamageable damageable)) {
+            damageable.DealDamage(
+                30f,
+                BulletType.Melee,
+                transform.gameObject,
+                hit.point
+            );
+        }
+    }
+
+    private void MeleeStun() {
+        entityStun = stunLength;
+        DecisionMaker.Stun(this);
     }
 
     private void RotationHelper(Quaternion rotation)

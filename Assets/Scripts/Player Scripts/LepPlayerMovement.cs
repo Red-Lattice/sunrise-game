@@ -123,7 +123,7 @@ public class LepPlayerMovement : MonoBehaviour
         {
             case Wallruning:
                 Wallrun(dir, wallSpeed, wallClimbSpeed, wallAccel);
-                if (ground.tag != "InfiniteWallrun") wrTimer = Mathf.Max(wrTimer - Time.deltaTime, 0f);
+                if (!ground.CompareTag(infiniteWallrun)) {wrTimer = Mathf.Max(wrTimer - Time.deltaTime, 0f);}
                 break;
 
             case Walking:
@@ -131,7 +131,7 @@ public class LepPlayerMovement : MonoBehaviour
                 break;
 
             case Sliding:
-                Slide(dir, groundSpeed, grAccel);
+                Slide();
                 break;
 
             case Flying:
@@ -203,9 +203,10 @@ public class LepPlayerMovement : MonoBehaviour
         }
 
         if (grounded) {return;}
-        foreach (ContactPoint contact in collision.contacts)
+        for (int i = 0; i < count; i++) // Uglier than the foreach but generates 0 garbage
         {
-            if (contact.otherCollider.tag == "NoWallrun" || mode == Walking)
+            ContactPoint contact = collision.GetContact(i);
+            if (contact.otherCollider.CompareTag(ignoreWallrun) || mode == Walking)
             {
                 continue;
             }
@@ -221,14 +222,11 @@ public class LepPlayerMovement : MonoBehaviour
             }
         }
     }
+    private static string ignoreWallrun = "NoWallrun";
+    private static string infiniteWallrun = "InfiniteWallrun";
 
-    void OnCollisionExit()
-    {
-        //if (collision.contactCount == 0)
-        //{
-            EnterFlying();
-        //}
-    }
+    //collision.contactCount == 0
+    void OnCollisionExit() {EnterFlying();}
     #endregion
 
 
@@ -317,20 +315,18 @@ public class LepPlayerMovement : MonoBehaviour
             rb.AddForce(direction, ForceMode.Acceleration);
         }
 
-        if (mode != Wallruning && !(Input.GetMouseButtonDown(2)))
+        if (mode != Wallruning && !Input.GetMouseButtonDown(2))
         {
             if (rb.velocity.magnitude < coefficientOfFriction)
             {
                 rb.velocity = Vector3.zero;
+                return;
             }
-            else
-            {
-                rb.AddForce(-1f * rb.velocity * frictionConstant, ForceMode.Acceleration);
-            }
+            rb.AddForce(-1f * rb.velocity * frictionConstant, ForceMode.Acceleration);
         }
     }
 
-    void Slide(Vector3 wishDir, float maxSpeed, float acceleration)
+    void Slide()
     {
         float slideFrictionConstant = 1f;
         if (jump && canJump)
