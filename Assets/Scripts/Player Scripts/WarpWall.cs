@@ -13,6 +13,8 @@ public class WarpWall : MonoBehaviour, IDamageable
     [SerializeField] private Transform WarpWallCenter;
     [SerializeField] private Transform cameraTransform;
 
+    public Team GetTeam() {return Team.Green;}
+
     void Awake()
     {
         wallMesh = GetComponent<MeshRenderer>();
@@ -80,8 +82,7 @@ public class WarpWall : MonoBehaviour, IDamageable
 
     private static void FireBullet(Transform bulletTransform, BulletType bulletType, Transform firer, Quaternion rotation)
     {
-        bulletTransform.rotation = rotation;
-        Weapon.Fire(firer.gameObject, new WeaponStruct {
+        WeaponStruct wepStruct = new WeaponStruct {
             gunType = GunType.None,
             bulletType = bulletType, 
             range = 100f, 
@@ -89,7 +90,9 @@ public class WarpWall : MonoBehaviour, IDamageable
             cooldown = 0f, 
             ammo = 1,
             reserveAmmo = 1,
-        }, bulletTransform);
+        };
+        bulletTransform.rotation = rotation;
+        Weapon.Fire(firer.gameObject, ref wepStruct, bulletTransform);
     }
 
     struct CapturedBullet {

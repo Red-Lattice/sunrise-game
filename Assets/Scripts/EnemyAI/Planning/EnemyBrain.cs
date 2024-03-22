@@ -407,7 +407,7 @@ public class EnemyBrain : MonoBehaviour
                     RotationHelper();
                     if (attackCooldown <= 0f && weapon.cooldown <= 0f)
                     {
-                        Weapon.Fire(transform.gameObject, weapon, weaponHoldPoint);
+                        Weapon.Fire(transform.gameObject, ref weapon, weaponHoldPoint);
                         weapon.cooldown = Weapon.WeaponTemplate(weapon.gunType).cooldown;
                         counter++;
                     }

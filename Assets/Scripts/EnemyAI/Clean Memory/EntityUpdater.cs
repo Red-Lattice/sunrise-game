@@ -30,10 +30,7 @@ public class EntityUpdater : MonoBehaviour
             aiList[i].StaggeredUpdate();
         }
         foreach (CleanAI ai in aiList) {
-            //ai.StaggeredUpdate();
-            if (Weapon.NotNull(ai.HeldWeapon()) && ai.HeldWeapon().cooldown > 0f) {
-                ai.UpdateCooldowns();
-            }
+            ai.UpdateCooldowns();
         }
     }
 }

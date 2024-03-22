@@ -16,6 +16,7 @@ public class StatManager : MonoBehaviour, IDamageable
     private float shield;
     private EnemyBrain optionalBrain;
 
+    public Team GetTeam() {return Team.Green;}
 
     // Start is called before the first frame update
     void Start()

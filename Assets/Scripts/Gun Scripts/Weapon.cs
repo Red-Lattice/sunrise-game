@@ -35,7 +35,9 @@ public enum GunType {
 public static class Weapon
 {
     // METHODS
-    public static void Fire(GameObject firer, WeaponStruct weaponInfo, Transform firePosition) {
+    public static bool Fire(GameObject firer, ref WeaponStruct weaponInfo, Transform firePosition) {
+        if (weaponInfo.cooldown > 0f) {return false;}
+
         switch (weaponInfo.bulletType) {
             case Melee:
                 FireRangedHitscan(firer, weaponInfo, firePosition);
@@ -50,7 +52,8 @@ public static class Weapon
                 Debug.LogError("Case not handled: " + weaponInfo.bulletType);
                 break;
         }
-        // Cooldown is YOUR responsibility to handle. The static class doesn't like it :(
+        weaponInfo.cooldown = ScriptableObjectHoarder.instance.WeaponTemplates[(int)weaponInfo.gunType].cooldown;
+        return true;
     }
 
     public static void FireHitscan(GameObject firer, WeaponStruct weaponInfo, Transform firePosition) {

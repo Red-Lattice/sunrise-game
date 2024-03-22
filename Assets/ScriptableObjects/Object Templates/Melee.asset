@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d1e9ea016e2a5f4eb82d0f0726e30ce, type: 3}
   m_Name: Melee
   m_EditorClassIdentifier: 
+  <prefab>k__BackingField: {fileID: 0}
   <gunType>k__BackingField: 0
   <bulletType>k__BackingField: 0
   <cooldown>k__BackingField: 0
   <range>k__BackingField: 3
   <maxAmmo>k__BackingField: 0
   <maxReserveAmmo>k__BackingField: 0
+  <countShots>k__BackingField: 0
+  <maxShotsInRow>k__BackingField: 255
+  <entityFiringCooldown>k__BackingField: 0

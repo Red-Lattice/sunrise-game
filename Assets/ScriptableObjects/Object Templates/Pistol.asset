@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d1e9ea016e2a5f4eb82d0f0726e30ce, type: 3}
   m_Name: Pistol
   m_EditorClassIdentifier: 
+  <prefab>k__BackingField: {fileID: 5139371571631139590, guid: cbc7a4b0ce565934dbd48a1163fd723e, type: 3}
   <gunType>k__BackingField: 1
   <bulletType>k__BackingField: 1
   <cooldown>k__BackingField: 0.2
   <range>k__BackingField: 100
   <maxAmmo>k__BackingField: 64
   <maxReserveAmmo>k__BackingField: 0
-  <prefab>k__BackingField: {fileID: 5139371571631139590, guid: cbc7a4b0ce565934dbd48a1163fd723e, type: 3}
+  <countShots>k__BackingField: 0
+  <maxShotsInRow>k__BackingField: 255
+  <entityFiringCooldown>k__BackingField: 0

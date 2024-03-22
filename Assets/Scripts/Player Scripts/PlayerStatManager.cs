@@ -16,6 +16,7 @@ public class PlayerStatManager : MonoBehaviour, IDamageable
     private float health;
     private float shield;
 
+    public Team GetTeam() {return Team.Green;}
 
     // Start is called before the first frame update
     void Start()

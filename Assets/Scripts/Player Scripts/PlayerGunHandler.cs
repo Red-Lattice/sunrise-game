@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static AnimationState;
 using static BulletType;
@@ -79,12 +80,10 @@ public class PlayerGunHandler : MonoBehaviour
 
         if (WeaponsEmpty()) {return;}
 
-        var weapon = availableWeapons[weaponSelectedIndex - 1];
-        if (Input.GetMouseButtonDown(0) && Weapon.NotNull(weapon))
+        if (Input.GetMouseButtonDown(0) && Weapon.NotNull(ref weapon))
         {
             if (weapon.cooldown > 0f) {return;}
-            Weapon.Fire(transform.gameObject, weapon, camControl.transform);
-            availableWeapons[weaponSelectedIndex - 1].cooldown = ScriptableObjectHoarder.instance.WeaponTemplates[(int)weapon.gunType].cooldown; // Structs are weird
+            Weapon.Fire(transform.gameObject, ref weapon, camControl.transform);
 
             AnimateGunfire();
 
@@ -93,6 +92,8 @@ public class PlayerGunHandler : MonoBehaviour
             recoilMovement += 1f;
         }
     }
+
+    ref WeaponStruct weapon => ref availableWeapons[weaponSelectedIndex - 1];
 
     private void UpdateCooldowns() {
         for (int i = 0; i < availableWeapons.Length; i++) {

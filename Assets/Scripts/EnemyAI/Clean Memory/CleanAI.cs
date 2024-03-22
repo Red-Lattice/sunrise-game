@@ -5,12 +5,14 @@ using System;
 using Unity.Profiling;
 using UnityEngine.AI;
 using UnityEngine.Animations;
+using System.Data.Common;
 
 public partial class CleanAI : MonoBehaviour
 {
     [Header("Standard")]
     public EntityType entityType;
-    private WeaponStruct weapon;
+    private WeaponStruct weaponStructDontGrabThis;
+    ref WeaponStruct weapon => ref weaponStructDontGrabThis;
     public GunType defaultGun;
     public BrainData aiData;
     public Team team;
@@ -18,6 +20,7 @@ public partial class CleanAI : MonoBehaviour
     public bool hasWeapon => Weapon.NotNull(ref weapon);
     public bool strafe = false;
     public byte boredom;
+    public bool fireTrigger = false;
     static readonly ProfilerMarker staggeredUpdateCall = new ProfilerMarker("StaggeredUpdate()");
 
     void Start() {
@@ -26,8 +29,7 @@ public partial class CleanAI : MonoBehaviour
         #endif
         agent = GetComponent<NavMeshAgent>();
         targets = new Target[5];
-        weapon = Weapon.BuildWeaponStruct(defaultGun, 100, 100);
-        Debug.Log(hasWeapon);
+        weaponStructDontGrabThis = Weapon.BuildWeaponStruct(defaultGun, 100, 100);
 
         aiData = new BrainData(transform.position, Quaternion.identity);
 
@@ -37,26 +39,27 @@ public partial class CleanAI : MonoBehaviour
         BeginMoving();
         //StartDebug();
     }
-    public GameObject gun;
+    public Animator gun;
     private void InitializeWeapon() {
-        gun = Instantiate(ScriptableObjectHoarder.instance.WeaponTemplates[(int)weapon.gunType].prefab, weaponHoldPoint);
-        //weaponHoldPoint.transform.LookAt(-transform.forward);
+        gun = Instantiate(
+                scriptableObjects.WeaponTemplates[(int)weapon.gunType].prefab,
+                weaponHoldPoint
+            ).GetComponent<Animator>();
     }
+    private ScriptableObjectHoarder scriptableObjects => ScriptableObjectHoarder.instance;
 
     /// <summary>
     /// Called by fixed update
     /// </summary>
     public void UpdateCooldowns() {
+        //UpdateDebug();
         weapon.cooldown -= Time.fixedDeltaTime;
+        fireCooldown -= Time.fixedDeltaTime;
     }
 
     #if UNITY_EDITOR
         public bool existsOnDefaultLayer => transform.gameObject.layer == 0;
     #endif
-    void Update() {
-        //MoveTo(new Vector3(1,1,1) * 5f);
-        //UpdateDebug();
-    }
 
     public void StaggeredUpdate() {
         staggeredUpdateCall.Begin();
@@ -69,7 +72,7 @@ public partial class CleanAI : MonoBehaviour
     }
     public Vector3 targetPosition => target.targetTransform.position;
     public Quaternion targetRotation => Quaternion.LookRotation(transform.position - targetPosition);
-    public LayerMask blockingLayerMask => 1 << 0;
+    public LayerMask blockingLayerMask => 1 << 0 | 1 << 8 | 1 << 9;//TeamToLayer();
 
     /// <summary>
     /// Draws a line between this entity and it's target.
@@ -84,6 +87,14 @@ public partial class CleanAI : MonoBehaviour
             blockingLayerMask);
     }
 
+    void OnDrawGizmosSelected()
+    {
+        // Draws a 5 unit long red line in front of the object
+        //Gizmos.color = Color.red;
+        //Vector3 direction = weaponHoldPoint.forward * DistanceToTarget();
+        //Gizmos.DrawRay(weaponHoldPoint.position, direction);
+    }
+
     public float DistanceToTarget() {
         return Vector3.Distance(transform.position, targetPosition);
     }
@@ -92,55 +103,92 @@ public partial class CleanAI : MonoBehaviour
 #region coroutines
 public partial class CleanAI : MonoBehaviour {
     private NavMeshAgent agent;
-    private Coroutine moveToCoroutine;
-    private bool moveToCoroutineActive => moveToCoroutine != null;
-    #region profiler_markers
-    static readonly ProfilerMarker moveToCoroutineMarker = new ProfilerMarker("MoveTo Coroutine");
-    static readonly ProfilerMarker makeStruct = new ProfilerMarker("Making new BrainData struct");
-    static readonly ProfilerMarker startingCoroutine = new ProfilerMarker("Starting a new Coroutine");
-    #endregion
+    private Coroutine coroutineContainer;
 
     public void BeginMoving() {
-        moveToCoroutineMarker.Begin();
-        makeStruct.Begin();
         aiData = new BrainData(transform.position, aiData.lookAtRot);
-        makeStruct.End();
-        startingCoroutine.Begin();
-        if (moveToCoroutine == null) {moveToCoroutine = StartCoroutine(MoveToCoroutine());}
-        startingCoroutine.End();
-        moveToCoroutineMarker.End();
+        if (coroutineContainer == null) {coroutineContainer = StartCoroutine(BigCoroutine());}
     }
 
-    private IEnumerator MoveToCoroutine() {
+    private IEnumerator BigCoroutine() {
         while (true) {
             if (agent.destination != aiData.moveToLocation) {
                 agent.SetDestination(aiData.moveToLocation);
             }
+
             if (aiData.lookAtRot != Quaternion.identity) {
                 agent.updateRotation = false;
                 RotationHelper(aiData.lookAtRot);
-            } else {agent.updateRotation = true;}
+            }
+            else {agent.updateRotation = true;}
+
+            if (fireTrigger) {Fire();}
             yield return null;
+        }
+    }
+    private byte timesShot;
+    private float fireCooldown = 0f;
+    private void Fire() {
+        if (fireCooldown > 0f) {return;}
+        if (!Weapon.Fire(gameObject, ref weapon, weaponHoldPoint)) {return;}
+
+        SO_WeaponTemplate weaponTemplate = scriptableObjects.WeaponTemplates[(int)weapon.gunType];
+        if (weaponTemplate.countShots) {
+            timesShot++;
+        }
+        if (timesShot >= weaponTemplate.maxShotsInRow) {
+            timesShot = 0;
+            fireCooldown = weaponTemplate.entityFiringCooldown;
         }
     }
 
     private void RotationHelper(Quaternion rotation)
     {
+        AimBodyAndHead(rotation);
+        //headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
+        AimGun(rotation);
+    }
+    private static float turnSpeed => 20 * Time.fixedDeltaTime;
+
+    private void AimBodyAndHead(Quaternion rotation) {
         Quaternion lookRotation = Quaternion.Euler(0, rotation.eulerAngles.y, 0);
 
-        //Quaternion headRotation = Quaternion.Euler(rotation.eulerAngles.x, 
-        //    rotation.eulerAngles.y, Mathf.Clamp(rotation.eulerAngles.z, -150f, 150f));
+        Quaternion headRotation = Quaternion.Euler(rotation.eulerAngles.x, 
+            rotation.eulerAngles.y, Mathf.Clamp(rotation.eulerAngles.z, -150f, 150f));
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 20 * Time.fixedDeltaTime);
-        //headTransform.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
-        //weaponHoldPoint.rotation = Quaternion.RotateTowards(headTransform.rotation, headRotation, 20 * Time.fixedDeltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, turnSpeed);
+    }
+
+    private void AimGun(Quaternion rotation) {
+        if (hasTarget) {Quaternion.RotateTowards(weaponHoldPoint.rotation, Quaternion.LookRotation(weaponHoldPoint.position - targetPosition), turnSpeed); return;}
+
+        Quaternion headRotation = Quaternion.Euler(rotation.eulerAngles.x, 
+            rotation.eulerAngles.y, Mathf.Clamp(rotation.eulerAngles.z, -150f, 150f));
+
+        weaponHoldPoint.rotation = Quaternion.RotateTowards(weaponHoldPoint.rotation, headRotation, turnSpeed);
     }
 
     /// <summary>
     /// Returns true if the ai is at a given position
     /// </summary>
     public bool DistanceCheck(Vector3 position) {
-        return Vector3.Distance(new Vector3(transform.position.x, 0, transform.position.z), new Vector3(position.x, 0, position.z)) < 0.25f;
+        return Vector3.Distance(
+            new Vector3(transform.position.x, 0, transform.position.z),
+            new Vector3(position.x, 0, position.z)
+        ) < 0.25f;
+    }
+
+    public bool AcceptableAngleToTarget() {
+        return Vector3.Angle(
+            targetPosition - transform.position,
+            weaponHoldPoint.forward
+        ) < 25f;
+    }
+    public bool CanHitTarget() {
+        return !Physics.Raycast(weaponHoldPoint.position, 
+            weaponHoldPoint.forward, 
+            DistanceToTarget(), 
+            blockingLayerMask & (~(1 << target.targetTransform.gameObject.layer)));
     }
 }
 #endregion
@@ -157,7 +205,7 @@ public partial class CleanAI : MonoBehaviour, IDamageable
         team = data.team;
     }
     public void DealDamage(float damage, BulletType bulletType, GameObject dealer, Vector3 hitPos) {
-        UpdateTarget(dealer, damage);
+        if (dealer.layer != gameObject.layer) {UpdateTarget(dealer, damage);}
         DamageStats(damage, bulletType);
     }
 
@@ -172,6 +220,25 @@ public partial class CleanAI : MonoBehaviour, IDamageable
             return;
         }
         Die();
+    }
+
+    public Team GetTeam() {return team;}
+
+    /// <summary>
+    /// These are the layers that the AI will consider "blocking their view"
+    /// If a friendly (to the player) steps in an enemy's path to shoot the player, they'll continue shooting
+    /// </summary>
+    public int TeamToLayer() {
+        switch (team) {
+            case Team.Red:
+                return 1 << 0 | 1 << 9;
+            case Team.Green:
+                return 1 << 0 | 1 << 8;
+            case Team.Blue:
+            case Team.None:
+                break;
+        }
+        return 1 << 0;
     }
 
     private void Die() {
