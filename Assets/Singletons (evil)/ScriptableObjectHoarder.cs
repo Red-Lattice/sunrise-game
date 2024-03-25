@@ -14,6 +14,5 @@ public class ScriptableObjectHoarder : MonoBehaviour
             return;
         }
         instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 }

@@ -5,8 +5,6 @@ using System;
 using Unity.Profiling;
 using UnityEngine.AI;
 using UnityEngine.Animations;
-using System.Data.Common;
-using Unity.VisualScripting;
 
 public partial class CleanAI : MonoBehaviour
 {
@@ -18,6 +16,7 @@ public partial class CleanAI : MonoBehaviour
     public BrainData aiData;
     public Team team;
     public Transform weaponHoldPoint;
+    [SerializeField] private Animator shieldAnimator;
     public bool hasWeapon => Weapon.NotNull(ref weapon);
     public bool strafe = false;
     public byte boredom;
@@ -239,17 +238,20 @@ public partial class CleanAI : MonoBehaviour, IDamageable
         DamageStats(damage, bulletType);
     }
 
+    private bool hasShieldAnimator => shieldAnimator != null;
+
     private void DamageStats(float damage, BulletType bulletType) {
         DamageType damageType = Damage.BulletTypeToDamageType(bulletType);
         if (shield > 0f) {
             shield = Math.Clamp(shield - damage, 0f, EntityUpdater.instance.aIList.List[(int)entityType].DefaultShield);
+            if (!hasShieldAnimator) {return;}
+            if (shield <= 0f) {shieldAnimator.Play("ShieldPop", -1, 0f);} else {shieldAnimator.Play("Flash", -1, 0f);}
             return;
         }
         if (health > 0f) {
             health = Math.Clamp(health - damage, 0f, EntityUpdater.instance.aIList.List[(int)entityType].DefaultHealth);
-            return;
         }
-        Die();
+        if (health <= 0f) Die();
     }
 
     public Team GetTeam() {return team;}
@@ -272,7 +274,10 @@ public partial class CleanAI : MonoBehaviour, IDamageable
     }
 
     private void Die() {
-
+        Instantiate(EntityUpdater.instance.aIList.List[(int)entityType].deadPrefab, transform.position, transform.rotation);
+        StopAllCoroutines();
+        EntityUpdater.instance.aiList.Remove(this);
+        Destroy(gameObject);
     }
 }
 #endregion

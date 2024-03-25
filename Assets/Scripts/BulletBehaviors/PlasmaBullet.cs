@@ -44,6 +44,7 @@ public class PlasmaBullet : MonoBehaviour, IInitializable
     }
 
     private bool Guards(Transform hitObject) {
+        if (shooter == null) {return false;}
         return (hitObject.gameObject.layer & shooter.layer) > 0; // Return if they're on different layers
     }
 

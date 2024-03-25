@@ -6,6 +6,7 @@ using UnityEngine;
 public class SO_AI : ScriptableObject
 {
     public GameObject prefab;
+    public GameObject deadPrefab;
     public float DefaultHealth;
     public float DefaultShield;
     public Team team;

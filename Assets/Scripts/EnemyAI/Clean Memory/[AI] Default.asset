@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: '[AI] Default'
   m_EditorClassIdentifier: 
   prefab: {fileID: 97495229439019715, guid: 8a163cda56ce6704ea13fe129fa06f6c, type: 3}
+  deadPrefab: {fileID: 8440909457511559008, guid: 39b6c295fc6dd59409ab0ea9f3f3a67e, type: 3}
   DefaultHealth: 100
   DefaultShield: 100
   team: 2
