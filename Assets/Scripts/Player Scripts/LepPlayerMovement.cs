@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using static Mode;
+using UnityEngine.Rendering.Universal;
 
 enum Mode
 {
@@ -166,10 +167,25 @@ public class LepPlayerMovement : MonoBehaviour
         float vAxis = Input.GetAxisRaw("Vertical");
 
         Vector3 direction = new Vector3(hAxis, 0, vAxis);
+        Vector3 pt = camCon.point - transform.position;
+        //if (camCon.locked) {direction = Quaternion.LookRotation(pt).normalized * direction;}
+
         return rb.transform.TransformDirection(direction);
     }
 
     #region Collisions
+    void OnCollisionEnter(Collision collision) {
+        int count = collision.contactCount;
+        if (count == 0) {return;}
+
+        for (int i = 0; i < count; i++) // Uglier than the foreach but generates 0 garbage
+        {
+            ContactPoint contact = collision.GetContact(i);
+            Vector3 vecToPoint = contact.point-transform.position;
+            float posAngle = Vector3.Angle(vecToPoint, Vector3.up);
+            if (posAngle > 150f && posAngle < 175) {transform.position += new Vector3(vecToPoint.x,0,0); return;}
+        }
+    }
     void OnCollisionStay(Collision collision)
     {
         int count = collision.contactCount;

@@ -14,8 +14,6 @@ public class PlayerGunHandler : MonoBehaviour
     **/
     [Header("Scriptable Objects")]
     [SerializeField] private GunScriptableObject gunGetter;
-    [SerializeField] private GrenadesScriptableObject grenadeGetter;
-
     [Header("Other Objects Needed To Function")]
     [SerializeField] private GameObject weaponObject;
     [SerializeField] private CameraController camControl;
@@ -64,11 +62,6 @@ public class PlayerGunHandler : MonoBehaviour
 
         ProcessRecoil();
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            ThrowGrenade();
-            return;
-        }
         if (Input.GetKeyDown(KeyCode.Q)) // Clean this shit up later
         {
             PunchSomething();
@@ -121,18 +114,6 @@ public class PlayerGunHandler : MonoBehaviour
         {
             camControl.Punch(new Vector2(0f, -Time.deltaTime * 3f));
             recoilMovement -= Time.deltaTime * 3f;
-        }
-    }
-
-    private void ThrowGrenade() {
-        GameObject newGrenade = Instantiate(grenadeGetter.defaultGrenade, transform.position + transform.forward, Quaternion.identity);
-        if (newGrenade.TryGetComponent(out Rigidbody grenadeRB))
-        {
-            grenadeRB.AddForce(camControl.transform.forward * 1000f, ForceMode.Acceleration);
-            
-            grenadeRB.angularVelocity += 
-                Vector3.forward * Random.Range(-10.0f, 10.0f)
-                + Vector3.left * Random.Range(-10.0f, 10.0f);
         }
     }
 

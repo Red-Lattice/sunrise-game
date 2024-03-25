@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6096960531501202601}
   - component: {fileID: 901364478804088191}
   - component: {fileID: 5248078038448321858}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5545504138036253778}
   - component: {fileID: 1030127289923998738}
   - component: {fileID: 1423623196068093150}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: 898200212085326215}
   - component: {fileID: 7844261902334610843}
   - component: {fileID: 101729924105574784}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: MuzzleFlash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +489,7 @@ GameObject:
   - component: {fileID: 8221253991723131638}
   - component: {fileID: 7396791889577552290}
   - component: {fileID: 3396488875662924231}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Slide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -572,7 +572,7 @@ GameObject:
   - component: {fileID: 4790043086901063947}
   - component: {fileID: 8285380696972943559}
   - component: {fileID: 9095550259132822614}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Sight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -655,7 +655,7 @@ GameObject:
   - component: {fileID: 8676396924021893849}
   - component: {fileID: 114156351831186503}
   - component: {fileID: 8400230847837159576}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -738,7 +738,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5483527934123766204}
   - component: {fileID: 1042913500393056220}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Flock Centered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -799,7 +799,7 @@ GameObject:
   - component: {fileID: 8736230530132046309}
   - component: {fileID: 4082931387158974574}
   - component: {fileID: 8938614554384449043}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -883,7 +883,7 @@ GameObject:
   - component: {fileID: 1065791742475071263}
   - component: {fileID: 6234709087788379038}
   - component: {fileID: 220069464391827728}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Magazine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
