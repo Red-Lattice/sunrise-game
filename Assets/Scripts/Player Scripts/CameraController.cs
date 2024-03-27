@@ -28,7 +28,7 @@ public class CameraController : MonoBehaviour
     public Vector3 point => (lockedTarget == null) ? Vector3.zero : lockedTarget.position;
     public bool locked {get; private set;}
     public bool hasTarget => lockedTarget != null;
-    private Transform lockedTarget;
+    public Transform lockedTarget {get; private set;}
     
 
     void Start()
@@ -44,7 +44,6 @@ public class CameraController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F)) {locked = !locked;}
         if (locked && !hasTarget) {locked = false;}
         if (!locked) {GetLockTarget();}
-        //marker.transform.position = point;
         RotateMainCamera();
     }
 
@@ -55,8 +54,6 @@ public class CameraController : MonoBehaviour
 
         // Cast character controller shape 10 meters forward to see if it is about to hit anything.
         if (Physics.CapsuleCast(p1, p1, 1f, transform.forward, out hit, 25f, targets)) {
-            //marker.transform.position = hit.transform.position;
-            //point = hit.transform.position;
             lockedTarget = hit.transform;
         }
             
@@ -91,8 +88,9 @@ public class CameraController : MonoBehaviour
     /// Runs when the camera is locked on a target
     /// </summary>
     void LockedRotate() {
-        transform.rotation = Quaternion.Lerp(transform.rotation, lookTo, deltaLerpSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, lookTo, deltaLerpSpeed * 2f);
         transform.parent.rotation = Quaternion.Lerp(parentRot, flatLookTo, deltaLerpSpeed);
+        rb.MoveRotation(transform.parent.rotation);
 
         currentLook.x = transform.parent.eulerAngles.y;
         currentLook.y = Mathf.Clamp(transform.rotation.y, -90, 90);

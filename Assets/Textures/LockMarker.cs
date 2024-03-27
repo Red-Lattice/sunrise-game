@@ -7,6 +7,7 @@ public class LockMarker : MonoBehaviour
 {
     [SerializeField] private CameraController camCon;
     [SerializeField] private Canvas thisCanvas;
+    [SerializeField] private float rotationSpeed;
     private Camera cam;
     private Image thisImage;
 
@@ -25,15 +26,19 @@ public class LockMarker : MonoBehaviour
         if (!thisImage.IsActive()) {return;}
 
         UpdatePosition();
+        UpdateRotation();
+    }
+    void UpdateRotation() {
+        thisImage.rectTransform.RotateAround(thisImage.rectTransform.position, thisImage.rectTransform.forward, Time.deltaTime * rotationSpeed);
     }
 
     void UpdatePosition() {
         // Calculate *screen* position (note, not a canvas/recttransform position)
-        Vector2 canvasPos;
+        Vector2 _;
         Vector2 screenPoint = cam.WorldToScreenPoint(camCon.point);
         
         // Convert screen position to Canvas / RectTransform space <- leave camera null if Screen Space Overlay
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(thisImage.rectTransform, screenPoint, null, out canvasPos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(thisImage.rectTransform, screenPoint, null, out _);
         
         // Set
         thisImage.rectTransform.position = screenPoint;

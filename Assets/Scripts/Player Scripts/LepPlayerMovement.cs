@@ -10,7 +10,9 @@ enum Mode
     Walking,
     Flying,
     Wallruning,
-    Sliding
+    Sliding,
+    Bashing, // When locked on to a target
+    Dashing, // When not locked on to a target
 }
 
 public class LepPlayerMovement : MonoBehaviour
@@ -100,15 +102,19 @@ public class LepPlayerMovement : MonoBehaviour
         {
             slideBoostApplied = false;
         }
-        rb.useGravity = mode != Mode.Walking && mode != Mode.Sliding;
+        rb.useGravity = mode != Walking && mode != Sliding && mode != Bashing;
 
         dir = Direction();
         if (dir.magnitude < 0.1f && getPlayerSpeed() < 0.5f) {rb.drag = 11f;}
 
         crouched = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
         jump = Input.GetKeyDown(KeyCode.Space) ? true : jump;
+        if (bashCooldown > 0f) bashCooldown -= Time.deltaTime;
+        if (Input.GetKeyDown(KeyCode.LeftShift) && camCon.locked && bashCooldown <= 0f) {EnterBashing();}
     }
 
+    float bashTimer = 0;
+    float bashCooldown = 0f;
     void FixedUpdate()
     {
         crouched = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C);
@@ -116,7 +122,7 @@ public class LepPlayerMovement : MonoBehaviour
         bannedGroundNormal = (wallStickTimer == 0f && wallBan > 0f) 
             ? groundNormal : Vector3.zero;
 
-        wallStickTimer = Mathf.Max(wallStickTimer - Time.deltaTime, 0f);
+        wallStickTimer = Mathf.Max(wallStickTimer - Time.fixedDeltaTime, 0f);
         wallBan = Mathf.Max(wallBan - Time.deltaTime, 0f);
 
         camCon.SetTilt((mode == Wallruning) ? WallrunCameraAngle() : 0);
@@ -126,17 +132,17 @@ public class LepPlayerMovement : MonoBehaviour
                 Wallrun(dir, wallSpeed, wallClimbSpeed, wallAccel);
                 if (!ground.CompareTag(infiniteWallrun)) {wrTimer = Mathf.Max(wrTimer - Time.deltaTime, 0f);}
                 break;
-
             case Walking:
                 Walk(dir, groundSpeed, grAccel);
                 break;
-
             case Sliding:
                 Slide();
                 break;
-
             case Flying:
                 AirMove(dir, airSpeed, airAccel);
+                break;
+            case Bashing:
+                Bash();
                 break;
         }
 
@@ -173,6 +179,7 @@ public class LepPlayerMovement : MonoBehaviour
         return rb.transform.TransformDirection(direction);
     }
 
+    [SerializeField] float bashStrength = 10f;
     #region Collisions
     void OnCollisionEnter(Collision collision) {
         int count = collision.contactCount;
@@ -182,6 +189,13 @@ public class LepPlayerMovement : MonoBehaviour
         {
             ContactPoint contact = collision.GetContact(i);
             Vector3 vecToPoint = contact.point-transform.position;
+            if (mode == Bashing && contact.otherCollider.transform == bashTarget) {
+                mode = Flying;
+                bashTimer = 0f;
+                bashCooldown = 2f;
+                contact.otherCollider.transform.GetComponent<IDamageable>().DealDamage(30f, BulletType.Melee, gameObject, contact.point);
+                rb.AddForce((-vecToPoint + transform.up * 0.25f) * bashStrength, ForceMode.VelocityChange);
+            }
             float posAngle = Vector3.Angle(vecToPoint, Vector3.up);
             if (posAngle > 150f && posAngle < 175) {transform.position += new Vector3(vecToPoint.x,0,0); return;}
         }
@@ -265,6 +279,16 @@ public class LepPlayerMovement : MonoBehaviour
         if (mode != Sliding && canJump)
         {
             mode = Sliding;
+        }
+    }
+
+    void EnterBashing()
+    {
+        if (mode != Bashing && canJump)
+        {
+            mode = Bashing;
+            bashTarget = camCon.lockedTarget;
+            bashTimer = 2f;
         }
     }
 
@@ -356,6 +380,14 @@ public class LepPlayerMovement : MonoBehaviour
         rb.AddForce(-1f * rb.velocity * slideFrictionConstant, ForceMode.Acceleration);
     }
 
+    Transform bashTarget;
+    void Bash()
+    {
+        rb.velocity = Quaternion.LookRotation(bashTarget.position - transform.position) * Vector3.forward
+            * 15f;
+        if (bashTimer <= 0f) {mode = Flying; bashCooldown = 2f;} else {bashTimer -= Time.fixedDeltaTime;}
+    }
+
     void slideBoost()
     {
         if (!slideBoostApplied)
@@ -370,10 +402,7 @@ public class LepPlayerMovement : MonoBehaviour
 
     void AirMove(Vector3 wishDir, float maxSpeed, float acceleration)
     {
-        if (jump)
-        {
-            DoubleJump(wishDir);
-        }
+        if (jump) {DoubleJump(wishDir);}
 
         float projVel = Vector3.Dot(new Vector3(rb.velocity.x, 0f, rb.velocity.z), wishDir); // Vector projection of Current velocity onto accelDir.
         float accelVel = acceleration * Time.deltaTime; // Accelerated velocity in direction of movment
@@ -515,7 +544,7 @@ public class LepPlayerMovement : MonoBehaviour
 
     bool CanRunOnThisWall(Vector3 normal)
     {
-        return (Vector3.Angle(normal, groundNormal) > 10 || wallBan == 0f);
+        return Vector3.Angle(normal, groundNormal) > 10 || wallBan == 0f;
     }
 
     Vector3 VectorToWall()
